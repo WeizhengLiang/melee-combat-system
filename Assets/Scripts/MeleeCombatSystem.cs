@@ -7,19 +7,21 @@ public class MeleeCombatSystem : MonoBehaviour
     private RPGCharacterController characterController;
     private RPGCharacterMovementController movementController;
     private RPGCharacterWeaponController weaponController;
+    private AttackHandler attackHandler;
 
     private void Start()
     {
         characterController = GetComponent<RPGCharacterController>();
         movementController = GetComponent<RPGCharacterMovementController>();
         weaponController = GetComponent<RPGCharacterWeaponController>();
+        attackHandler = GetComponent<AttackHandler>();
     }
 
     public void PerformAttack(int attackNumber)
     {
         if (characterController.canAction)
         {
-            characterController.Attack(attackNumber, Side.Left,characterController.leftWeapon, characterController.rightWeapon, 0.5f);
+            attackHandler.PerformAttack(attackNumber, Side.Left);
         }
     }
 

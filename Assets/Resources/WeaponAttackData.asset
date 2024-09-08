@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44cea9b2857fb4dbda7f29bcdeda4acc, type: 3}
+  m_Name: WeaponAttackData
+  m_EditorClassIdentifier: 
+  weaponAttackDataList:
+  - weaponType: 0
+    attackRadius: 0.03
+    attackPoints:
+    - localOffset: {x: -0.3548962, y: -0.00000008702278, z: -0.0000003051758}
+    - localOffset: {x: -0.3548959, y: -0.0000000667572, z: -0.0000001525879}
+  - weaponType: 1
+    attackRadius: 0.1
+    attackPoints:
+    - localOffset: {x: -0.206, y: -0.196, z: 2.285}
+    - localOffset: {x: -0.202, y: 0, z: 1.384}
+    - localOffset: {x: -0.184, y: 0, z: 0.431}

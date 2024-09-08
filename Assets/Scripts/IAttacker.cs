@@ -1,7 +1,7 @@
 using UnityEngine;
+using RPGCharacterAnims.Lookups;
 
 public interface IAttacker
 {
-    void PerformAttack();
-    Vector3 GetAttackPosition();
+    void PerformAttack(int attackNumber, Side attackSide);
 }
