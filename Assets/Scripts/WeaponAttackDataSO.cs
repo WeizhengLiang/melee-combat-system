@@ -2,13 +2,13 @@ using UnityEngine;
 using RPGCharacterAnims.Lookups;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "WeaponAttackData", menuName = "RPG/Weapon Attack Data", order = 1)]
-public class WeaponAttackDataSO : ScriptableObject
+//[CreateAssetMenu(fileName = "WeaponAttackData", menuName = "RPG/Weapon Attack Data", order = 1)]
+public class WeaponAttackDataSO : MonoBehaviour
 {
     [System.Serializable]
     public class AttackPoint
     {
-        public Vector3 localOffset;
+        public Transform atkPtTransform;
     }
 
     [System.Serializable]

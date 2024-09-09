@@ -14,13 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponAttackDataList:
   - weaponType: 0
-    attackRadius: 0.03
+    attackRadius: 0
     attackPoints:
-    - localOffset: {x: -0.3548962, y: -0.00000008702278, z: -0.0000003051758}
-    - localOffset: {x: -0.3548959, y: -0.0000000667572, z: -0.0000001525879}
-  - weaponType: 1
-    attackRadius: 0.1
+    - atkPtTransform: {fileID: 0}
+  - weaponType: 0
+    attackRadius: 0
     attackPoints:
-    - localOffset: {x: -0.206, y: -0.196, z: 2.285}
-    - localOffset: {x: -0.202, y: 0, z: 1.384}
-    - localOffset: {x: -0.184, y: 0, z: 0.431}
+    - atkPtTransform: {fileID: 0}

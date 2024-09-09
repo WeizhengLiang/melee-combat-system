@@ -4,17 +4,19 @@ using RPGCharacterAnims.Lookups;
 
 public class MeleeCombatSystem : MonoBehaviour
 {
-    private RPGCharacterController characterController;
-    private RPGCharacterMovementController movementController;
-    private RPGCharacterWeaponController weaponController;
-    private AttackHandler attackHandler;
+    public CharacterInstance UserCharacter;
+
+    private RPGCharacterController          characterController;
+    private RPGCharacterMovementController  movementController;
+    private RPGCharacterWeaponController    weaponController;
+    private AttackHandler                   attackHandler;
 
     private void Start()
     {
-        characterController = GetComponent<RPGCharacterController>();
-        movementController = GetComponent<RPGCharacterMovementController>();
-        weaponController = GetComponent<RPGCharacterWeaponController>();
-        attackHandler = GetComponent<AttackHandler>();
+        characterController = UserCharacter.GetComponent<RPGCharacterController>();
+        movementController  = UserCharacter.GetComponent<RPGCharacterMovementController>();
+        weaponController    = UserCharacter.GetComponent<RPGCharacterWeaponController>();
+        attackHandler       = UserCharacter.GetComponent<AttackHandler>();
     }
 
     public void PerformAttack(int attackNumber)

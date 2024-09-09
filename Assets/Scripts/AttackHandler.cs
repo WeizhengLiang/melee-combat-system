@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
 using UnityEngine;
+using static WeaponAttackDataSO;
 
 public class AttackHandler : MonoBehaviour, IAttacker
 {
-    private RPGCharacterController characterController;
+    private RPGCharacterController  characterController;
+    private WeaponManager           weaponManager;
     public float attackDuration = 0.5f;
 
     public WeaponAttackDataSO weaponAttackDataSO;
@@ -19,22 +21,23 @@ public class AttackHandler : MonoBehaviour, IAttacker
     private void Awake()
     {
         characterController = GetComponent<RPGCharacterController>();
+        weaponManager = GetComponent<WeaponManager>();
         CacheWeaponPrefabs();
     }
 
-    private void CacheWeaponPrefabs()
+    public void CacheWeaponPrefabs()
     {
         if (debugMode) Debug.Log("AttackHandler: Starting to cache weapon prefabs");
 
         // 确保 WeaponManager 实例存在
-        if (WeaponManager.Instance == null)
+        if (weaponManager == null)
         {
             Debug.LogError("AttackHandler: WeaponManager instance not found. Make sure it's set up in the scene.");
             return;
         }
 
         // 从 WeaponManager 获取所有武器预制体
-        weaponPrefabs = WeaponManager.Instance.GetAllWeaponPrefabs();
+        weaponPrefabs = weaponManager.GetAllWeaponPrefabs();
 
         if (debugMode)
         {
@@ -105,7 +108,7 @@ public class AttackHandler : MonoBehaviour, IAttacker
         {
             foreach (var attackPoint in attackPoints)
             {
-                Vector3 worldAttackPoint = weaponPrefab.transform.TransformPoint(attackPoint.localOffset);
+                Vector3 worldAttackPoint = weaponPrefab.transform.TransformPoint(attackPoint.atkPtTransform.position);
                 if (debugMode) Debug.Log($"AttackHandler: Checking hit at {worldAttackPoint} with radius {currentRadius}");
 
                 Collider[] hitColliders = Physics.OverlapSphere(worldAttackPoint, currentRadius);
@@ -141,7 +144,7 @@ public class AttackHandler : MonoBehaviour, IAttacker
             WeaponAttackDataSO.AttackPoint[] points = weaponAttackDataSO.GetAttackPoints(currentWeapon);
             if (points.Length > 0)
             {
-                Vector3 attackPosition = weaponPrefab.transform.TransformPoint(points[0].localOffset);
+                Vector3 attackPosition = weaponPrefab.transform.TransformPoint(points[0].atkPtTransform.position);
                 if (debugMode) Debug.Log($"AttackHandler: Attack position for {currentWeapon} on {attackSide} side is {attackPosition}");
                 return attackPosition;
             }
@@ -153,6 +156,8 @@ public class AttackHandler : MonoBehaviour, IAttacker
     private void OnDrawGizmosSelected()
     {
         if (weaponAttackDataSO == null) return;
+
+        if(characterController == null) return;
 
         Gizmos.color = Color.red;
         DrawWeaponGizmos(characterController.rightWeapon);
@@ -170,9 +175,9 @@ public class AttackHandler : MonoBehaviour, IAttacker
 
             foreach (var point in points)
             {
-                Vector3 worldPoint = weaponPrefab.transform.TransformPoint(point.localOffset);
-                Gizmos.DrawWireSphere(worldPoint, radius);
-                if (debugMode && Application.isPlaying) Debug.DrawLine(transform.position, worldPoint, Color.yellow, 0.1f);
+                //Vector3 worldPoint = weaponPrefab.transform.TransformPoint(point.atkPtTransform.position);
+                //Gizmos.DrawWireSphere(worldPoint, radius);
+                //if (debugMode && Application.isPlaying) Debug.DrawLine(transform.position, worldPoint, Color.yellow, 0.1f);
             }
         }
         else if (debugMode && Application.isPlaying)

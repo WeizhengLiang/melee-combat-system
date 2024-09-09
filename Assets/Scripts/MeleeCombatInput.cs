@@ -10,7 +10,7 @@ public class MeleeCombatInput : MonoBehaviour
     private void Start()
     {
         meleeCombatSystem = GetComponent<MeleeCombatSystem>();
-        characterController = GetComponent<RPGCharacterController>();
+        characterController = meleeCombatSystem.UserCharacter.GetComponent<RPGCharacterController>();
     }
 
     private void Update()
@@ -25,10 +25,14 @@ public class MeleeCombatInput : MonoBehaviour
             if (characterController.rightWeapon == Weapon.Unarmed)
             {
                 meleeCombatSystem.EquipWeapon(Weapon.TwoHandSword);
+                characterController.leftWeapon = Weapon.TwoHandSword;
+                characterController.rightWeapon = Weapon.TwoHandSword;
             }
             else
             {
                 meleeCombatSystem.UnequipWeapon();
+                characterController.rightWeapon = Weapon.Unarmed;
+                characterController.leftWeapon = Weapon.Unarmed;
             }
         }
 
