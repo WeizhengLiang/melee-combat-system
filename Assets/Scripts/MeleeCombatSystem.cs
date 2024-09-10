@@ -1,41 +1,102 @@
 using UnityEngine;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
+using RPGCharacterAnims.Actions;
+using System.Collections.Generic;
 
 public class MeleeCombatSystem : MonoBehaviour
 {
-    public CharacterInstance UserCharacter;
+    private RPGCharacterController characterController;
+    private RPGCharacterWeaponController weaponController;
+    private AttackHandler attackHandler;
+    private WeaponManager weaponManager;
 
-    private RPGCharacterController          characterController;
-    private RPGCharacterMovementController  movementController;
-    private RPGCharacterWeaponController    weaponController;
-    private AttackHandler                   attackHandler;
+    private bool isInImpactPhase = false;
 
     private void Start()
     {
-        characterController = UserCharacter.GetComponent<RPGCharacterController>();
-        movementController  = UserCharacter.GetComponent<RPGCharacterMovementController>();
-        weaponController    = UserCharacter.GetComponent<RPGCharacterWeaponController>();
-        attackHandler       = UserCharacter.GetComponent<AttackHandler>();
+        characterController = GetComponent<RPGCharacterController>();
+        weaponController = GetComponent<RPGCharacterWeaponController>();
+        weaponManager = GetComponent<WeaponManager>();
+        attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+
+        if (attackHandler == null)
+        {
+            Debug.LogError("AttackHandler not found in RPGCharacterController");
+            return;
+        }
+
+        // 订阅 AttackHandler 的事件
+        attackHandler.OnImpactPhaseStart += StartImpactPhase;
+        attackHandler.OnImpactPhaseEnd += EndImpactPhase;
     }
 
-    public void PerformAttack(int attackNumber)
+    private void Update()
     {
-        if (characterController.canAction)
+        if (isInImpactPhase)
         {
-            attackHandler.PerformAttack(attackNumber, Side.Left);
+            DetectHit(attackHandler.CurrentAttackSide);
+        }
+    }
+
+    public void PerformAttack(int attackNumber, Side attackSide)
+    {
+        if (characterController.CanStartAction(HandlerTypes.Attack) && attackHandler.CanStartAction(characterController))
+        {
+            characterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, attackSide, attackNumber));
+        }
+    }
+
+    private void StartImpactPhase()
+    {
+        isInImpactPhase = true;
+    }
+
+    private void EndImpactPhase()
+    {
+        isInImpactPhase = false;
+    }
+
+    private void DetectHit(Side attackSide)
+    {
+        Weapon currentWeapon = (attackSide == Side.Left) ? characterController.leftWeapon : characterController.rightWeapon;
+        List<Transform> attackPoints = weaponManager.GetAttackPoints(currentWeapon);
+        float attackRadius = weaponManager.GetAttackRadius(currentWeapon);
+
+        foreach (var attackPoint in attackPoints)
+        {
+            Collider[] hitColliders = Physics.OverlapSphere(attackPoint.position, attackRadius);
+            foreach (var hitCollider in hitColliders)
+            {
+                IDamageable damageable = hitCollider.GetComponent<IDamageable>();
+                if (damageable != null && hitCollider.gameObject != gameObject)
+                {
+                    damageable.ReceiveHit(attackPoint.position);
+                }
+            }
         }
     }
 
     public void EquipWeapon(Weapon weapon)
     {
+        weaponManager.EquipWeapon(weapon);
         weaponController.UnsheathWeapon(weapon);
     }
 
     public void UnequipWeapon()
     {
-        weaponController.SheathWeapon(characterController.rightWeapon, Weapon.Unarmed);
+        Weapon currentWeapon = characterController.rightWeapon;
+        weaponManager.UnequipWeapon();
+        weaponController.SheathWeapon(currentWeapon, Weapon.Unarmed);
     }
 
-    // 添加更多近战相关的方法
+    private void OnDestroy()
+    {
+        // 取消订阅事件
+        if (attackHandler != null)
+        {
+            attackHandler.OnImpactPhaseStart -= StartImpactPhase;
+            attackHandler.OnImpactPhaseEnd -= EndImpactPhase;
+        }
+    }
 }

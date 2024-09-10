@@ -1,3 +1,5 @@
+using System;
+using RPGCharacterAnims.Lookups;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,6 +22,11 @@ namespace RPGCharacterAnims
 
         public AnimatorMoveEvent OnMove = new AnimatorMoveEvent();
 
+        public UnityEvent OnAttackAnticipationStart = new UnityEvent();
+        public UnityEvent OnAttackImpactStart = new UnityEvent();
+        public UnityEvent OnAttackRecoveryStart = new UnityEvent();
+        public UnityEvent OnAttackEnd = new UnityEvent();
+
 		// Components.
 		private RPGCharacterController rpgCharacterController;
         private Animator animator;
@@ -30,6 +37,15 @@ namespace RPGCharacterAnims
             animator = GetComponent<Animator>();
         }
 
+        private void Start()
+        {
+	        AttackHandler attackHandler = rpgCharacterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+	        OnAttackAnticipationStart.AddListener(attackHandler.OnAttackAnticipationStart);
+            OnAttackImpactStart.AddListener(attackHandler.OnAttackImpactStart);
+            OnAttackRecoveryStart.AddListener(attackHandler.OnAttackRecoveryStart);
+            OnAttackEnd.AddListener(attackHandler.OnAttackEnd);
+        }
+
         public void Hit() => OnHit.Invoke();
         public void Shoot() => OnShoot.Invoke();
         public void FootR() => OnFootR.Invoke();
@@ -38,8 +54,13 @@ namespace RPGCharacterAnims
 
         public void WeaponSwitch() => OnWeaponSwitch.Invoke();
 
-        // Used for animations that contain root motion to drive the character’s
-		// position and rotation using the “Motion” node of the animation file.
+        public void AttackAnticipationStart() => OnAttackAnticipationStart.Invoke();
+        public void AttackImpactStart() => OnAttackImpactStart.Invoke();
+        public void AttackRecoveryStart() => OnAttackRecoveryStart.Invoke();
+        public void AttackEnd() => OnAttackEnd.Invoke();
+
+        // Used for animations that contain root motion to drive the characters
+		// position and rotation using the Motion node of the animation file.
 		void OnAnimatorMove()
 		{
 			if (!animator) { return; }

@@ -10,14 +10,14 @@ public class MeleeCombatInput : MonoBehaviour
     private void Start()
     {
         meleeCombatSystem = GetComponent<MeleeCombatSystem>();
-        characterController = meleeCombatSystem.UserCharacter.GetComponent<RPGCharacterController>();
+        characterController = GetComponent<RPGCharacterController>();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
-            meleeCombatSystem.PerformAttack(1);
+            meleeCombatSystem.PerformAttack(1, Side.Right);
         }
 
         if (Input.GetKeyDown(KeyCode.E))

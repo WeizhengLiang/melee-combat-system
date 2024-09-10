@@ -230,7 +230,11 @@ namespace RPGCharacterAnims
 			// Setup IKhands if used.
             ikHands = GetComponentInChildren<IKHands>();
 
-            SetHandler(HandlerTypes.Attack, new Attack());
+            // SetHandler(HandlerTypes.Attack, new Attack());
+            var attackHandler = new AttackHandler();
+            attackHandler.Initialize(this);
+            SetHandler(HandlerTypes.Attack, attackHandler);
+            
             SetHandler(HandlerTypes.Face, new SimpleActionHandler(StartFace, EndFace));
             SetHandler(HandlerTypes.Null, new Null());
             SetHandler(HandlerTypes.SlowTime, new SlowTime());

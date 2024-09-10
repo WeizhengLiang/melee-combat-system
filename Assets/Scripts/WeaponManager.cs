@@ -1,58 +1,104 @@
 using UnityEngine;
 using System.Collections.Generic;
+using RPGCharacterAnims;
+using RPGCharacterAnims.Extensions;
 using RPGCharacterAnims.Lookups;
 
 public class WeaponManager : MonoBehaviour
 {
-
     [System.Serializable]
-    public class WeaponPrefabPair
+    public class WeaponData
     {
         public Weapon weaponType;
         public GameObject prefab;
+        public List<Transform> attackPoints;
+        public float attackRadius = 0.5f;
     }
 
-    public List<WeaponPrefabPair> weaponPrefabs = new List<WeaponPrefabPair>();
+    public List<WeaponData> availableWeapons = new List<WeaponData>();
+    private Dictionary<Weapon, WeaponData> weaponDataDict = new Dictionary<Weapon, WeaponData>();
 
-    private Dictionary<Weapon, GameObject> weaponPrefabDict = new Dictionary<Weapon, GameObject>();
+    private RPGCharacterController characterController;
 
     private void Awake()
     {
-        InitializeWeaponPrefabDictionary();
+        characterController = GetComponent<RPGCharacterController>();
+        InitializeWeaponData();
     }
 
-    private void InitializeWeaponPrefabDictionary()
+    private void InitializeWeaponData()
     {
-        foreach (var pair in weaponPrefabs)
+        foreach (var weaponData in availableWeapons)
         {
-            if (!weaponPrefabDict.ContainsKey(pair.weaponType))
+            if (!weaponDataDict.ContainsKey(weaponData.weaponType))
             {
-                weaponPrefabDict[pair.weaponType] = pair.prefab;
+                weaponDataDict[weaponData.weaponType] = weaponData;
             }
             else
             {
-                Debug.LogWarning($"Duplicate weapon type found: {pair.weaponType}. Ignoring duplicate.");
+                Debug.LogWarning($"Duplicate weapon type found: {weaponData.weaponType}. Ignoring duplicate.");
             }
         }
     }
 
     public GameObject GetWeaponPrefab(Weapon weaponType)
     {
-        if (weaponPrefabDict.TryGetValue(weaponType, out GameObject prefab))
+        if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
         {
-            return prefab;
+            return weaponData.prefab;
         }
         Debug.LogWarning($"Weapon prefab for {weaponType} not found.");
         return null;
     }
 
-    public Dictionary<Weapon, GameObject> GetAllWeaponPrefabs()
+    public List<Transform> GetAttackPoints(Weapon weaponType)
     {
-        return new Dictionary<Weapon, GameObject>(weaponPrefabDict);
+        if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
+        {
+            return weaponData.attackPoints;
+        }
+        Debug.LogWarning($"Attack points for {weaponType} not found.");
+        return new List<Transform>();
+    }
+
+    public float GetAttackRadius(Weapon weaponType)
+    {
+        if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
+        {
+            return weaponData.attackRadius;
+        }
+        Debug.LogWarning($"Attack radius for {weaponType} not found. Using default value.");
+        return 0.5f;
     }
 
     public bool IsWeaponAvailable(Weapon weaponType)
     {
-        return weaponPrefabDict.ContainsKey(weaponType);
+        return weaponDataDict.ContainsKey(weaponType);
+    }
+
+    public void EquipWeapon(Weapon weaponType)
+    {
+        if (IsWeaponAvailable(weaponType))
+        {
+            characterController.rightWeapon = weaponType;
+            if (weaponType.Is2HandedWeapon())
+            {
+                characterController.leftWeapon = weaponType;
+            }
+            else
+            {
+                characterController.leftWeapon = Weapon.Unarmed;
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Attempted to equip unavailable weapon: {weaponType}");
+        }
+    }
+
+    public void UnequipWeapon()
+    {
+        characterController.rightWeapon = Weapon.Unarmed;
+        characterController.leftWeapon = Weapon.Unarmed;
     }
 }
