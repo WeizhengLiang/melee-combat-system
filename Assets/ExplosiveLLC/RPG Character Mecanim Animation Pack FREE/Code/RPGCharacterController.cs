@@ -232,7 +232,7 @@ namespace RPGCharacterAnims
 
             // SetHandler(HandlerTypes.Attack, new Attack());
             var attackHandler = new AttackHandler();
-            attackHandler.Initialize(this);
+            attackHandler.Initialize(this, GetComponent<CharacterInstance>());
             SetHandler(HandlerTypes.Attack, attackHandler);
             
             SetHandler(HandlerTypes.Face, new SimpleActionHandler(StartFace, EndFace));
@@ -479,6 +479,16 @@ namespace RPGCharacterAnims
 			var attackTriggerType = AnimatorTrigger.AttackTrigger;
 			animator.SetActionTrigger(attackTriggerType, attackNumber);
 		}
+
+        public void Attack(int attackNumber, Side attackSide, Weapon leftWeapon, Weapon rightWeapon)
+        {
+            animator.SetSide(attackSide);
+            _isAttacking = true;
+
+            // Trigger the animation.
+            var attackTriggerType = AnimatorTrigger.AttackTrigger;
+            animator.SetActionTrigger(attackTriggerType, attackNumber);
+        }
 
         /// <summary>
         /// Trigger the running attack animation.

@@ -10,6 +10,7 @@ public class MeleeCombatSystem : MonoBehaviour
     private RPGCharacterWeaponController weaponController;
     private AttackHandler attackHandler;
     private WeaponManager weaponManager;
+    private CharacterInstance characterInstance;
 
     private bool isInImpactPhase = false;
 
@@ -19,6 +20,7 @@ public class MeleeCombatSystem : MonoBehaviour
         weaponController = GetComponent<RPGCharacterWeaponController>();
         weaponManager = GetComponent<WeaponManager>();
         attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+        characterInstance = GetComponent<CharacterInstance>();
 
         if (attackHandler == null)
         {
@@ -71,7 +73,7 @@ public class MeleeCombatSystem : MonoBehaviour
                 IDamageable damageable = hitCollider.GetComponent<IDamageable>();
                 if (damageable != null && hitCollider.gameObject != gameObject)
                 {
-                    damageable.ReceiveHit(attackPoint.position);
+                    damageable.ReceiveHit(attackPoint.position, characterInstance.Toughness);
                 }
             }
         }

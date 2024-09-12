@@ -211,9 +211,6 @@ PrefabInstance:
       addedObject: {fileID: 675562946}
     - targetCorrespondingSourceObject: {fileID: 100004, guid: 5ea6e0b5afd24ff4db553230913ba424, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 675562947}
-    - targetCorrespondingSourceObject: {fileID: 100004, guid: 5ea6e0b5afd24ff4db553230913ba424, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 675562955}
   m_SourcePrefab: {fileID: 100100000, guid: 5ea6e0b5afd24ff4db553230913ba424, type: 3}
 --- !u!1 &72200347 stripped
@@ -727,29 +724,6 @@ MonoBehaviour:
     - {fileID: 4044219469245269952}
     - {fileID: 2022820046533913784}
     attackRadius: 0.5
---- !u!114 &675562947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 675562929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44cea9b2857fb4dbda7f29bcdeda4acc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponAttackDataList:
-  - weaponType: 0
-    attackRadius: 0.5
-    attackPoints:
-    - atkPtTransform: {fileID: 1193595916}
-  - weaponType: 1
-    attackRadius: 0.5
-    attackPoints:
-    - atkPtTransform: {fileID: 4824493686916691063}
-    - atkPtTransform: {fileID: 4044219469245269952}
-    - atkPtTransform: {fileID: 2022820046533913784}
 --- !u!114 &675562955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -953,9 +927,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100004, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1885862606}
-    - targetCorrespondingSourceObject: {fileID: 100004, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1885862608}
     - targetCorrespondingSourceObject: {fileID: 100004, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1885862619}
@@ -2234,6 +2205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 137d5df61dab7954db325e6fe03ebef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toughness: 10
 --- !u!114 &1885862607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2259,29 +2231,6 @@ MonoBehaviour:
     - {fileID: 4044219469245269952}
     - {fileID: 2022820046533913784}
     attackRadius: 0.5
---- !u!114 &1885862608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1885764624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44cea9b2857fb4dbda7f29bcdeda4acc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponAttackDataList:
-  - weaponType: 0
-    attackRadius: 0.5
-    attackPoints:
-    - atkPtTransform: {fileID: 1193595916}
-  - weaponType: 1
-    attackRadius: 0.5
-    attackPoints:
-    - atkPtTransform: {fileID: 4824493686916691063}
-    - atkPtTransform: {fileID: 4044219469245269952}
-    - atkPtTransform: {fileID: 2022820046533913784}
 --- !u!114 &1885862619
 MonoBehaviour:
   m_ObjectHideFlags: 0

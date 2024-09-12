@@ -6,6 +6,9 @@ public class CharacterInstance : MonoBehaviour
 {
     private WeaponManager weaponManager;
 
+    [SerializeField] private float toughness = 10f;
+
+    public float Toughness => toughness;
     //enum CharacterClass
     //{
     //    WARRIOR,
