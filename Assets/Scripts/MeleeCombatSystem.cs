@@ -43,7 +43,7 @@ public class MeleeCombatSystem : MonoBehaviour
 
     public void PerformAttack(int attackNumber, Side attackSide)
     {
-        if (characterController.CanStartAction(HandlerTypes.Attack) && attackHandler.CanStartAction(characterController))
+        if (characterController.CanStartAction(HandlerTypes.Attack))
         {
             characterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, attackSide, attackNumber));
         }

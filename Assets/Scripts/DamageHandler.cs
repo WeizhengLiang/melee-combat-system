@@ -17,12 +17,16 @@ public class DamageHandler : MonoBehaviour, IDamageable
     {
         bool wasInterrupted = false;
 
-        if (attackHandler != null)
+        if (attackHandler.CurrentAttackPhase != AttackHandler.AttackPhase.None)
         {
             wasInterrupted = attackHandler.TryInterruptAttack(attackerToughness);
         }
+        else
+        {
+            characterController.GetHit(Random.Range(1, 3));
+        }
 
-        if (wasInterrupted || attackHandler == null)
+        if (wasInterrupted)
         {
             // 如果攻击被打断或者角色没有在攻击中，执行普通的受击逻辑
             characterController.GetHit(Random.Range(1, 3));
@@ -34,7 +38,7 @@ public class DamageHandler : MonoBehaviour, IDamageable
         }
         else
         {
-            characterController.GetHit(Random.Range(1, 3));
+            
         }
     }
 }

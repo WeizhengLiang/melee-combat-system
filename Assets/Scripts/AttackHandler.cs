@@ -16,12 +16,13 @@ public class AttackHandler : Attack
     public event Action OnImpactPhaseEnd;
 
     private AttackPhase currentPhase = AttackPhase.None;
+    public AttackPhase CurrentAttackPhase => currentPhase;
     private Side currentAttackSide;
     public Side CurrentAttackSide => currentAttackSide;
     private int currentAttackNumber;
 
     [Header("Debug")]
-    public bool debugMode = true;
+    public bool debugMode = false;
 
     public void Initialize(RPGCharacterController controller, CharacterInstance character)
     {
@@ -31,7 +32,11 @@ public class AttackHandler : Attack
 
     public override bool CanStartAction(RPGCharacterController controller)
     {
-        return currentPhase == AttackPhase.None || currentPhase == AttackPhase.Recovery;
+        if (characterController.gameObject.name == "RPG-Character")
+        {
+            
+        }
+        return base.CanStartAction(controller) && (currentPhase == AttackPhase.None || currentPhase == AttackPhase.Recovery);
     }
 
     // 这些方法将由动画事件调用
@@ -57,14 +62,18 @@ public class AttackHandler : Attack
 
     public void OnAttackEnd()
     {
-        EndAction(characterController);
+        ResetAttackPhase();
     }
 
     protected override void _EndAction(RPGCharacterController controller)
     {
+        
+    }
+
+    private void ResetAttackPhase()
+    {
         currentPhase = AttackPhase.None;
-        controller.Unlock(true, true);
-        if (debugMode) Debug.Log("AttackHandler: Attack ended");
+        characterController.Unlock(true, true);
     }
 
     public bool TryInterruptAttack(float attackerToughness)
@@ -73,19 +82,19 @@ public class AttackHandler : Attack
         {
             case AttackPhase.Anticipation:
                 // Anticipation 阶段总是可以被打断
-                EndAction(characterController);
+                ResetAttackPhase();
                 return true;
             case AttackPhase.Impact:
                 // Impact 阶段根据韧性决定是否可以被打断
                 if (attackerToughness > characterInstance.Toughness)
                 {
-                    EndAction(characterController);
+                    ResetAttackPhase();
                     return true;
                 }
                 return false;
             case AttackPhase.Recovery:
                 // Recovery 阶段可以被打断
-                EndAction(characterController);
+                ResetAttackPhase();
                 return true;
             default:
                 return false;
