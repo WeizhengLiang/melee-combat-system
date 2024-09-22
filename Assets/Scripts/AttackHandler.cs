@@ -10,7 +10,7 @@ public class AttackHandler : Attack
     public enum AttackPhase { None, Anticipation, Impact, Recovery }
 
     private RPGCharacterController characterController;
-    private CharacterInstance characterInstance;
+    private MeleeCombatSystemConfig combatSystemConfig;
 
     public event Action OnImpactPhaseStart;
     public event Action OnImpactPhaseEnd;
@@ -26,10 +26,10 @@ public class AttackHandler : Attack
     [Header("Debug")]
     public bool debugMode = true;
 
-    public void Initialize(RPGCharacterController controller, CharacterInstance character)
+    public void Initialize(RPGCharacterController controller, MeleeCombatSystemConfig combatConfig)
     {
         characterController = controller;
-        characterInstance = character;
+        combatSystemConfig = combatConfig;
     }
 
     public override bool CanStartAction(RPGCharacterController controller)
@@ -99,7 +99,7 @@ public class AttackHandler : Attack
                 return true;
             case AttackPhase.Impact:
                 // Impact 阶段根据韧性决定是否可以被打断
-                if (attackerToughness > characterInstance.Toughness)
+                if (attackerToughness > combatSystemConfig.toughness)
                 {
                     if (debugMode) Debug.Log($"TryInterruptAttack: Impact, currentgameobject: {characterController.gameObject.name}");
                     ResetAttackPhase();

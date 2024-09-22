@@ -232,7 +232,7 @@ namespace RPGCharacterAnims
 
             // SetHandler(HandlerTypes.Attack, new Attack());
             var attackHandler = new AttackHandler();
-            attackHandler.Initialize(this, GetComponent<CharacterInstance>());
+            attackHandler.Initialize(this, GetComponent<MeleeCombatSystem>().combatConfig);
             SetHandler(HandlerTypes.Attack, attackHandler);
             
             SetHandler(HandlerTypes.Face, new SimpleActionHandler(StartFace, EndFace));

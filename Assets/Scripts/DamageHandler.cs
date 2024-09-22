@@ -1,6 +1,8 @@
+using System;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DamageHandler : MonoBehaviour, IDamageable
 {
@@ -10,6 +12,10 @@ public class DamageHandler : MonoBehaviour, IDamageable
     private void Awake()
     {
         characterController = GetComponent<RPGCharacterController>();
+    }
+
+    private void Start()
+    {
         attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
     }
 
