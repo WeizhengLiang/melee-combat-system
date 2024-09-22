@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 2286120817069326701}
   - component: {fileID: 2517634086580141922}
   - component: {fileID: 979864703474750838}
+  - component: {fileID: 7818981756840865863}
   m_Layer: 0
   m_Name: 2Hand-Sword
   m_TagString: Untagged
@@ -180,6 +181,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7818981756840865863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220178317465926844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98ebefe8eb9ea4dbebe26f0f92f21972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackPoints:
+  - {fileID: 5783769170118189871}
+  - {fileID: 8108252959344808319}
+  - {fileID: 6397788393939663594}
 --- !u!1 &8671757060484485415
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class MeleeCombatSystem : MonoBehaviour
 {
+    public MeleeCombatSystemConfig combatConfig;
     private RPGCharacterController characterController;
     private RPGCharacterWeaponController weaponController;
     private AttackHandler attackHandler;
@@ -90,28 +91,43 @@ public class MeleeCombatSystem : MonoBehaviour
                 if (damageable != null && hitCollider.gameObject != gameObject && !hitTargets[currentAttackId].Contains(damageable))
                 {
                     hitTargets[currentAttackId].Add(damageable);
-                    ProcessHit(damageable, attackPoint.position);
+                    ProcessHit(damageable, attackPoint.position, characterController.rightWeapon);
                 }
             }
         }
     }
 
-    private void ProcessHit(IDamageable target, Vector3 hitPosition)
+    private void ProcessHit(IDamageable target, Vector3 hitPosition, Weapon weapon)
     {
-        // 检查目标是否处于防御状态
         bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
 
         if (isTargetDefending)
         {
-            // 处理击中防御的逻辑，例如播放防御音效或特效
-            Debug.Log("Hit defended!");
+            if (Random.value < combatConfig.blockChance)
+            {
+                Debug.Log("Hit blocked!");
+                return;
+            }
         }
-        else
-        {
-            // 应用伤害
-            target.ReceiveHit(hitPosition, characterInstance.Toughness);
-        }
+
+        // float damage = CalculateDamage(weapon);
+        float damage = 0;
+        target.ReceiveHit(hitPosition, damage, combatConfig.toughness);
     }
+
+    // private float CalculateDamage(Weapon weapon)
+    // {
+    //     MeleeCombatSystemConfig.WeaponData weaponData = combatConfig.GetWeaponData(weapon);
+    //     float baseDamage = combatConfig.baseAttackDamage * weaponData.damageMultiplier;
+    //
+    //     if (Random.value < combatConfig.criticalHitChance)
+    //     {
+    //         baseDamage *= combatConfig.criticalHitMultiplier;
+    //         Debug.Log("Critical hit!");
+    //     }
+    //
+    //     return baseDamage;
+    // }
 
     public void EquipWeapon(Weapon weapon)
     {

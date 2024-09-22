@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abd351293187d4226b2fb8c1ffd1bcdc, type: 3}
+  m_Name: MeleeCombatSystemConfig_1
+  m_EditorClassIdentifier: 
+  weaponDataList:
+  - weaponType: 0
+    prefab: {fileID: 6806757697949842298, guid: 41efd71772c154b18a64d6095931bc79, type: 3}
+    attackPoints: {fileID: 370225896913207586, guid: 41efd71772c154b18a64d6095931bc79, type: 3}
+    attackRadius: 1.5
+    damageMultiplier: 0
+    attackSpeedMultiplier: 0
+    staminaCost: 0
+  - weaponType: 1
+    prefab: {fileID: 8220178317465926844, guid: 1cc258fa90d0f4580a82e55d6af74418, type: 3}
+    attackPoints: {fileID: 7818981756840865863, guid: 1cc258fa90d0f4580a82e55d6af74418, type: 3}
+    attackRadius: 3
+    damageMultiplier: 0
+    attackSpeedMultiplier: 0
+    staminaCost: 0
+  baseAttackDamage: 11
+  baseAttackSpeed: 1
+  criticalHitChance: 0.1
+  criticalHitMultiplier: 2
+  blockChance: 0.2
+  blockDamageReduction: 0.5
+  toughness: 11
+  maxStamina: 100
+  staminaRegenRate: 5
+  baseAttackStaminaCost: 20
+  maxComboChain: 3
+  comboTimeWindow: 1.5
