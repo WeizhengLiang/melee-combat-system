@@ -49,6 +49,7 @@ public class MeleeCombatSystem : MonoBehaviour
     {
         if (characterController.CanStartAction(HandlerTypes.Attack))
         {
+            attackHandler.ResetInterruptFlag();
             characterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, attackSide, attackNumber));
         }
     }

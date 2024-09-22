@@ -21,6 +21,7 @@ public class AttackHandler : Attack
     private Side currentAttackSide;
     public Side CurrentAttackSide => currentAttackSide;
     private int currentAttackNumber;
+    private bool isAttackInterrupted = false;
 
     [Header("Debug")]
     public bool debugMode = true;
@@ -33,10 +34,6 @@ public class AttackHandler : Attack
 
     public override bool CanStartAction(RPGCharacterController controller)
     {
-        if (characterController.gameObject.name == "RPG-Character")
-        {
-            
-        }
         return base.CanStartAction(controller) && (currentPhase == AttackPhase.None || currentPhase == AttackPhase.Recovery);
     }
 
@@ -44,26 +41,31 @@ public class AttackHandler : Attack
     public void OnAttackAnticipationStart()
     {
         currentPhase = AttackPhase.Anticipation;
-        if (debugMode) Debug.Log("AttackHandler: Entering Anticipation phase");
+        if (debugMode) Debug.Log($"AttackHandler: Entering Anticipation phase, currentgameobject: {characterController.gameObject.name}");
     }
 
     public void OnAttackImpactStart()
     {
+        if (isAttackInterrupted)
+        {
+            if (debugMode) Debug.Log($"Attack was interrupted, skipping Impact phase, currentgameobject: {characterController.gameObject.name}");
+            return;
+        }
         currentPhase = AttackPhase.Impact;
-        if (debugMode) Debug.Log("AttackHandler: Entering Impact phase");
+        if (debugMode) Debug.Log($"AttackHandler: Entering Impact phase, currentgameobject: {characterController.gameObject.name}");
         OnImpactPhaseStart?.Invoke();
     }
 
     public void OnAttackRecoveryStart()
     {
         currentPhase = AttackPhase.Recovery;
-        if (debugMode) Debug.Log("AttackHandler: Entering Recovery phase");
+        if (debugMode) Debug.Log($"AttackHandler: Entering Recovery phase, currentgameobject: {characterController.gameObject.name}");
         OnImpactPhaseEnd?.Invoke();
     }
 
     public void OnAttackEnd()
     {
-        Debug.Log("AttackHandler: Entering Attack end");
+       if (debugMode) Debug.Log($"AttackHandler: Entering Attack end, currentgameobject: {characterController.gameObject.name}");
         ResetAttackPhase();
         OnAttackActionEnd?.Invoke();
     }
@@ -75,9 +77,14 @@ public class AttackHandler : Attack
 
     private void ResetAttackPhase()
     {
-        Debug.Log("ResetAttackPhase");
+        if (debugMode) Debug.Log($"ResetAttackPhase, currentgameobject: {characterController.gameObject.name}");
         currentPhase = AttackPhase.None;
         characterController.Unlock(true, true);
+    }
+
+    public void ResetInterruptFlag()
+    {
+        isAttackInterrupted = false;
     }
 
     public bool TryInterruptAttack(float attackerToughness)
@@ -86,22 +93,25 @@ public class AttackHandler : Attack
         {
             case AttackPhase.Anticipation:
                 // Anticipation 阶段总是可以被打断
-                Debug.Log("TryInterruptAttack: Anticipation");
+                if (debugMode) Debug.Log($"TryInterruptAttack: Anticipation, currentgameobject: {characterController.gameObject.name}");
                 ResetAttackPhase();
+                isAttackInterrupted = true;
                 return true;
             case AttackPhase.Impact:
                 // Impact 阶段根据韧性决定是否可以被打断
                 if (attackerToughness > characterInstance.Toughness)
                 {
-                    Debug.Log("TryInterruptAttack: Impact");
+                    if (debugMode) Debug.Log($"TryInterruptAttack: Impact, currentgameobject: {characterController.gameObject.name}");
                     ResetAttackPhase();
+                    isAttackInterrupted = true;
                     return true;
                 }
                 return false;
             case AttackPhase.Recovery:
                 // Recovery 阶段可以被打断
-                Debug.Log("TryInterruptAttack: Recovery");
+                if (debugMode) Debug.Log($"TryInterruptAttack: Recovery, currentgameobject: {characterController.gameObject.name}");
                 ResetAttackPhase();
+                isAttackInterrupted = true;
                 return true;
             default:
                 return false;
