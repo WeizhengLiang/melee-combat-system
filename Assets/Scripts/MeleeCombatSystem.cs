@@ -14,6 +14,9 @@ public class MeleeCombatSystem : MonoBehaviour
 
     private bool isInImpactPhase = false;
 
+    private int currentAttackId = 0;
+    private Dictionary<int, HashSet<IDamageable>> hitTargets = new Dictionary<int, HashSet<IDamageable>>();
+
     private void Start()
     {
         characterController = GetComponent<RPGCharacterController>();
@@ -31,6 +34,7 @@ public class MeleeCombatSystem : MonoBehaviour
         // 订阅 AttackHandler 的事件
         attackHandler.OnImpactPhaseStart += StartImpactPhase;
         attackHandler.OnImpactPhaseEnd += EndImpactPhase;
+        attackHandler.OnAttackActionEnd += EndAttack;
     }
 
     private void Update()
@@ -51,6 +55,7 @@ public class MeleeCombatSystem : MonoBehaviour
 
     private void StartImpactPhase()
     {
+        currentAttackId++;
         isInImpactPhase = true;
     }
 
@@ -59,8 +64,18 @@ public class MeleeCombatSystem : MonoBehaviour
         isInImpactPhase = false;
     }
 
+    private void EndAttack()
+    {
+        hitTargets.Remove(currentAttackId);
+    }
+
     private void DetectHit(Side attackSide)
     {
+        if(!hitTargets.ContainsKey(currentAttackId))
+        {
+            hitTargets[currentAttackId] = new HashSet<IDamageable>();
+        }
+
         Weapon currentWeapon = (attackSide == Side.Left) ? characterController.leftWeapon : characterController.rightWeapon;
         List<Transform> attackPoints = weaponManager.GetAttackPoints(currentWeapon);
         float attackRadius = weaponManager.GetAttackRadius(currentWeapon);
@@ -71,11 +86,29 @@ public class MeleeCombatSystem : MonoBehaviour
             foreach (var hitCollider in hitColliders)
             {
                 IDamageable damageable = hitCollider.GetComponent<IDamageable>();
-                if (damageable != null && hitCollider.gameObject != gameObject)
+                if (damageable != null && hitCollider.gameObject != gameObject && !hitTargets[currentAttackId].Contains(damageable))
                 {
-                    damageable.ReceiveHit(attackPoint.position, characterInstance.Toughness);
+                    hitTargets[currentAttackId].Add(damageable);
+                    ProcessHit(damageable, attackPoint.position);
                 }
             }
+        }
+    }
+
+    private void ProcessHit(IDamageable target, Vector3 hitPosition)
+    {
+        // 检查目标是否处于防御状态
+        bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
+
+        if (isTargetDefending)
+        {
+            // 处理击中防御的逻辑，例如播放防御音效或特效
+            Debug.Log("Hit defended!");
+        }
+        else
+        {
+            // 应用伤害
+            target.ReceiveHit(hitPosition, characterInstance.Toughness);
         }
     }
 
@@ -99,6 +132,7 @@ public class MeleeCombatSystem : MonoBehaviour
         {
             attackHandler.OnImpactPhaseStart -= StartImpactPhase;
             attackHandler.OnImpactPhaseEnd -= EndImpactPhase;
+            attackHandler.OnAttackActionEnd -= EndAttack;
         }
     }
 }

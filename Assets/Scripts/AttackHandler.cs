@@ -14,6 +14,7 @@ public class AttackHandler : Attack
 
     public event Action OnImpactPhaseStart;
     public event Action OnImpactPhaseEnd;
+    public event Action OnAttackActionEnd;
 
     private AttackPhase currentPhase = AttackPhase.None;
     public AttackPhase CurrentAttackPhase => currentPhase;
@@ -22,7 +23,7 @@ public class AttackHandler : Attack
     private int currentAttackNumber;
 
     [Header("Debug")]
-    public bool debugMode = false;
+    public bool debugMode = true;
 
     public void Initialize(RPGCharacterController controller, CharacterInstance character)
     {
@@ -62,7 +63,9 @@ public class AttackHandler : Attack
 
     public void OnAttackEnd()
     {
+        Debug.Log("AttackHandler: Entering Attack end");
         ResetAttackPhase();
+        OnAttackActionEnd?.Invoke();
     }
 
     protected override void _EndAction(RPGCharacterController controller)
@@ -72,6 +75,7 @@ public class AttackHandler : Attack
 
     private void ResetAttackPhase()
     {
+        Debug.Log("ResetAttackPhase");
         currentPhase = AttackPhase.None;
         characterController.Unlock(true, true);
     }
@@ -82,18 +86,21 @@ public class AttackHandler : Attack
         {
             case AttackPhase.Anticipation:
                 // Anticipation 阶段总是可以被打断
+                Debug.Log("TryInterruptAttack: Anticipation");
                 ResetAttackPhase();
                 return true;
             case AttackPhase.Impact:
                 // Impact 阶段根据韧性决定是否可以被打断
                 if (attackerToughness > characterInstance.Toughness)
                 {
+                    Debug.Log("TryInterruptAttack: Impact");
                     ResetAttackPhase();
                     return true;
                 }
                 return false;
             case AttackPhase.Recovery:
                 // Recovery 阶段可以被打断
+                Debug.Log("TryInterruptAttack: Recovery");
                 ResetAttackPhase();
                 return true;
             default:
