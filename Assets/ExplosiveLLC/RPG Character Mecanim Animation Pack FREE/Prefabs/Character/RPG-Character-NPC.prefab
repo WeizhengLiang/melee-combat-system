@@ -15,10 +15,6 @@ GameObject:
   - component: {fileID: 7517427521858630766}
   - component: {fileID: 3668655356348723783}
   - component: {fileID: 2365503}
-  - component: {fileID: 2241447407946518469}
-  - component: {fileID: 5383110523053944138}
-  - component: {fileID: 7308093034292157943}
-  - component: {fileID: 5474765576473430286}
   m_Layer: 0
   m_Name: RPG-Character-NPC
   m_TagString: Player
@@ -163,62 +159,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followDistance: 3
---- !u!114 &2241447407946518469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15309d31e52e04b02a734a727a2d3fd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  combatConfig: {fileID: 0}
---- !u!114 &5383110523053944138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb639a91270014939a64686447c181f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  availableWeapons: []
---- !u!114 &7308093034292157943
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 615e8e2847d2a46c2b6e24e034c40bd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5474765576473430286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5958cd024b2eaad48be530c6c18db3df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugWalkthrough: 1
-  debugSwitchWeaponContext: 1
-  debugDoWeaponSwitch: 1
-  debugWeaponVisibility: 1
-  debugSetAnimator: 1
-  twoHandSword: {fileID: 8220178317465926844, guid: 1cc258fa90d0f4580a82e55d6af74418, type: 3}
 --- !u!1001 &5017534650380124603
 PrefabInstance:
   m_ObjectHideFlags: 0

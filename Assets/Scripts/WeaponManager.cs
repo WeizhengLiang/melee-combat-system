@@ -32,6 +32,13 @@ public class WeaponManager : MonoBehaviour
         {
             if (!weaponDataDict.ContainsKey(weaponData.weaponType))
             {
+                foreach (Transform child in weaponData.prefab.transform)
+                {
+                    if (child.CompareTag("AttackPoint"))
+                    {
+                        weaponData.attackPoints.Add(child);
+                    }
+                }
                 weaponDataDict[weaponData.weaponType] = weaponData;
             }
             else

@@ -41,6 +41,7 @@ public class CharacterSetupWindow : EditorWindow
     }
 
     private Vector2 scrollPosition;
+    private GameObject characterInstance;
 
     private void OnGUI()
     {
@@ -49,19 +50,26 @@ public class CharacterSetupWindow : EditorWindow
         selectedCharacterType = (CharacterType)EditorGUILayout.EnumPopup("Character Type", selectedCharacterType);
         selectedSetupMode = (SetupMode)EditorGUILayout.EnumPopup("Setup Mode", selectedSetupMode);
 
-        if (selectedCharacterType == CharacterType.Character)
+        GameObject newPrefab = selectedCharacterType == CharacterType.Character
+            ? AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabPath)
+            : AssetDatabase.LoadAssetAtPath<GameObject>(CharacterNPCPrefabPath);
+
+        if (newPrefab != characterPrefab)
         {
-            characterPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabPath);
-        }
-        else
-        {
-            characterPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterNPCPrefabPath);
+            characterPrefab = newPrefab;
+            if (characterInstance != null)
+            {
+                DestroyImmediate(characterInstance);
+            }
+            characterInstance = PrefabUtility.InstantiatePrefab(characterPrefab) as GameObject;
+            characterInstance.name = "Preview " + selectedCharacterType.ToString();
         }
 
-        if (characterPrefab != null)
+        if (characterInstance != null)
         {
-            EditorGUILayout.ObjectField("Character Prefab", characterPrefab, typeof(GameObject), false);
-
+            EditorGUILayout.ObjectField("Character Instance", characterInstance, typeof(GameObject), true);
+            // 继续绘制其他UI元素...
+        
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             if (selectedSetupMode == SetupMode.Default)
@@ -75,6 +83,11 @@ public class CharacterSetupWindow : EditorWindow
                 DrawComponentToggle<MeleeCombatSystem>("Melee Combat System", ref useMeleeCombatSystem);
                 DrawComponentToggle<WeaponManager>("Weapon Manager", ref useWeaponManager);
                 DrawComponentToggle<DamageHandler>("Damage Handler", ref useDamageHandler);
+
+                ApplyComponentIfNeeded<MeleeCombatInput>(characterInstance, useMeleeCombatInput);
+                ApplyComponentIfNeeded<MeleeCombatSystem>(characterInstance, useMeleeCombatSystem);
+                ApplyComponentIfNeeded<WeaponManager>(characterInstance, useWeaponManager);
+                ApplyComponentIfNeeded<DamageHandler>(characterInstance, useDamageHandler);
             }
             else
             {
@@ -82,6 +95,11 @@ public class CharacterSetupWindow : EditorWindow
                 DrawComponentToggle<WeaponManager>("Weapon Manager", ref useWeaponManager);
                 DrawComponentToggle<DamageHandler>("Damage Handler", ref useDamageHandler);
                 DrawComponentToggle<RPGCharacterWeaponController>("RPG Character Weapon Controller", ref useRPGCharacterWeaponController);
+
+                ApplyComponentIfNeeded<MeleeCombatSystem>(characterInstance, useMeleeCombatSystem);
+                ApplyComponentIfNeeded<WeaponManager>(characterInstance, useWeaponManager);
+                ApplyComponentIfNeeded<DamageHandler>(characterInstance, useDamageHandler);
+                ApplyComponentIfNeeded<RPGCharacterWeaponController>(characterInstance, useRPGCharacterWeaponController);
             }
 
             if (selectedSetupMode == SetupMode.Default)
@@ -115,25 +133,25 @@ public class CharacterSetupWindow : EditorWindow
 
     private void DrawComponentToggle<T>(string label, ref bool useComponent) where T : Component
     {
-        bool hasComponent = characterPrefab.GetComponent<T>() != null;
+        bool hasComponent = characterInstance.GetComponent<T>() != null;
+        EditorGUI.BeginChangeCheck();
         useComponent = EditorGUILayout.Toggle(label, useComponent);
-
-        if (useComponent != hasComponent)
+        if (EditorGUI.EndChangeCheck())
         {
-            if (useComponent)
+            if (useComponent && !hasComponent)
             {
-                characterPrefab.AddComponent<T>();
+                characterInstance.AddComponent<T>();
             }
-            else
+            else if (!useComponent && hasComponent)
             {
-                DestroyImmediate(characterPrefab.GetComponent<T>());
+                DestroyImmediate(characterInstance.GetComponent<T>());
             }
         }
     }
 
     private void DrawWeaponManagerSettings()
     {
-        WeaponManager weaponManager = characterPrefab.GetComponent<WeaponManager>();
+        WeaponManager weaponManager = characterInstance.GetComponent<WeaponManager>();
         if (weaponManager != null)
         {
             EditorGUILayout.LabelField("Available Weapons", EditorStyles.boldLabel);
@@ -145,28 +163,7 @@ public class CharacterSetupWindow : EditorWindow
                 availableWeapons[i].prefab = EditorGUILayout.ObjectField("Weapon Prefab", availableWeapons[i].prefab, typeof(GameObject), false) as GameObject;
                 availableWeapons[i].attackRadius = EditorGUILayout.FloatField("Attack Radius", availableWeapons[i].attackRadius);
 
-                EditorGUILayout.LabelField("Attack Points", EditorStyles.boldLabel);
-                if (availableWeapons[i].attackPoints == null)
-                {
-                    availableWeapons[i].attackPoints = new List<Transform>();
-                }
-
-                for (int j = 0; j < availableWeapons[i].attackPoints.Count; j++)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    availableWeapons[i].attackPoints[j] = EditorGUILayout.ObjectField($"Point {j + 1}", availableWeapons[i].attackPoints[j], typeof(Transform), true) as Transform;
-                    if (GUILayout.Button("Remove Point", GUILayout.Width(100)))
-                    {
-                        availableWeapons[i].attackPoints.RemoveAt(j);
-                        j--;
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
-
-                if (GUILayout.Button("Add Attack Point"))
-                {
-                    availableWeapons[i].attackPoints.Add(null);
-                }
+                EditorGUILayout.HelpBox("Please setup Attack Points with 'AttackPoint' tag in weapon prefab", MessageType.Info);
 
                 if (GUILayout.Button("Remove Weapon"))
                 {
@@ -185,7 +182,7 @@ public class CharacterSetupWindow : EditorWindow
 
     private void DrawMeleeCombatSystemSettings()
     {
-        MeleeCombatSystem meleeCombatSystem = characterPrefab.GetComponent<MeleeCombatSystem>();
+        MeleeCombatSystem meleeCombatSystem = characterInstance.GetComponent<MeleeCombatSystem>();
         if (meleeCombatSystem != null)
         {
             EditorGUILayout.LabelField("Melee Combat System Config", EditorStyles.boldLabel);
@@ -213,7 +210,7 @@ public class CharacterSetupWindow : EditorWindow
 
     private void DrawRPGCharacterWeaponControllerSettings()
     {
-        RPGCharacterWeaponController weaponController = characterPrefab.GetComponent<RPGCharacterWeaponController>();
+        RPGCharacterWeaponController weaponController = characterInstance.GetComponent<RPGCharacterWeaponController>();
         if (weaponController != null)
         {
             EditorGUILayout.LabelField("RPG Character Weapon Controller Settings", EditorStyles.boldLabel);
@@ -233,33 +230,20 @@ public class CharacterSetupWindow : EditorWindow
 
     private void GenerateCharacter()
     {
-        if (characterPrefab == null)
+        if (characterInstance == null)
         {
-            Debug.LogError("Character prefab is not set!");
+            Debug.LogError("Character instance is not set!");
             return;
         }
 
-        GameObject character = PrefabUtility.InstantiatePrefab(characterPrefab) as GameObject;
-        character.name = "Generated " + selectedCharacterType.ToString();
+        // 创建一个新的游戏对象作为最终生成的角色
+        GameObject finalCharacter = Instantiate(characterInstance);
+        finalCharacter.name = "Generated " + selectedCharacterType.ToString();
 
-        if (selectedCharacterType == CharacterType.Character)
-        {
-            ApplyComponentIfNeeded<MeleeCombatInput>(character, useMeleeCombatInput);
-            ApplyComponentIfNeeded<MeleeCombatSystem>(character, useMeleeCombatSystem);
-            ApplyComponentIfNeeded<WeaponManager>(character, useWeaponManager);
-            ApplyComponentIfNeeded<DamageHandler>(character, useDamageHandler);
-        }
-        else
-        {
-            ApplyComponentIfNeeded<MeleeCombatSystem>(character, useMeleeCombatSystem);
-            ApplyComponentIfNeeded<WeaponManager>(character, useWeaponManager);
-            ApplyComponentIfNeeded<DamageHandler>(character, useDamageHandler);
-            ApplyComponentIfNeeded<RPGCharacterWeaponController>(character, useRPGCharacterWeaponController);
-        }
-
+        // 应用所有设置...
         if (useWeaponManager)
         {
-            WeaponManager weaponManager = character.GetComponent<WeaponManager>();
+            WeaponManager weaponManager = finalCharacter.GetComponent<WeaponManager>();
             if (weaponManager != null)
             {
                 weaponManager.availableWeapons = new List<WeaponManager.WeaponData>(availableWeapons);
@@ -268,7 +252,7 @@ public class CharacterSetupWindow : EditorWindow
 
         if (useMeleeCombatSystem)
         {
-            MeleeCombatSystem meleeCombatSystem = character.GetComponent<MeleeCombatSystem>();
+            MeleeCombatSystem meleeCombatSystem = finalCharacter.GetComponent<MeleeCombatSystem>();
             if (meleeCombatSystem != null)
             {
                 meleeCombatSystem.combatConfig = combatConfig;
@@ -277,14 +261,19 @@ public class CharacterSetupWindow : EditorWindow
 
         if (useRPGCharacterWeaponController)
         {
-            RPGCharacterWeaponController weaponController = character.GetComponent<RPGCharacterWeaponController>();
+            RPGCharacterWeaponController weaponController = finalCharacter.GetComponent<RPGCharacterWeaponController>();
             if (weaponController != null && weaponControllerSettings != null)
             {
                 EditorUtility.CopySerialized(weaponControllerSettings, weaponController);
             }
         }
 
-        Undo.RegisterCreatedObjectUndo(character, "Generate Character");
+        Undo.RegisterCreatedObjectUndo(finalCharacter, "Generate Character");
+
+        // 重新创建预览实例
+        DestroyImmediate(characterInstance);
+        characterInstance = PrefabUtility.InstantiatePrefab(characterPrefab) as GameObject;
+        characterInstance.name = "Preview " + selectedCharacterType.ToString();
     }
 
     private void ApplyComponentIfNeeded<T>(GameObject target, bool shouldApply) where T : Component
@@ -303,6 +292,38 @@ public class CharacterSetupWindow : EditorWindow
             {
                 DestroyImmediate(component);
             }
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        DestroyPreviewInstance();
+    }
+    
+    private void OnEnable()
+    {
+        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+    }
+
+    private void OnPlayModeStateChanged(PlayModeStateChange state)
+    {
+        if (state == PlayModeStateChange.ExitingEditMode)
+        {
+            DestroyPreviewInstance();
+        }
+    }
+
+    private void DestroyPreviewInstance()
+    {
+        if (characterInstance != null)
+        {
+            DestroyImmediate(characterInstance);
+            characterInstance = null;
         }
     }
 }

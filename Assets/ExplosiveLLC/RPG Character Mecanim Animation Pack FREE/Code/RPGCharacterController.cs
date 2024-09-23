@@ -244,6 +244,7 @@ namespace RPGCharacterAnims
             Unlock(true, true);
 
 			// Set Aim Input.
+			if (target == null) target = transform;
 			SetAimInput(target.transform.position);
 		}
 
