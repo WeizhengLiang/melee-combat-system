@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Extensions;
 using RPGCharacterAnims.Lookups;
+using UnityEngine.Serialization;
 
 public class WeaponManager : MonoBehaviour
 {
     [System.Serializable]
     public class WeaponData
     {
+        public string name;
         public Weapon weaponType;
-        public GameObject prefab;
+        public GameObject weaponInstance;
         public List<Transform> attackPoints;
+        public Transform attachPoint;
         public float attackRadius = 0.5f;
     }
 
     public List<WeaponData> availableWeapons = new List<WeaponData>();
     private Dictionary<Weapon, WeaponData> weaponDataDict = new Dictionary<Weapon, WeaponData>();
+    public Dictionary<Weapon, WeaponData> WeaponDataDict => weaponDataDict;
 
     private RPGCharacterController characterController;
 
@@ -32,11 +36,14 @@ public class WeaponManager : MonoBehaviour
         {
             if (!weaponDataDict.ContainsKey(weaponData.weaponType))
             {
-                foreach (Transform child in weaponData.prefab.transform)
+                foreach (Transform child in weaponData.weaponInstance.transform)
                 {
                     if (child.CompareTag("AttackPoint"))
                     {
                         weaponData.attackPoints.Add(child);
+                    }else if (child.CompareTag("AttachPoint"))
+                    {
+                        weaponData.attachPoint = child;
                     }
                 }
                 weaponDataDict[weaponData.weaponType] = weaponData;
@@ -52,7 +59,7 @@ public class WeaponManager : MonoBehaviour
     {
         if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
         {
-            return weaponData.prefab;
+            return weaponData.weaponInstance;
         }
         Debug.LogWarning($"Weapon prefab for {weaponType} not found.");
         return null;

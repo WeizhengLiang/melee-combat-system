@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Linq;
 using RPGCharacterAnims;
-using RPGCharacterAnims.Lookups;
 
 public class CharacterSetupWindow : EditorWindow
 {
@@ -23,7 +23,8 @@ public class CharacterSetupWindow : EditorWindow
     private GameObject characterPrefab;
     private MeleeCombatSystemConfig combatConfig;
     private RPGCharacterWeaponController weaponControllerSettings;
-    private List<WeaponManager.WeaponData> availableWeapons = new List<WeaponManager.WeaponData>();
+    private bool isCombatConfigEditing = false;
+    private List<WeaponDataSO> availableWeaponsSO = new ();
 
     private bool useDamageHandler = true;
     private bool useWeaponManager = true;
@@ -33,6 +34,8 @@ public class CharacterSetupWindow : EditorWindow
 
     private const string CharacterPrefabPath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Prefabs/Character/RPG-Character.prefab";
     private const string CharacterNPCPrefabPath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Prefabs/Character/RPG-Character-NPC.prefab";
+    private const string CharacterCombatCfgsPath = "Assets/Resources/CombatCfgs";
+    public const string WeaponCfgsPath = "Assets/Resources/WeaponCfgs";
 
     [MenuItem("Tools/Character Setup")]
     public static void ShowWindow()
@@ -67,7 +70,9 @@ public class CharacterSetupWindow : EditorWindow
 
         if (characterInstance != null)
         {
+            EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.ObjectField("Character Instance", characterInstance, typeof(GameObject), true);
+            EditorGUI.EndDisabledGroup();
             // 继续绘制其他UI元素...
         
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
@@ -156,28 +161,79 @@ public class CharacterSetupWindow : EditorWindow
         {
             EditorGUILayout.LabelField("Available Weapons", EditorStyles.boldLabel);
             
-            for (int i = 0; i < availableWeapons.Count; i++)
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Name", GUILayout.Width(200));
+            EditorGUILayout.LabelField("Type", GUILayout.Width(200));
+            EditorGUILayout.LabelField("", GUILayout.Width(100)); // 占位符，用于对齐删除按钮
+            EditorGUILayout.EndHorizontal();
+
+            for (int i = 0; i < availableWeaponsSO.Count; i++)
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
-                availableWeapons[i].weaponType = (Weapon)EditorGUILayout.EnumPopup("Weapon Type", availableWeapons[i].weaponType);
-                availableWeapons[i].prefab = EditorGUILayout.ObjectField("Weapon Prefab", availableWeapons[i].prefab, typeof(GameObject), false) as GameObject;
-                availableWeapons[i].attackRadius = EditorGUILayout.FloatField("Attack Radius", availableWeapons[i].attackRadius);
-
-                EditorGUILayout.HelpBox("Please setup Attack Points with 'AttackPoint' tag in weapon prefab", MessageType.Info);
-
-                if (GUILayout.Button("Remove Weapon"))
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(availableWeaponsSO[i].name, GUILayout.Width(200));
+                EditorGUILayout.LabelField(availableWeaponsSO[i].weaponType.ToString(), GUILayout.Width(200));
+                if (GUILayout.Button("Remove", GUILayout.Width(100)))
                 {
-                    availableWeapons.RemoveAt(i);
+                    availableWeaponsSO.RemoveAt(i);
                     i--;
                 }
+                EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
             }
 
             if (GUILayout.Button("Add Weapon"))
             {
-                availableWeapons.Add(new WeaponManager.WeaponData());
+                ShowWeaponSelectionMenu();
+            }
+
+            if (GUILayout.Button("Remove All Weapons"))
+            {
+                if (EditorUtility.DisplayDialog("Confirm Remove All Weapons", "Are you sure you want to remove all weapons?", "Yes", "No"))
+                {
+                    availableWeaponsSO.Clear();
+                }
             }
         }
+    }
+
+    private void ShowWeaponSelectionMenu()
+    {
+        WeaponSelectionWindow.ShowWindow(this);
+    }
+
+    public void AddSelectedWeapons(List<WeaponDataSO> selectedWeapons)
+    {
+        foreach (var weaponDataSO in selectedWeapons)
+        {
+            if(availableWeaponsSO.Any(w => w.name == weaponDataSO.name))
+            {
+                Debug.Log($"Weapon already exists! - {weaponDataSO.name}");
+                continue;
+            }
+
+            availableWeaponsSO.Add(weaponDataSO);
+        }
+    }
+
+    private Transform FindDeepChild(Transform parent, string childName)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == childName)
+            {
+                return child;
+            }
+            else
+            {
+                Transform found = FindDeepChild(child, childName);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     private void DrawMeleeCombatSystemSettings()
@@ -186,17 +242,74 @@ public class CharacterSetupWindow : EditorWindow
         if (meleeCombatSystem != null)
         {
             EditorGUILayout.LabelField("Melee Combat System Config", EditorStyles.boldLabel);
-            combatConfig = EditorGUILayout.ObjectField("Combat Config", combatConfig, typeof(MeleeCombatSystemConfig), false) as MeleeCombatSystemConfig;
 
-            if (combatConfig == null && GUILayout.Button("Create New Config"))
+            // 获取所有的 Combat Config
+            string[] guids = AssetDatabase.FindAssets("t:MeleeCombatSystemConfig", new[] { CharacterCombatCfgsPath });
+            List<string> configNames = new List<string> { "Please select character combat config" };
+            List<MeleeCombatSystemConfig> configs = new List<MeleeCombatSystemConfig>();
+
+            foreach (string guid in guids)
             {
-                combatConfig = CreateInstance<MeleeCombatSystemConfig>();
-                AssetDatabase.CreateAsset(combatConfig, "Assets/Resources/CombatCfgs/MeleeCombatSystemConfig.asset");
-                AssetDatabase.SaveAssets();
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                MeleeCombatSystemConfig config = AssetDatabase.LoadAssetAtPath<MeleeCombatSystemConfig>(path);
+                configs.Add(config);
+                configNames.Add(config.name);
             }
 
-            if (combatConfig != null)
+            int selectedIndex = combatConfig != null ? configs.IndexOf(combatConfig) + 1 : 0;
+            int newSelectedIndex = EditorGUILayout.Popup("Combat Config", selectedIndex, configNames.ToArray());
+
+            if (newSelectedIndex != selectedIndex)
             {
+                if (newSelectedIndex == 0)
+                {
+                    combatConfig = null;
+                }
+                else
+                {
+                    combatConfig = configs[newSelectedIndex - 1];
+                }
+                GUI.changed = true;
+            }
+
+            if (!isCombatConfigEditing)
+            {
+                if (GUILayout.Button("Create New Config"))
+                {
+                    string path = EditorUtility.SaveFilePanelInProject("Save Combat Config", "MeleeCombatSystemConfig", "asset", "Please enter a file name to save the config to", CharacterCombatCfgsPath);
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        combatConfig = CreateInstance<MeleeCombatSystemConfig>();
+                        AssetDatabase.CreateAsset(combatConfig, path);
+                        AssetDatabase.SaveAssets();
+                        GUI.changed = true;
+                    }
+                }
+            }
+
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.ObjectField("Combat Config", combatConfig, typeof(MeleeCombatSystemConfig), false);
+            EditorGUI.EndDisabledGroup();
+
+            if (!isCombatConfigEditing && selectedIndex != 0)
+            {
+                if (GUILayout.Button("Edit Config"))
+                {
+                    isCombatConfigEditing = true;
+                }
+            }
+
+            if (isCombatConfigEditing)
+            {
+                if (GUILayout.Button("Save Config"))
+                {
+                    EditorUtility.SetDirty(combatConfig);
+                    AssetDatabase.SaveAssets();
+                    isCombatConfigEditing = false;
+                    GUI.changed = true;
+                }
+                
+                EditorGUI.BeginDisabledGroup(false);
                 combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
                 combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
                 combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
@@ -204,6 +317,23 @@ public class CharacterSetupWindow : EditorWindow
                 combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
                 combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
                 combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
+                EditorGUI.EndDisabledGroup();
+            }
+            else
+            {
+                if (selectedIndex != 0)
+                {
+                    EditorGUI.BeginDisabledGroup(true);
+                    combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
+                    combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
+                    combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
+                    combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
+                    combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
+                    combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
+                    combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
+                    EditorGUI.EndDisabledGroup();
+                }
+                
             }
         }
     }
@@ -235,6 +365,62 @@ public class CharacterSetupWindow : EditorWindow
             Debug.LogError("Character instance is not set!");
             return;
         }
+        
+        string warningMessage = "The following component/infos are missing:\n";
+
+        if (selectedSetupMode == SetupMode.Default)
+        {
+            if (combatConfig == null)
+            {
+                warningMessage += "- Combat Config\n";
+            }
+            if (availableWeaponsSO.Count == 0)
+            {
+                warningMessage += "- Weapons\n";
+            }
+        }
+        else if (selectedSetupMode == SetupMode.Custom)
+        {
+            // components missing
+            if (!useMeleeCombatInput)
+            {
+                warningMessage += "- Melee Combat Input\n";
+            }
+            if (!useMeleeCombatSystem)
+            {
+                warningMessage += "- Melee Combat System\n";
+            }
+            if (!useWeaponManager)
+            {
+                warningMessage += "- Weapon Manager\n";
+            }
+            if (!useDamageHandler)
+            {
+                warningMessage += "- Damage Handler\n";
+            }
+            if (selectedCharacterType == CharacterType.CharacterNPC && !useRPGCharacterWeaponController)
+            {
+                warningMessage += "- RPG Character Weapon Controller\n";
+            }
+            
+            // component information missing
+            if (combatConfig == null)
+            {
+                warningMessage += "- Combat Config\n";
+            }
+            if (availableWeaponsSO.Count == 0)
+            {
+                warningMessage += "- Weapons\n";
+            }
+        }
+
+        if (warningMessage != "The following component/infos are missing:\n")
+        {
+            if (!EditorUtility.DisplayDialog("Missing Components", warningMessage + "Do you want to proceed?", "Yes", "No"))
+            {
+                return;
+            }
+        }
 
         // 创建一个新的游戏对象作为最终生成的角色
         GameObject finalCharacter = Instantiate(characterInstance);
@@ -246,7 +432,22 @@ public class CharacterSetupWindow : EditorWindow
             WeaponManager weaponManager = finalCharacter.GetComponent<WeaponManager>();
             if (weaponManager != null)
             {
-                weaponManager.availableWeapons = new List<WeaponManager.WeaponData>(availableWeapons);
+                foreach (var temWeaponDataSO in availableWeaponsSO)
+                {
+                    Transform handTransform = FindDeepChild(finalCharacter.transform, "B_R_Hand");
+                    if (handTransform != null)
+                    {
+                        WeaponManager.WeaponData weaponData = new WeaponManager.WeaponData();
+                        weaponData.weaponType = temWeaponDataSO.weaponType;
+                        weaponData.name = temWeaponDataSO.name;
+                        weaponData.weaponInstance = Instantiate(temWeaponDataSO.prefab, handTransform);
+                        weaponManager.availableWeapons.Add(weaponData);
+                    }
+                    else
+                    {
+                        Debug.LogError("Hand transform not found!");
+                    }
+                }
             }
         }
 

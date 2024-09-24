@@ -12,6 +12,7 @@ namespace RPGCharacterAnims
         private RPGCharacterController rpgCharacterController;
         private Animator animator;
         private CoroutineQueue coroQueue;
+        private WeaponManager weaponManager;
 
 		[Header("Debug Options")]
 		public bool debugWalkthrough = true;
@@ -22,9 +23,6 @@ namespace RPGCharacterAnims
 
 		[HideInInspector] bool isWeaponSwitching = false;
 
-		[Header("Weapon Models")]
-        public GameObject twoHandSword;
-
         private void Awake()
         {
             coroQueue = new CoroutineQueue(1, StartCoroutine);
@@ -34,7 +32,10 @@ namespace RPGCharacterAnims
             // Find the Animator component.
             animator = GetComponentInChildren<Animator>();
 
-			// Character starts in Unarmed so hide all weapons.
+            // Get the WeaponManager component.
+            weaponManager = GetComponent<WeaponManager>();
+
+            // Character starts in Unarmed so hide all weapons.
             StartCoroutine(_HideAllWeapons(false, false));
         }
 
@@ -288,7 +289,8 @@ namespace RPGCharacterAnims
             if (timed) { while (!isWeaponSwitching) { yield return null; } }
 
             // Reset to Unarmed.
-            if (resetToUnarmed) {
+            if (resetToUnarmed)
+            {
                 animator.SetInteger(AnimationParameters.Weapon, 0);
                 rpgCharacterController.rightWeapon = Weapon.Unarmed;
                 rpgCharacterController.leftWeapon = Weapon.Unarmed;
@@ -297,7 +299,14 @@ namespace RPGCharacterAnims
                 animator.SetInteger(AnimationParameters.LeftWeapon, 0);
                 animator.SetSide(Side.None);
             }
-            SafeSetVisibility(twoHandSword, false);
+
+            if (weaponManager != null)
+            {
+                foreach (var weaponData in weaponManager.availableWeapons)
+                {
+                    SafeSetVisibility(weaponData.weaponInstance, false);
+                }
+            }
         }
 
         /// <summary>
@@ -310,9 +319,13 @@ namespace RPGCharacterAnims
         {
 			if (debugWeaponVisibility) { Debug.Log($"WeaponVisibility:{weaponNumber}   Visible:{visible}"); }
 
-			while (isWeaponSwitching) { yield return null; }
-            var weaponType = (Weapon)weaponNumber;
-			switch (weaponType) { case Weapon.TwoHandSword: SafeSetVisibility(twoHandSword, visible); break; }
+            while (isWeaponSwitching) { yield return null; }
+
+            if (weaponManager != null && weaponManager.WeaponDataDict.TryGetValue(weaponNumber, out var weaponData))
+            {
+                SafeSetVisibility(weaponData.weaponInstance, visible);
+            }
+
             yield return null;
         }
 
@@ -336,10 +349,25 @@ namespace RPGCharacterAnims
             StopCoroutine(nameof(_HideAllWeapons));
             StopCoroutine(nameof(_WeaponVisibility));
 
-            SafeSetVisibility(twoHandSword, false);
+            if (weaponManager != null)
+            {
+                foreach (var weaponData in weaponManager.availableWeapons)
+                {
+                    SafeSetVisibility(weaponData.weaponInstance, false);
+                }
 
-            var rightWeaponType = (Weapon)rpgCharacterController.rightWeapon;
-            switch (rightWeaponType) { case Weapon.TwoHandSword: SafeSetVisibility(twoHandSword, true); break; }
+                var rightWeaponType = (Weapon)rpgCharacterController.rightWeapon;
+                if (weaponManager.WeaponDataDict.TryGetValue(rightWeaponType, out var rightWeaponData))
+                {
+                    SafeSetVisibility(rightWeaponData.weaponInstance, true);
+                }
+
+				var leftWeaponType = (Weapon)rpgCharacterController.leftWeapon;
+                if (weaponManager.WeaponDataDict.TryGetValue(leftWeaponType, out var leftWeaponData))
+                {
+                    SafeSetVisibility(leftWeaponData.weaponInstance, true);
+                }
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ namespace RPGCharacterAnims
     {
         private Animator animator;
         private RPGCharacterWeaponController rpgCharacterWeaponController;
+        private WeaponManager weaponManager;
         public Transform leftHandObj;
         public Transform attachLeft;
         public bool canBeUsed;
@@ -22,6 +23,7 @@ namespace RPGCharacterAnims
         {
             animator = GetComponent<Animator>();
             rpgCharacterWeaponController = GetComponentInParent<RPGCharacterWeaponController>();
+            weaponManager = GetComponentInParent<WeaponManager>();
         }
 
 		/// <summary>
@@ -105,9 +107,7 @@ namespace RPGCharacterAnims
 		private void GetCurrentWeaponAttachPoint(Weapon weapon)
 		{
 			var weaponType = (Weapon)weapon;
-			switch (weaponType) {
-				case Weapon.TwoHandSword: blendToTransform = rpgCharacterWeaponController.twoHandSword.transform.GetChild(0).transform; break;
-			}
+			blendToTransform = weaponManager.WeaponDataDict[weaponType].attachPoint;
 		}
     }
 }

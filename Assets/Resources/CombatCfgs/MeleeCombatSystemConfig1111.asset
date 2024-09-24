@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abd351293187d4226b2fb8c1ffd1bcdc, type: 3}
-  m_Name: MeleeCombatSystemConfig_2
+  m_Name: MeleeCombatSystemConfig1111
   m_EditorClassIdentifier: 
   baseAttackDamage: 10
   baseAttackSpeed: 1

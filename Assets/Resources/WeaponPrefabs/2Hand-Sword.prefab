@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 1372282176733086124}
   m_Layer: 0
   m_Name: AttachPoint
-  m_TagString: Untagged
+  m_TagString: AttachPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,7 +110,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2286120817069326701
 Transform:
   m_ObjectHideFlags: 0
