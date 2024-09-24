@@ -73,8 +73,7 @@ public class CharacterSetupWindow : EditorWindow
             EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.ObjectField("Character Instance", characterInstance, typeof(GameObject), true);
             EditorGUI.EndDisabledGroup();
-            // 继续绘制其他UI元素...
-        
+
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             if (selectedSetupMode == SetupMode.Default)
@@ -82,6 +81,9 @@ public class CharacterSetupWindow : EditorWindow
                 GUI.enabled = false;
             }
 
+            GUILayout.Space(10);
+            GUILayout.Label("Component Toggles", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             if (selectedCharacterType == CharacterType.Character)
             {
                 DrawComponentToggle<MeleeCombatInput>("Melee Combat Input", ref useMeleeCombatInput);
@@ -106,25 +108,38 @@ public class CharacterSetupWindow : EditorWindow
                 ApplyComponentIfNeeded<DamageHandler>(characterInstance, useDamageHandler);
                 ApplyComponentIfNeeded<RPGCharacterWeaponController>(characterInstance, useRPGCharacterWeaponController);
             }
+            EditorGUILayout.EndVertical();
 
             if (selectedSetupMode == SetupMode.Default)
             {
                 GUI.enabled = true;
             }
 
+            GUILayout.Space(10);
+            GUILayout.Label("Weapon Manager Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             if (useWeaponManager)
             {
                 DrawWeaponManagerSettings();
             }
+            EditorGUILayout.EndVertical();
 
+            GUILayout.Space(10);
+            GUILayout.Label("Melee Combat System Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
             if (useMeleeCombatSystem)
             {
                 DrawMeleeCombatSystemSettings();
             }
+            EditorGUILayout.EndVertical();
 
             if (selectedCharacterType == CharacterType.CharacterNPC && useRPGCharacterWeaponController)
             {
+                GUILayout.Space(10);
+                GUILayout.Label("RPG Character Weapon Controller Settings", EditorStyles.boldLabel);
+                EditorGUILayout.BeginVertical(GUI.skin.box);
                 DrawRPGCharacterWeaponControllerSettings();
+                EditorGUILayout.EndVertical();
             }
 
             EditorGUILayout.EndScrollView();

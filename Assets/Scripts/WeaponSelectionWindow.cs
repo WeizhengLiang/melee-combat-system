@@ -63,8 +63,8 @@ public class WeaponSelectionWindow : EditorWindow
 
         scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
+        // Available Weapons Section
         EditorGUILayout.BeginVertical(GUI.skin.box);
-
         GUILayout.Label("Available Weapons:", EditorStyles.boldLabel);
         weaponListScrollPosition = GUILayout.BeginScrollView(weaponListScrollPosition, GUILayout.Height(position.height / 2));
         foreach (var weapon in filteredWeapons)
@@ -80,7 +80,10 @@ public class WeaponSelectionWindow : EditorWindow
             }
         }
         GUILayout.EndScrollView();
+        EditorGUILayout.EndVertical();
 
+        // Selected Weapons Section
+        EditorGUILayout.BeginVertical(GUI.skin.box);
         GUILayout.Label("Selected Weapons:", EditorStyles.boldLabel);
         selectedWeaponsScrollPosition = GUILayout.BeginScrollView(selectedWeaponsScrollPosition, GUILayout.Height(position.height / 4));
         foreach (var weapon in selectedWeapons)
@@ -88,7 +91,6 @@ public class WeaponSelectionWindow : EditorWindow
             GUILayout.Label(weapon.name);
         }
         GUILayout.EndScrollView();
-
         EditorGUILayout.EndVertical();
 
         GUILayout.EndScrollView();
