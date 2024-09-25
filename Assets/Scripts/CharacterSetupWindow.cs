@@ -31,6 +31,7 @@ public class CharacterSetupWindow : EditorWindow
     private bool useMeleeCombatInput = true;
     private bool useMeleeCombatSystem = true;
     private bool useRPGCharacterWeaponController = true;
+    private bool setAsMainCameraTarget = false;
 
     private const string CharacterPrefabPath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Prefabs/Character/RPG-Character.prefab";
     private const string CharacterNPCPrefabPath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Prefabs/Character/RPG-Character-NPC.prefab";
@@ -143,7 +144,14 @@ public class CharacterSetupWindow : EditorWindow
             }
 
             EditorGUILayout.EndScrollView();
-
+            
+            if (selectedCharacterType == CharacterType.Character)
+            {
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                setAsMainCameraTarget = EditorGUILayout.ToggleLeft("Set this character to main camera", setAsMainCameraTarget);
+                EditorGUILayout.EndVertical();
+            }
+            
             if (GUILayout.Button("Generate Character"))
             {
                 GenerateCharacter();
@@ -393,6 +401,10 @@ public class CharacterSetupWindow : EditorWindow
             {
                 warningMessage += "- Weapons\n";
             }
+            if (selectedCharacterType == CharacterType.Character && !setAsMainCameraTarget)
+            {
+                warningMessage += "- Main Camera Target\n";
+            }
         }
         else if (selectedSetupMode == SetupMode.Custom)
         {
@@ -426,6 +438,10 @@ public class CharacterSetupWindow : EditorWindow
             if (availableWeaponsSO.Count == 0)
             {
                 warningMessage += "- Weapons\n";
+            }
+            if (selectedCharacterType == CharacterType.Character && !setAsMainCameraTarget)
+            {
+                warningMessage += "- Main Camera Target\n";
             }
         }
 
@@ -481,6 +497,19 @@ public class CharacterSetupWindow : EditorWindow
             if (weaponController != null && weaponControllerSettings != null)
             {
                 EditorUtility.CopySerialized(weaponControllerSettings, weaponController);
+            }
+        }
+
+        if (selectedCharacterType == CharacterType.Character && setAsMainCameraTarget)
+        {
+            CameraController cameraController = FindObjectOfType<CameraController>();
+            if (cameraController != null)
+            {
+                cameraController.cameraTarget = finalCharacter;
+            }
+            else
+            {
+                Debug.LogError("CameraController not found in the scene!");
             }
         }
 
