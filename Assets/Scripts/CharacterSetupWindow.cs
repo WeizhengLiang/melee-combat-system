@@ -145,13 +145,24 @@ public class CharacterSetupWindow : EditorWindow
 
             EditorGUILayout.EndScrollView();
             
+            EditorGUILayout.BeginHorizontal();
+
             if (selectedCharacterType == CharacterType.Character)
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 setAsMainCameraTarget = EditorGUILayout.ToggleLeft("Set this character to main camera", setAsMainCameraTarget);
                 EditorGUILayout.EndVertical();
             }
-            
+
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            if (GUILayout.Button("Clear All Setup", GUILayout.Width(100)))
+            {
+                ClearAllSetup();
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal();
+
             if (GUILayout.Button("Generate Character"))
             {
                 GenerateCharacter();
@@ -537,6 +548,39 @@ public class CharacterSetupWindow : EditorWindow
             {
                 DestroyImmediate(component);
             }
+        }
+    }
+
+    private void ClearAllSetup()
+    {
+        if (EditorUtility.DisplayDialog("Clear All Setup", "Are you sure you want to clear all setup and start fresh?", "Yes", "No"))
+        {
+            selectedCharacterType = CharacterType.Character;
+            selectedSetupMode = SetupMode.Default;
+            combatConfig = null;
+            weaponControllerSettings = null;
+            isCombatConfigEditing = false;
+            availableWeaponsSO.Clear();
+
+            useDamageHandler = true;
+            useWeaponManager = true;
+            useMeleeCombatInput = true;
+            useMeleeCombatSystem = true;
+            useRPGCharacterWeaponController = true;
+            setAsMainCameraTarget = false;
+
+            // Recreate the preview instance
+            DestroyImmediate(characterInstance);
+            characterPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabPath);
+            characterInstance = PrefabUtility.InstantiatePrefab(characterPrefab) as GameObject;
+            characterInstance.name = "Preview " + selectedCharacterType.ToString();
+
+            // Reset components
+            ApplyComponentIfNeeded<MeleeCombatInput>(characterInstance, useMeleeCombatInput);
+            ApplyComponentIfNeeded<MeleeCombatSystem>(characterInstance, useMeleeCombatSystem);
+            ApplyComponentIfNeeded<WeaponManager>(characterInstance, useWeaponManager);
+            ApplyComponentIfNeeded<DamageHandler>(characterInstance, useDamageHandler);
+            ApplyComponentIfNeeded<RPGCharacterWeaponController>(characterInstance, useRPGCharacterWeaponController);
         }
     }
     
