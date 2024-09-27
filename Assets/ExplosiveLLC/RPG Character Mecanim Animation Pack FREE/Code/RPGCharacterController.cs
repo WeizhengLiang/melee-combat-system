@@ -244,7 +244,21 @@ namespace RPGCharacterAnims
             Unlock(true, true);
 
 			// Set Aim Input.
-			if (target == null) target = transform;
+			if (target == null)
+			{
+				if (gameObject.TryGetComponent<SuperCharacterController>(out _))
+				{
+					target = transform;
+				}
+				else
+				{
+					target = FindObjectOfType<SuperCharacterController>().transform;
+				}
+				
+				
+				
+				
+			}
 			SetAimInput(target.transform.position);
 		}
 
