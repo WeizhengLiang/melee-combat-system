@@ -24,6 +24,8 @@ public class WeaponManager : MonoBehaviour
 
     private RPGCharacterController characterController;
 
+    public UnarmedAttackPointsConfig unarmedConfig;
+
     private void Awake()
     {
         characterController = GetComponent<RPGCharacterController>();
@@ -32,8 +34,15 @@ public class WeaponManager : MonoBehaviour
 
     private void InitializeWeaponData()
     {
+        SetupWeaponsAttackPoints();
+    }
+
+    private void SetupWeaponsAttackPoints()
+    {
         foreach (var weaponData in availableWeapons)
         {
+            if(weaponData.weaponType == Weapon.Unarmed) continue;
+            
             if (!weaponDataDict.ContainsKey(weaponData.weaponType))
             {
                 foreach (Transform child in weaponData.weaponInstance.transform)
@@ -51,6 +60,27 @@ public class WeaponManager : MonoBehaviour
             else
             {
                 Debug.LogWarning($"Duplicate weapon type found: {weaponData.weaponType}. Ignoring duplicate.");
+            }
+        }
+    }
+
+    private void SetupUnarmedAttackPoints()
+    {
+        if (unarmedConfig == null)
+        {
+            Debug.LogWarning("Character's unarmedConfig is missing, Setup unarmed AttackPoints failed");
+            return;
+        }
+
+        foreach (var attackPoint in unarmedConfig.attackPoints)
+        {
+            Transform bone = Utility.FindDeepChild(transform, attackPoint.boneName);
+            if (bone != null)
+            {
+                GameObject attackPointObj = new GameObject(attackPoint.name);
+                attackPointObj.transform.SetParent(bone);
+                attackPointObj.transform.localPosition = attackPoint.localPosition;
+                attackPointObj.tag = "AttackPoint";
             }
         }
     }
