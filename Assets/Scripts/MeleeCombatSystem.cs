@@ -3,6 +3,7 @@ using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
 using RPGCharacterAnims.Actions;
 using System.Collections.Generic;
+using System.Linq;
 
 public class MeleeCombatSystem : MonoBehaviour
 {
@@ -36,6 +37,9 @@ public class MeleeCombatSystem : MonoBehaviour
         attackHandler.OnImpactPhaseStart += StartImpactPhase;
         attackHandler.OnImpactPhaseEnd += EndImpactPhase;
         attackHandler.OnAttackActionEnd += EndAttack;
+
+        // 订阅武器变化事件（假设 RPGCharacterController 有这样的事件）
+        // characterController.OnWeaponChanged += OnWeaponChanged;
     }
 
     private void Update()
@@ -68,7 +72,9 @@ public class MeleeCombatSystem : MonoBehaviour
 
     private void EndAttack()
     {
+        Debug.Log($"EndAttack called, currentAttackId: {currentAttackId}, hitTargets count: {hitTargets.Count}");
         hitTargets.Remove(currentAttackId);
+        Debug.Log($"After removal, hitTargets count: {hitTargets.Count}");
     }
 
     private void DetectHit(Side attackSide)
@@ -82,11 +88,14 @@ public class MeleeCombatSystem : MonoBehaviour
         List<Transform> attackPoints = weaponManager.GetAttackPoints(currentWeapon);
         float attackRadius = weaponManager.GetAttackRadius(currentWeapon);
 
+        Debug.Log($"Current weapon: {currentWeapon}, Attack points: {attackPoints.Count}, Attack radius: {attackRadius}");
         foreach (var attackPoint in attackPoints)
         {
+            Debug.Log($"Attack point: {attackPoint.name}, Attack point position: {attackPoint.position}, Attack radius: {attackRadius}");
             Collider[] hitColliders = Physics.OverlapSphere(attackPoint.position, attackRadius);
             foreach (var hitCollider in hitColliders)
             {
+                Debug.Log($"Detected collider: {hitCollider.name}");
                 IDamageable damageable = hitCollider.GetComponent<IDamageable>();
                 if (damageable != null && hitCollider.gameObject != gameObject && !hitTargets[currentAttackId].Contains(damageable))
                 {
@@ -99,6 +108,8 @@ public class MeleeCombatSystem : MonoBehaviour
 
     private void ProcessHit(IDamageable target, Vector3 hitPosition, Weapon weapon)
     {
+        Debug.Log($"ProcessHit called for {target}, weapon: {weapon}");
+
         bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
 
         if (isTargetDefending)
@@ -129,17 +140,19 @@ public class MeleeCombatSystem : MonoBehaviour
     //     return baseDamage;
     // }
 
-    public void EquipWeapon(Weapon weapon)
+    private void OnWeaponChanged(Weapon newWeapon)
     {
-        weaponManager.EquipWeapon(weapon);
-        weaponController.UnsheathWeapon(weapon);
+        // 根据新武器更新 MeleeCombatSystem 的状态
+        // 例如，更新攻击点、攻击半径等
+        UpdateWeaponProperties(newWeapon);
     }
 
-    public void UnequipWeapon()
+    private void UpdateWeaponProperties(Weapon weapon)
     {
-        Weapon currentWeapon = characterController.rightWeapon;
-        weaponManager.UnequipWeapon();
-        weaponController.SheathWeapon(currentWeapon, Weapon.Unarmed);
+        // 更新与武器相关的属性
+        // 例如：
+        // attackRadius = weaponManager.GetAttackRadius(weapon);
+        // attackPoints = weaponManager.GetAttackPoints(weapon);
     }
 
     private void OnDestroy()
@@ -151,5 +164,11 @@ public class MeleeCombatSystem : MonoBehaviour
             attackHandler.OnImpactPhaseEnd -= EndImpactPhase;
             attackHandler.OnAttackActionEnd -= EndAttack;
         }
+
+        // 取消订阅武器变化事件
+        // if (characterController != null)
+        // {
+        //     characterController.OnWeaponChanged -= OnWeaponChanged;
+        // }
     }
 }

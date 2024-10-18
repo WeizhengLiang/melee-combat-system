@@ -21,23 +21,23 @@ public class DamageHandler : MonoBehaviour, IDamageable
 
     public void ReceiveHit(Vector3 attackerPosition, float damage, float attackerToughness)
     {
+        Debug.Log($"ReceiveHit called, damage: {damage}, attackerToughness: {attackerToughness}, CurrentAttackPhase: {attackHandler.CurrentAttackPhase}");
+        
         bool wasInterrupted = attackHandler.CurrentAttackPhase != AttackHandler.AttackPhase.None && 
                               attackHandler.TryInterruptAttack(attackerToughness);
+        
+        Debug.Log($"Was attack interrupted: {wasInterrupted}");
 
         if (wasInterrupted || attackHandler.CurrentAttackPhase == AttackHandler.AttackPhase.None)
         {
             characterController.GetHit(Random.Range(1, 3));
             ApplyDamage(damage);
-
-            // 如果需要击退效果，可以取消下面的注释
-            // Vector3 knockbackDirection = (transform.position - attackerPosition).normalized;
-            // knockbackDirection.y = 0;
-            // transform.position += knockbackDirection * 0.5f;
+            Debug.Log($"Full damage applied: {damage}");
         }
         else
         {
-            // 如果攻击没有被打断，仍然承受一定比例的伤害
             ApplyDamage(damage * 0.5f);
+            Debug.Log($"Reduced damage applied: {damage * 0.5f}");
         }
     }
 

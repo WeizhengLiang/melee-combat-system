@@ -1,3 +1,4 @@
+using RPGCharacterAnims.Actions;
 using UnityEngine;
 using RPGCharacterAnims.Lookups;
 
@@ -43,6 +44,7 @@ namespace RPGCharacterAnims
             }
 			// if (IsOutOfRange(transform.position, targetPosition))
 			// { rpgCharacterController.StartAction(HandlerTypes.Navigation, RandomOffset(targetPosition)); }
+               // Debug.Log($"NPC position: {transform.position}");
 		}
 
 		private void MoveAndAttack()
@@ -63,9 +65,14 @@ namespace RPGCharacterAnims
 
             if (!rpgCharacterController.hasTwoHandedWeapon)
             {
-	            meleeCombatSystem.EquipWeapon(Weapon.TwoHandSword);
-	            rpgCharacterController.leftWeapon = Weapon.TwoHandSword;
-	            rpgCharacterController.rightWeapon = Weapon.TwoHandSword;
+	            var context = new SwitchWeaponContext
+	            {
+	                type = HandlerTypes.Switch,
+	                side = "None",
+	                leftWeapon = Weapon.TwoHandSword,
+	                rightWeapon = Weapon.TwoHandSword
+	            };
+	            rpgCharacterController.StartAction(HandlerTypes.SwitchWeapon, context);
             }
             // 发起攻击
             var attackHandler = rpgCharacterController.GetHandler(HandlerTypes.Attack) as AttackHandler;

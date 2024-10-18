@@ -1,41 +1,39 @@
 using UnityEngine;
 using RPGCharacterAnims;
+using RPGCharacterAnims.Actions;
 using RPGCharacterAnims.Lookups;
 
 public class MeleeCombatInput : MonoBehaviour
 {
+    public delegate void WeaponToggleEventHandler();
+    public static event WeaponToggleEventHandler OnWeaponToggle;
+
     private MeleeCombatSystem meleeCombatSystem;
-    private RPGCharacterController characterController;
 
     private void Start()
     {
         meleeCombatSystem = GetComponent<MeleeCombatSystem>();
-        characterController = GetComponent<RPGCharacterController>();
     }
 
     private void Update()
+    {
+        CustomMeleeCombatInputs();
+    }
+
+    private void CustomMeleeCombatInputs()
     {
         if (Input.GetKeyDown(KeyCode.J))
         {
             meleeCombatSystem.PerformAttack(1, Side.Right);
         }
-
-        if (Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.K))
         {
-            if (characterController.rightWeapon == Weapon.Unarmed)
-            {
-                meleeCombatSystem.EquipWeapon(Weapon.TwoHandSword);
-                characterController.leftWeapon = Weapon.TwoHandSword;
-                characterController.rightWeapon = Weapon.TwoHandSword;
-            }
-            else
-            {
-                meleeCombatSystem.UnequipWeapon();
-                characterController.rightWeapon = Weapon.Unarmed;
-                characterController.leftWeapon = Weapon.Unarmed;
-            }
+            meleeCombatSystem.PerformAttack(1, Side.Left);
         }
 
-        // 添加更多输入控制
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            OnWeaponToggle?.Invoke();
+        }
     }
 }

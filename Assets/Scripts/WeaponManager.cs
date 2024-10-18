@@ -41,18 +41,34 @@ public class WeaponManager : MonoBehaviour
     {
         foreach (var weaponData in availableWeapons)
         {
-            if(weaponData.weaponType == Weapon.Unarmed) continue;
-            
             if (!weaponDataDict.ContainsKey(weaponData.weaponType))
             {
-                foreach (Transform child in weaponData.weaponInstance.transform)
+                // handle unarmed case
+                if(weaponData.weaponType == Weapon.Unarmed)
                 {
-                    if (child.CompareTag("AttackPoint"))
+                    if (unarmedConfig == null)
                     {
-                        weaponData.attackPoints.Add(child);
-                    }else if (child.CompareTag("AttachPoint"))
+                        Debug.LogWarning("Character's unarmedConfig is missing, Setup unarmed AttackPoints failed");
+                        return;
+                    }
+
+                    foreach (var attackPoint in unarmedConfig.attackPoints)
                     {
-                        weaponData.attachPoint = child;
+                        weaponData.attackPoints.Add(attackPoint.self);
+                    }
+                }
+                else
+                {
+                    // the rest of weapon cases
+                    foreach (Transform child in weaponData.weaponInstance.transform)
+                    {
+                        if (child.CompareTag("AttackPoint"))
+                        {
+                            weaponData.attackPoints.Add(child);
+                        }else if (child.CompareTag("AttachPoint"))
+                        {
+                            weaponData.attachPoint = child;
+                        }
                     }
                 }
                 weaponDataDict[weaponData.weaponType] = weaponData;
