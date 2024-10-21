@@ -23,12 +23,12 @@ public class MeleeCombatInput : MonoBehaviour
     private void CustomMeleeCombatInputs()
     {
         if (Input.GetKeyDown(KeyCode.J))
-        {
-            meleeCombatSystem.PerformAttack(1, Side.Right);
+        {   
+            meleeCombatSystem.PerformAttack(Random.Range(1, 4), Side.Right);
         }
         else if (Input.GetKeyDown(KeyCode.K))
         {
-            meleeCombatSystem.PerformAttack(1, Side.Left);
+            meleeCombatSystem.PerformAttack(Random.Range(4, 7), Side.Left);
         }
 
         if (Input.GetKeyDown(KeyCode.U))
