@@ -213,7 +213,7 @@ public class CharacterModelManager : EditorWindow
                     name = child.name,
                     boneName = child.parent.name,
                     localPosition = child.localPosition,
-                    self = child
+                    parent = child.parent
                 });
             }
         }

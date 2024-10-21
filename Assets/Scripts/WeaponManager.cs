@@ -43,33 +43,14 @@ public class WeaponManager : MonoBehaviour
         {
             if (!weaponDataDict.ContainsKey(weaponData.weaponType))
             {
-                // handle unarmed case
-                if(weaponData.weaponType == Weapon.Unarmed)
+                weaponData.attackPoints = new List<Transform>();
+                if (weaponData.weaponType == Weapon.Unarmed)
                 {
-                    if (unarmedConfig == null)
-                    {
-                        Debug.LogWarning("Character's unarmedConfig is missing, Setup unarmed AttackPoints failed");
-                        return;
-                    }
-
-                    foreach (var attackPoint in unarmedConfig.attackPoints)
-                    {
-                        weaponData.attackPoints.Add(attackPoint.self);
-                    }
+                    SetupUnarmedAttackPoints(weaponData);
                 }
                 else
                 {
-                    // the rest of weapon cases
-                    foreach (Transform child in weaponData.weaponInstance.transform)
-                    {
-                        if (child.CompareTag("AttackPoint"))
-                        {
-                            weaponData.attackPoints.Add(child);
-                        }else if (child.CompareTag("AttachPoint"))
-                        {
-                            weaponData.attachPoint = child;
-                        }
-                    }
+                    SetupWeaponAttackPoints(weaponData);
                 }
                 weaponDataDict[weaponData.weaponType] = weaponData;
             }
@@ -80,7 +61,21 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    private void SetupUnarmedAttackPoints()
+    private void SetupWeaponAttackPoints(WeaponData weaponData)
+    {
+        foreach (Transform child in weaponData.weaponInstance.transform)
+        {
+            if (child.CompareTag("AttackPoint"))
+            {
+                weaponData.attackPoints.Add(child);
+            }else if (child.CompareTag("AttachPoint"))
+            {
+                weaponData.attachPoint = child;
+            }
+        }
+    }
+
+    private void SetupUnarmedAttackPoints(WeaponData weaponData)
     {
         if (unarmedConfig == null)
         {
@@ -88,15 +83,25 @@ public class WeaponManager : MonoBehaviour
             return;
         }
 
-        foreach (var attackPoint in unarmedConfig.attackPoints)
+        foreach (var attackPointConfig in unarmedConfig.attackPoints)
         {
-            Transform bone = Utility.FindDeepChild(transform, attackPoint.boneName);
+            Transform bone = Utility.FindDeepChild(transform, attackPointConfig.boneName);
             if (bone != null)
             {
-                GameObject attackPointObj = new GameObject(attackPoint.name);
-                attackPointObj.transform.SetParent(bone);
-                attackPointObj.transform.localPosition = attackPoint.localPosition;
-                attackPointObj.tag = "AttackPoint";
+                Transform existingAttackPoint = bone.Find(attackPointConfig.name);
+                if (existingAttackPoint == null)
+                {
+                    GameObject attackPointObj = new GameObject(attackPointConfig.name);
+                    attackPointObj.transform.SetParent(bone);
+                    attackPointObj.transform.localPosition = attackPointConfig.localPosition;
+                    attackPointObj.tag = "AttackPoint";
+                    existingAttackPoint = attackPointObj.transform;
+                }
+                weaponData.attackPoints.Add(existingAttackPoint);
+            }
+            else
+            {
+                Debug.LogWarning($"Bone {attackPointConfig.boneName} not found for unarmed attack point {attackPointConfig.name}");
             }
         }
     }

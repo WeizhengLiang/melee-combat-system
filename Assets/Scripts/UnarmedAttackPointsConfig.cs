@@ -10,7 +10,7 @@ public class UnarmedAttackPointsConfig : ScriptableObject
         public string name;
         public string boneName;
         public Vector3 localPosition;
-        public Transform self;
+        public Transform parent;
     }
 
     public List<UnarmedAttackPoint> attackPoints = new List<UnarmedAttackPoint>();

@@ -16,4 +16,4 @@ MonoBehaviour:
   - name: AttackPoint_0
     boneName: B_L_Hand
     localPosition: {x: -0.024, y: 0, z: 0.009}
-    self: {fileID: 8650714409825839127, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
+    parent: {fileID: 5017534650379737879, guid: b1cc94d26cd016d479aa5b522d88da0a, type: 3}
