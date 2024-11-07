@@ -22,9 +22,9 @@ public class CharacterSetupWindow : EditorWindow
     private CharacterType selectedCharacterType;
     private SetupMode selectedSetupMode;
     private GameObject characterPrefab;
-    private MeleeCombatSystemConfig combatConfig;
+    // private MeleeCombatSystemConfig combatConfig; 隐藏数值设计
     private RPGCharacterWeaponController weaponControllerSettings;
-    private bool isCombatConfigEditing = false;
+    // private bool isCombatConfigEditing = false; 隐藏数值设计
     private List<WeaponDataSO> availableWeaponsSO = new ();
 
     private bool useDamageHandler = true;
@@ -140,14 +140,15 @@ public class CharacterSetupWindow : EditorWindow
             }
             EditorGUILayout.EndVertical();
 
-            GUILayout.Space(10);
-            GUILayout.Label("Melee Combat System Settings", EditorStyles.boldLabel);
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            if (useMeleeCombatSystem)
-            {
-                DrawMeleeCombatSystemSettings();
-            }
-            EditorGUILayout.EndVertical();
+            // 隐藏数值设计
+            // GUILayout.Space(10);
+            // GUILayout.Label("Melee Combat System Settings", EditorStyles.boldLabel);
+            // EditorGUILayout.BeginVertical(GUI.skin.box);
+            // if (useMeleeCombatSystem)
+            // {
+            //     DrawMeleeCombatSystemSettings();
+            // }
+            // EditorGUILayout.EndVertical();
 
             if (selectedCharacterType == CharacterType.BuildNPC && useRPGCharacterWeaponController)
             {
@@ -284,108 +285,108 @@ public class CharacterSetupWindow : EditorWindow
     }
 
     
+// 隐藏数值设计
+    // private void DrawMeleeCombatSystemSettings()
+    // {
+    //     MeleeCombatSystem meleeCombatSystem = templateCharacterInstance.GetComponent<MeleeCombatSystem>();
+    //     if (meleeCombatSystem != null)
+    //     {
+    //         EditorGUILayout.LabelField("Melee Combat System Config", EditorStyles.boldLabel);
 
-    private void DrawMeleeCombatSystemSettings()
-    {
-        MeleeCombatSystem meleeCombatSystem = templateCharacterInstance.GetComponent<MeleeCombatSystem>();
-        if (meleeCombatSystem != null)
-        {
-            EditorGUILayout.LabelField("Melee Combat System Config", EditorStyles.boldLabel);
+    //         // 获取所有的 Combat Config
+    //         string[] guids = AssetDatabase.FindAssets("t:MeleeCombatSystemConfig", new[] { CharacterCombatCfgsPath });
+    //         List<string> configNames = new List<string> { "Please select character combat config" };
+    //         List<MeleeCombatSystemConfig> configs = new List<MeleeCombatSystemConfig>();
 
-            // 获取所有的 Combat Config
-            string[] guids = AssetDatabase.FindAssets("t:MeleeCombatSystemConfig", new[] { CharacterCombatCfgsPath });
-            List<string> configNames = new List<string> { "Please select character combat config" };
-            List<MeleeCombatSystemConfig> configs = new List<MeleeCombatSystemConfig>();
+    //         foreach (string guid in guids)
+    //         {
+    //             string path = AssetDatabase.GUIDToAssetPath(guid);
+    //             MeleeCombatSystemConfig config = AssetDatabase.LoadAssetAtPath<MeleeCombatSystemConfig>(path);
+    //             configs.Add(config);
+    //             configNames.Add(config.name);
+    //         }
 
-            foreach (string guid in guids)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                MeleeCombatSystemConfig config = AssetDatabase.LoadAssetAtPath<MeleeCombatSystemConfig>(path);
-                configs.Add(config);
-                configNames.Add(config.name);
-            }
+    //         int selectedIndex = combatConfig != null ? configs.IndexOf(combatConfig) + 1 : 0;
+    //         int newSelectedIndex = EditorGUILayout.Popup("Combat Config", selectedIndex, configNames.ToArray());
 
-            int selectedIndex = combatConfig != null ? configs.IndexOf(combatConfig) + 1 : 0;
-            int newSelectedIndex = EditorGUILayout.Popup("Combat Config", selectedIndex, configNames.ToArray());
+    //         if (newSelectedIndex != selectedIndex)
+    //         {
+    //             if (newSelectedIndex == 0)
+    //             {
+    //                 combatConfig = null;
+    //             }
+    //             else
+    //             {
+    //                 combatConfig = configs[newSelectedIndex - 1];
+    //             }
+    //             GUI.changed = true;
+    //         }
 
-            if (newSelectedIndex != selectedIndex)
-            {
-                if (newSelectedIndex == 0)
-                {
-                    combatConfig = null;
-                }
-                else
-                {
-                    combatConfig = configs[newSelectedIndex - 1];
-                }
-                GUI.changed = true;
-            }
+    //         if (!isCombatConfigEditing)
+    //         {
+    //             if (GUILayout.Button("Create New Config"))
+    //             {
+    //                 string path = EditorUtility.SaveFilePanelInProject("Save Combat Config", "MeleeCombatSystemConfig", "asset", "Please enter a file name to save the config to", CharacterCombatCfgsPath);
+    //                 if (!string.IsNullOrEmpty(path))
+    //                 {
+    //                     combatConfig = CreateInstance<MeleeCombatSystemConfig>();
+    //                     AssetDatabase.CreateAsset(combatConfig, path);
+    //                     AssetDatabase.SaveAssets();
+    //                     GUI.changed = true;
+    //                 }
+    //             }
+    //         }
 
-            if (!isCombatConfigEditing)
-            {
-                if (GUILayout.Button("Create New Config"))
-                {
-                    string path = EditorUtility.SaveFilePanelInProject("Save Combat Config", "MeleeCombatSystemConfig", "asset", "Please enter a file name to save the config to", CharacterCombatCfgsPath);
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        combatConfig = CreateInstance<MeleeCombatSystemConfig>();
-                        AssetDatabase.CreateAsset(combatConfig, path);
-                        AssetDatabase.SaveAssets();
-                        GUI.changed = true;
-                    }
-                }
-            }
+    //         EditorGUI.BeginDisabledGroup(true);
+    //         EditorGUILayout.ObjectField("Combat Config", combatConfig, typeof(MeleeCombatSystemConfig), false);
+    //         EditorGUI.EndDisabledGroup();
 
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.ObjectField("Combat Config", combatConfig, typeof(MeleeCombatSystemConfig), false);
-            EditorGUI.EndDisabledGroup();
+    //         if (!isCombatConfigEditing && selectedIndex != 0)
+    //         {
+    //             if (GUILayout.Button("Edit Config"))
+    //             {
+    //                 isCombatConfigEditing = true;
+    //             }
+    //         }
 
-            if (!isCombatConfigEditing && selectedIndex != 0)
-            {
-                if (GUILayout.Button("Edit Config"))
-                {
-                    isCombatConfigEditing = true;
-                }
-            }
-
-            if (isCombatConfigEditing)
-            {
-                if (GUILayout.Button("Save Config"))
-                {
-                    EditorUtility.SetDirty(combatConfig);
-                    AssetDatabase.SaveAssets();
-                    isCombatConfigEditing = false;
-                    GUI.changed = true;
-                }
+    //         if (isCombatConfigEditing)
+    //         {
+    //             if (GUILayout.Button("Save Config"))
+    //             {
+    //                 EditorUtility.SetDirty(combatConfig);
+    //                 AssetDatabase.SaveAssets();
+    //                 isCombatConfigEditing = false;
+    //                 GUI.changed = true;
+    //             }
                 
-                EditorGUI.BeginDisabledGroup(false);
-                combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
-                combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
-                combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
-                combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
-                combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
-                combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
-                combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
-                EditorGUI.EndDisabledGroup();
-            }
-            else
-            {
-                if (selectedIndex != 0)
-                {
-                    EditorGUI.BeginDisabledGroup(true);
-                    combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
-                    combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
-                    combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
-                    combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
-                    combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
-                    combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
-                    combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
-                    EditorGUI.EndDisabledGroup();
-                }
+    //             EditorGUI.BeginDisabledGroup(false);
+    //             combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
+    //             combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
+    //             combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
+    //             combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
+    //             combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
+    //             combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
+    //             combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
+    //             EditorGUI.EndDisabledGroup();
+    //         }
+    //         else
+    //         {
+    //             if (selectedIndex != 0)
+    //             {
+    //                 EditorGUI.BeginDisabledGroup(true);
+    //                 combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
+    //                 combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
+    //                 combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
+    //                 combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
+    //                 combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
+    //                 combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
+    //                 combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
+    //                 EditorGUI.EndDisabledGroup();
+    //             }
                 
-            }
-        }
-    }
+    //         }
+    //     }
+    // }
 
     private void DrawRPGCharacterWeaponControllerSettings()
     {
@@ -419,10 +420,11 @@ public class CharacterSetupWindow : EditorWindow
 
         if (selectedSetupMode == SetupMode.Default)
         {
-            if (combatConfig == null)
-            {
-                warningMessage += "- Combat Config\n";
-            }
+            // 隐藏数值设计
+            // if (combatConfig == null)
+            // {
+            //     warningMessage += "- Combat Config\n";
+            // }
             if (availableWeaponsSO.Count == 0)
             {
                 warningMessage += "- Weapons\n";
@@ -457,10 +459,11 @@ public class CharacterSetupWindow : EditorWindow
             }
             
             // component information missing
-            if (combatConfig == null)
-            {
-                warningMessage += "- Combat Config\n";
-            }
+            // 隐藏数值设计
+            // if (combatConfig == null)
+            // {
+            //     warningMessage += "- Combat Config\n";
+            // }
             if (availableWeaponsSO.Count == 0)
             {
                 warningMessage += "- Weapons\n";
@@ -536,14 +539,15 @@ public class CharacterSetupWindow : EditorWindow
             }
         }
 
-        if (useMeleeCombatSystem)
-        {
-            MeleeCombatSystem meleeCombatSystem = finalCharacter.GetComponent<MeleeCombatSystem>();
-            if (meleeCombatSystem != null)
-            {
-                meleeCombatSystem.combatConfig = combatConfig;
-            }
-        }
+        // 隐藏数值设计
+        // if (useMeleeCombatSystem)
+        // {
+        //     MeleeCombatSystem meleeCombatSystem = finalCharacter.GetComponent<MeleeCombatSystem>();
+        //     if (meleeCombatSystem != null)
+        //     {
+        //         meleeCombatSystem.combatConfig = combatConfig;
+        //     }
+        // }
 
         if (useRPGCharacterWeaponController)
         {
@@ -600,9 +604,9 @@ public class CharacterSetupWindow : EditorWindow
         {
             selectedCharacterType = CharacterType.BuildPlayer;
             selectedSetupMode = SetupMode.Default;
-            combatConfig = null;
+            // combatConfig = null; 隐藏数值设计
             weaponControllerSettings = null;
-            isCombatConfigEditing = false;
+            //isCombatConfigEditing = false; 隐藏数值设计
             availableWeaponsSO.Clear();
 
             useDamageHandler = true;
