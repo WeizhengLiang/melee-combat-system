@@ -8,6 +8,8 @@ TagManager:
   - Collide
   - AttackPoint
   - AttachPoint
+  - RightHand
+  - LeftHand
   layers:
   - Default
   - TransparentFX

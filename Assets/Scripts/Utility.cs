@@ -22,4 +22,16 @@ public static class Utility
         }
         return null;
     }
+
+    public static Transform FindChildWithTag(Transform parent, string tag)
+    {
+        foreach (Transform child in parent.GetComponentsInChildren<Transform>())
+        {
+            if (child.CompareTag(tag))
+            {
+                return child;
+            }
+        }
+        return null;
+    }
 }

@@ -1,5 +1,7 @@
 namespace RPGCharacterAnims.Lookups
 {
     public enum KnockdownType
-    { Knockdown1 = 1 }
+    {
+        Knockdown1 = 1,
+    }
 }

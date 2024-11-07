@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: e57e9b8cd5e115f4f8d7736473e5c7fd
 ModelImporter:
-  serializedVersion: 25
+  serializedVersion: 19301
   internalIDToNameTable:
   - first:
       1: 100000
@@ -755,7 +755,7 @@ ModelImporter:
     second: Take 001
   externalObjects: {}
   materials:
-    importMaterials: 0
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 0
@@ -818,10 +818,12 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 0
     importBlendShapes: 0
     importCameras: 0
     importLights: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -848,7 +850,6 @@ ModelImporter:
     normalSmoothingSource: 0
   referencedClips: []
   importAnimation: 0
-  copyAvatar: 0
   humanDescription:
     serializedVersion: 3
     human:
@@ -1024,10 +1025,10 @@ ModelImporter:
       humanName: Left Thumb Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 25, z: 20}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: B_L_Finger01
       humanName: Left Thumb Intermediate
       limit:
@@ -1144,10 +1145,10 @@ ModelImporter:
       humanName: Right Thumb Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 25, z: 20}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: B_R_Finger01
       humanName: Right Thumb Intermediate
       limit:
@@ -1557,8 +1558,10 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
+  avatarSetup: 1
   additionalBone: 1
   userData: 
   assetBundleName: 

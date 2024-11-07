@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 11400000}
   - component: {fileID: 5400000}
   - component: {fileID: 13681452}
-  - component: {fileID: 7517427521858630766}
   - component: {fileID: 3668655356348723783}
-  - component: {fileID: 2365503}
+  - component: {fileID: 3854177387491144519}
+  - component: {fileID: 5170302482190371260}
   m_Layer: 0
   m_Name: RPG-Character-NPC_Template
   m_TagString: Player
@@ -51,9 +51,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
-  animationSpeed: 1
+  mainCamera: {fileID: 0}
   ikHands: {fileID: 0}
+  ladder: {fileID: 0}
+  cliff: {fileID: 0}
   target: {fileID: 0}
+  animationSpeed: 1
+  headLook: 0
+  idleAlert: 1
+  isNearCliff: 0
+  isNearLadder: 0
+  isSitting: 0
+  isSpecial: 0
+  isTalking: 0
   rightWeapon: 0
   leftWeapon: 0
 --- !u!54 &5400000
@@ -106,24 +116,6 @@ CapsuleCollider:
   m_Height: 2.5
   m_Direction: 1
   m_Center: {x: 0, y: 1.25, z: 0}
---- !u!114 &7517427521858630766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8abad51ba0028479bb89a9ea8fb39b0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: 0}
-  debugNavigation: 1
-  isNavigating: 0
-  moveSpeed: 1
-  rotationSpeed: 1
-  maxNavPathLength: 40
 --- !u!195 &3668655356348723783
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -146,7 +138,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
---- !u!114 &2365503
+--- !u!114 &3854177387491144519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,10 +147,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 100004}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c531798cd46802d438107c55310d89dc, type: 3}
+  m_Script: {fileID: 11500000, guid: e751e5b24a6cb5b47a1378bf193426cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followDistance: 3
+  navMeshAgent: {fileID: 0}
+  debugNavigation: 0
+  isNavigating: 0
+  moveSpeed: 1
+  rotationSpeed: 1
+  maxNavPathLength: 40
+--- !u!114 &5170302482190371260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d4a011782dc2eb46acefefb4b0a7fd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  navMeshAgent: {fileID: 0}
 --- !u!1001 &5017534650380124603
 PrefabInstance:
   m_ObjectHideFlags: 0

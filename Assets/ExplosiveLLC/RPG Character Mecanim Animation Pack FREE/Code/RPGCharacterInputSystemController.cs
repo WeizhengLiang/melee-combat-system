@@ -3,14 +3,14 @@
 
 using UnityEngine;
 using RPGCharacterAnims.Actions;
+using RPGCharacterAnims.Extensions;
 using RPGCharacterAnims.Lookups;
-
 // Requires installing the InputSystem Package from the Package Manager: https://docs.unity3d.com/Packages/com.unity.inputsystem@1.5/manual/Installation.html
 using UnityEngine.InputSystem;
 
 namespace RPGCharacterAnims
 {
-	[HelpURL("https://docs.unity3d.com/Packages/com.unity.inputsystem@1.5/manual/index.html")]
+	[HelpURL("https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html")]
 
 	public class RPGCharacterInputSystemController : MonoBehaviour
     {
@@ -22,20 +22,29 @@ namespace RPGCharacterAnims
 		// Inputs.
 		private bool inputJump;
         private bool inputLightHit;
-        private bool inputKnockdown;
+        private bool inputDeath;
         private bool inputAttackL;
         private bool inputAttackR;
+        private bool inputCastL;
+        private bool inputCastR;
+		private bool inputBlock;
 		private bool inputRoll;
+		private bool inputShield;
+		private bool inputRelax;
 		private bool inputAim;
 		private Vector2 inputMovement;
 		private bool inputFace;
 		private Vector2 inputFacing;
 		private bool inputSwitchUp;
 		private bool inputSwitchDown;
+		private bool inputSwitchLeft;
+		private bool inputSwitchRight;
 
 		// Variables.
 		private Vector3 moveInput;
 		private Vector3 currentAim;
+		private float bowPull;
+		private bool blockToggle;
 		private float inputPauseTimeout = 0;
 		private bool inputPaused = false;
 
@@ -58,6 +67,8 @@ namespace RPGCharacterAnims
 
 		public bool HasFacingInput() => inputFacing != Vector2.zero || inputFace;
 
+		public bool HasBlockInput() => inputBlock;
+
 		private void Update()
 		{
 			// Pause input for other external input.
@@ -68,15 +79,19 @@ namespace RPGCharacterAnims
 
 			if (!inputPaused) { Inputs(); }
 
+			Blocking();
 			Moving();
 			Jumping();
 			Damage();
 			SwitchWeapons();
-			Strafing();
-			Facing();
-			Aiming();
-			Rolling();
-			Attacking();
+
+			if (!rpgCharacterController.IsActive("Relax")) {
+				Strafing();
+				Facing();
+				Aiming();
+				Rolling();
+				Attacking();
+			}
 		}
 
 		/// <summary>
@@ -97,37 +112,67 @@ namespace RPGCharacterAnims
             try {
 				inputAttackL = rpgInputs.RPGCharacter.AttackL.WasPressedThisFrame();
 				inputAttackR = rpgInputs.RPGCharacter.AttackR.WasPressedThisFrame();
-				inputKnockdown = rpgInputs.RPGCharacter.Knockdown.WasPressedThisFrame();
+				inputBlock = rpgInputs.RPGCharacter.Block.IsPressed();
+				inputCastL = rpgInputs.RPGCharacter.CastL.WasPressedThisFrame();
+				inputCastR = rpgInputs.RPGCharacter.CastR.WasPressedThisFrame();
+				inputDeath = rpgInputs.RPGCharacter.Death.WasPressedThisFrame();
 				inputFace = rpgInputs.RPGCharacter.Face.IsPressed();
 				inputFacing = rpgInputs.RPGCharacter.Facing.ReadValue<Vector2>();
 				inputJump = rpgInputs.RPGCharacter.Jump.IsPressed();
 				inputLightHit = rpgInputs.RPGCharacter.LightHit.WasPressedThisFrame();
 				inputMovement = rpgInputs.RPGCharacter.Move.ReadValue<Vector2>();
+				inputRelax = rpgInputs.RPGCharacter.Relax.WasPressedThisFrame();
 				inputRoll = rpgInputs.RPGCharacter.Roll.WasPressedThisFrame();
+				inputShield = rpgInputs.RPGCharacter.Shield.WasPressedThisFrame();
 				inputAim = rpgInputs.RPGCharacter.Aim.IsPressed();
 				inputSwitchDown = rpgInputs.RPGCharacter.WeaponDown.WasPressedThisFrame();
+				inputSwitchLeft = rpgInputs.RPGCharacter.WeaponLeft.WasPressedThisFrame();
+				inputSwitchRight = rpgInputs.RPGCharacter.WeaponRight.WasPressedThisFrame();
 				inputSwitchUp = rpgInputs.RPGCharacter.WeaponUp.WasPressedThisFrame();
 
-                // Slow time toggle.
-                if (Keyboard.current.tKey.wasPressedThisFrame) {
-                    if (rpgCharacterController.CanStartAction("SlowTime"))
-					{ rpgCharacterController.StartAction("SlowTime", 0.125f); }
-					else if (rpgCharacterController.CanEndAction("SlowTime"))
-					{ rpgCharacterController.EndAction("SlowTime"); }
+                // Headlook toggle.
+                if (rpgInputs.RPGCharacter.ToggleHeadLook.IsPressed())
+				{ rpgCharacterController.ToggleHeadlook(); }
+
+				// Injury toggle.
+				if (rpgInputs.RPGCharacter.ToggleInjury.IsPressed()) {
+                    if (rpgCharacterController.CanStartAction("Injure"))
+					{ rpgCharacterController.StartAction("Injure"); }
+					else if (rpgCharacterController.CanEndAction("Injure"))
+					{ rpgCharacterController.EndAction("Injure"); }
                 }
                 // Pause toggle.
-                if (Keyboard.current.pKey.wasPressedThisFrame) {
+                if (rpgInputs.RPGCharacter.TogglePause.IsPressed()) {
                     if (rpgCharacterController.CanStartAction("SlowTime"))
 					{ rpgCharacterController.StartAction("SlowTime", 0f); }
 					else if (rpgCharacterController.CanEndAction("SlowTime"))
 					{ rpgCharacterController.EndAction("SlowTime"); }
                 }
+                // Slow time toggle.
+                if (rpgInputs.RPGCharacter.ToggleSlowTime.IsPressed()) {
+                    if (rpgCharacterController.CanStartAction("SlowTime"))
+					{ rpgCharacterController.StartAction("SlowTime", 0.125f); }
+					else if (rpgCharacterController.CanEndAction("SlowTime"))
+					{ rpgCharacterController.EndAction("SlowTime"); }
+                }
             }
-			catch (System.Exception) { Debug.LogError("Inputs not found!  " +
-				"Make sure your project is using the new InputSystem: Edit>Project Settings>Player>Active Input Handling  - change to 'Input System Package (New)'."); }
-			}
+			catch (System.Exception) { Debug.LogError("Inputs not found!  Character must have Player Input component."); }
+        }
 
-			public void Moving()
+		public void Blocking()
+        {
+            bool blocking = HasBlockInput();
+            if (blocking && rpgCharacterController.CanStartAction("Block")) {
+                rpgCharacterController.StartAction("Block");
+				blockToggle = true;
+            }
+			else if (!blocking && blockToggle && rpgCharacterController.CanEndAction("Block")) {
+                rpgCharacterController.EndAction("Block");
+				blockToggle = false;
+            }
+        }
+
+        public void Moving()
 		{
 			moveInput = new Vector3(inputMovement.x, inputMovement.y, 0f);
 
@@ -156,16 +201,51 @@ namespace RPGCharacterAnims
 		}
 
 		private void Aiming()
-		{ Strafing(); }
+		{
+			if (rpgCharacterController.hasAimedWeapon) {
+				if (rpgCharacterController.HandlerExists(HandlerTypes.Aim)) {
+					if (HasAimInput()) { rpgCharacterController.TryStartAction(HandlerTypes.Aim); }
+					else { rpgCharacterController.TryEndAction(HandlerTypes.Aim); }
+				}
+				if (rpgCharacterController.rightWeapon == Weapon.TwoHandBow) {
+
+					// If using the bow, we want to pull back slowly on the bow string while the
+					// Left Mouse button is down, and shoot when it is released.
+					if (Mouse.current.leftButton.isPressed) { bowPull += 0.05f; }
+					else if (Mouse.current.leftButton.wasReleasedThisFrame) {
+						if (rpgCharacterController.HandlerExists(HandlerTypes.Shoot))
+						{ rpgCharacterController.TryStartAction(HandlerTypes.Shoot); }
+					}
+					else { bowPull = 0f; }
+					bowPull = Mathf.Clamp(bowPull, 0f, 1f);
+				}
+				else {
+					// If using a gun or a crossbow, we want to fire when the left mouse button is pressed.
+					if (rpgCharacterController.HandlerExists(HandlerTypes.Shoot)) {
+						if (Mouse.current.leftButton.isPressed) { rpgCharacterController.TryStartAction(HandlerTypes.Shoot); }
+					}
+				}
+				// Reload.
+				if (rpgCharacterController.HandlerExists(HandlerTypes.Reload)) {
+					if (Mouse.current.rightButton.isPressed) { rpgCharacterController.TryStartAction(HandlerTypes.Reload); }
+				}
+				// Finally, set aim location and bow pull.
+				rpgCharacterController.SetAimInput(rpgCharacterController.target.position);
+				rpgCharacterController.SetBowPull(bowPull);
+			}
+			else { Strafing(); }
+		}
 
 		private void Strafing()
 		{
 			if (rpgCharacterController.canStrafe) {
-				if (inputAim) {
-					if (rpgCharacterController.CanStartAction("Strafe")) { rpgCharacterController.StartAction("Strafe"); }
-				}
-				else {
-					if (rpgCharacterController.CanEndAction("Strafe")) { rpgCharacterController.EndAction("Strafe"); }
+				if (!rpgCharacterController.hasAimedWeapon) {
+					if (inputAim) {
+						if (rpgCharacterController.CanStartAction("Strafe")) { rpgCharacterController.StartAction("Strafe"); }
+					}
+					else {
+						if (rpgCharacterController.CanEndAction("Strafe")) { rpgCharacterController.EndAction("Strafe"); }
+					}
 				}
 			}
 		}
@@ -198,8 +278,15 @@ namespace RPGCharacterAnims
 
 		private void Attacking()
 		{
-			// Check to make sure Attack Action exists.
-			if (!rpgCharacterController.HandlerExists(HandlerTypes.Attack)) { return; }
+			// Check to make sure Attack and Cast Actions exist.
+			if (!rpgCharacterController.HandlerExists(HandlerTypes.Attack)
+				&& rpgCharacterController.HandlerExists(HandlerTypes.AttackCast)) { return; }
+
+			// If already casting, stop casting.
+			if ((inputCastL || inputCastR) && rpgCharacterController.IsActive(HandlerTypes.AttackCast)) {
+				rpgCharacterController.EndAction(HandlerTypes.AttackCast);
+				return;
+			}
 
 			// Check to make character can Attack.
 			if (!rpgCharacterController.CanStartAction(HandlerTypes.Attack)) { return; }
@@ -208,19 +295,21 @@ namespace RPGCharacterAnims
 			{ rpgCharacterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, Side.Left)); }
 			else if (inputAttackR)
 			{ rpgCharacterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, Side.Right)); }
+			else if (inputCastL)
+			{ rpgCharacterController.StartAction(HandlerTypes.AttackCast, new AttackCastContext(AnimationVariations.AttackCast.TakeRandom(), Side.Left)); }
+			else if (inputCastR)
+			{ rpgCharacterController.StartAction(HandlerTypes.AttackCast, new AttackCastContext(AnimationVariations.AttackCast.TakeRandom(), Side.Right)); }
 		}
 
 		private void Damage()
 		{
 			// Hit.
-			if (rpgCharacterController.HandlerExists(HandlerTypes.GetHit)) {
-				if (inputLightHit) { rpgCharacterController.StartAction(HandlerTypes.GetHit, new HitContext()); }
-			}
+			if (inputLightHit) { rpgCharacterController.StartAction("GetHit", new HitContext()); }
 
-			// Knockdown.
-			if (rpgCharacterController.HandlerExists(HandlerTypes.Knockdown)) {
-				if (inputKnockdown && rpgCharacterController.CanStartAction(HandlerTypes.Knockdown))
-				{ rpgCharacterController.StartAction(HandlerTypes.Knockdown, new HitContext(( int )KnockdownType.Knockdown1, Vector3.back)); }
+			// Death.
+			if (inputDeath) {
+				if (rpgCharacterController.CanStartAction("Death")) { rpgCharacterController.StartAction("Death"); }
+				else if (rpgCharacterController.CanEndAction("Death")) { rpgCharacterController.EndAction("Death"); }
 			}
 		}
 
@@ -237,14 +326,37 @@ namespace RPGCharacterAnims
 			// Bail out if we can't switch weapons.
 			if (!rpgCharacterController.CanStartAction(HandlerTypes.SwitchWeapon)) { return; }
 
+			// Switch to Relaxed.
+			if (inputRelax) {
+				rpgCharacterController.StartAction(HandlerTypes.Relax);
+				return;
+			}
+
 			var doSwitch = false;
 			var context = new SwitchWeaponContext();
 			var weaponNumber = Weapon.Unarmed;
 
+			// Switch to Shield.
+			if (inputShield) {
+				doSwitch = true;
+				context.side = "Left";
+				context.type = "Switch";
+				context.leftWeapon = Weapon.Shield;
+				context.rightWeapon = Weapon.Relax;
+				rpgCharacterController.StartAction(HandlerTypes.SwitchWeapon, context);
+				return;
+			}
+
 			// Cycle through 2Handed weapons if any input happens on the up-down axis.
 			if (inputSwitchUp || inputSwitchDown) {
 				var twoHandedWeapons = new Weapon[] {
-					Weapon.TwoHandSword
+					Weapon.TwoHandSword,
+					 Weapon.TwoHandSpear,
+					 Weapon.TwoHandAxe,
+					 Weapon.TwoHandBow,
+					 Weapon.TwoHandCrossbow,
+					 Weapon.TwoHandStaff,
+					 Weapon.Rifle,
 				};
 				// If we're not wielding 2Handed weapon already, just switch to the first one in the list.
 				if (System.Array.IndexOf(twoHandedWeapons, rpgCharacterController.rightWeapon) == -1)
@@ -261,10 +373,51 @@ namespace RPGCharacterAnims
 				doSwitch = true;
 				context.type = HandlerTypes.Switch;
 				context.side = "None";
-				context.leftWeapon = Weapon.Unarmed;
+				context.leftWeapon = Weapon.Relax;
 				context.rightWeapon = weaponNumber;
 			}
 
+			// Cycle through 1Handed weapons if any input happens on the left-right axis.
+			if (inputSwitchLeft  || inputSwitchRight) {
+				doSwitch = true;
+				context.type = HandlerTypes.Switch;
+
+				// Left-handed weapons.
+				if (inputSwitchLeft) {
+					var leftWeaponType = rpgCharacterController.leftWeapon;
+
+					// If we are not wielding a left-handed weapon, switch to Left Sword.
+					if (System.Array.IndexOf(WeaponGroupings.LeftHandedWeapons, leftWeaponType) == -1)
+					{ weaponNumber = Weapon.LeftSword; }
+
+					// Otherwise, cycle through the list.
+					else {
+						var currentIndex = System.Array.IndexOf(WeaponGroupings.LeftHandedWeapons, leftWeaponType);
+						weaponNumber = WeaponGroupings.LeftHandedWeapons[(currentIndex + 1) % WeaponGroupings.LeftHandedWeapons.Length];
+					}
+
+					context.side = "Left";
+					context.leftWeapon = weaponNumber;
+					context.rightWeapon = Weapon.Relax;
+				}
+				// Right-handed weapons.
+				else if (inputSwitchRight) {
+					var rightWeaponType = rpgCharacterController.rightWeapon;
+
+					// If we are not wielding a right-handed weapon, switch to Unarmed.
+					if (System.Array.IndexOf(WeaponGroupings.RightHandedWeapons, rightWeaponType) == -1)
+					{ weaponNumber = Weapon.Unarmed; }
+
+					// Otherwise, cycle through the list.
+					else {
+						var currentIndex = System.Array.IndexOf(WeaponGroupings.RightHandedWeapons, rightWeaponType);
+						weaponNumber = WeaponGroupings.RightHandedWeapons[(currentIndex + 1) % WeaponGroupings.RightHandedWeapons.Length];
+					}
+					context.side = "Right";
+					context.leftWeapon = Weapon.Relax;
+					context.rightWeapon = weaponNumber;
+				}
+			}
 			// If we've received input, then "doSwitch" is true, and the context is filled out,
 			// so start the SwitchWeapon action.
 			if (doSwitch) { rpgCharacterController.StartAction(HandlerTypes.SwitchWeapon, context); }

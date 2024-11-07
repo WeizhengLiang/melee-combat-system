@@ -722,7 +722,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 0
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -973,10 +973,10 @@ ModelImporter:
       humanName: Left Thumb Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 25, z: 20}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: B_L_Finger01
       humanName: Left Thumb Intermediate
       limit:
@@ -1093,10 +1093,10 @@ ModelImporter:
       humanName: Right Thumb Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 25, z: 20}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: B_R_Finger01
       humanName: Right Thumb Intermediate
       limit:

@@ -757,7 +757,28 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.33846155
+        functionName: Hit
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.2923077
+        functionName: FootR
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.8153846
+        functionName: FootL
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {fileID: 101100000, guid: 3e4e408fdcc93ee468a1275b69104d63, type: 2}
@@ -976,10 +997,10 @@ ModelImporter:
       humanName: Left Thumb Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 25, z: 20}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: B_L_Finger01
       humanName: Left Thumb Intermediate
       limit:
@@ -1096,10 +1117,10 @@ ModelImporter:
       humanName: Right Thumb Proximal
       limit:
         min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 25, z: 20}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: B_R_Finger01
       humanName: Right Thumb Intermediate
       limit:

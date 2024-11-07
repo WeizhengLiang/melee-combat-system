@@ -107,7 +107,18 @@ namespace RPGCharacterAnims
 		private void GetCurrentWeaponAttachPoint(Weapon weapon)
 		{
 			var weaponType = (Weapon)weapon;
-			blendToTransform = weaponManager.WeaponDataDict[weaponType].attachPoint;
+			// switch (weaponType) {
+			// 	case Weapon.TwoHandSword: blendToTransform = rpgCharacterWeaponController.twoHandSword.transform.GetChild(0).transform; break;
+			// 	case Weapon.TwoHandSpear: blendToTransform = rpgCharacterWeaponController.twoHandSpear.transform.GetChild(0).transform; break;
+			// 	case Weapon.TwoHandAxe: blendToTransform = rpgCharacterWeaponController.twoHandAxe.transform.GetChild(0).transform; break;
+			// 	case Weapon.TwoHandCrossbow: blendToTransform = rpgCharacterWeaponController.twoHandCrossbow.transform.GetChild(0).transform; break;
+			// 	case Weapon.Rifle: blendToTransform = rpgCharacterWeaponController.rifle.transform.GetChild(0).transform; break;
+			// }
+
+			if (weaponManager.WeaponDataDict.TryGetValue(weaponType, out var weaponData))
+			{
+				blendToTransform = weaponData.attachPoint;
+			}
 		}
     }
 }

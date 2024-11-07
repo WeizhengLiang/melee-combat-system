@@ -26,7 +26,7 @@ public class AttackHandler : Attack
     [Header("Debug")]
     public bool debugMode = true;
 
-    public void Initialize(RPGCharacterController controller, MeleeCombatSystemConfig combatConfig)
+    public AttackHandler(RPGCharacterController controller, MeleeCombatSystemConfig combatConfig)
     {
         characterController = controller;
         combatSystemConfig = combatConfig;

@@ -1,0 +1,105 @@
+[11/7/2024 12:16:35 PM] [Log] Play Mode started. Logging begins.
+[11/7/2024 12:16:36 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:36 PM] [Log] Move_EnterState
+[11/7/2024 12:16:36 PM] [Log] Move_ExitState
+[11/7/2024 12:16:36 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:36 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:36 PM] [Log] Move_EnterState
+[11/7/2024 12:16:37 PM] [Log] Move_ExitState
+[11/7/2024 12:16:37 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:37 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:37 PM] [Log] Move_EnterState
+[11/7/2024 12:16:37 PM] [Log] Move_ExitState
+[11/7/2024 12:16:37 PM] [Log] Jump_EnterState
+[11/7/2024 12:16:37 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:38 PM] [Log] Fall_EnterState
+[11/7/2024 12:16:38 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:38 PM] [Log] Fall_ExitState
+[11/7/2024 12:16:38 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:38 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:38 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:38 PM] [Log] Move_EnterState
+[11/7/2024 12:16:38 PM] [Log] Move_ExitState
+[11/7/2024 12:16:38 PM] [Log] Jump_EnterState
+[11/7/2024 12:16:38 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:39 PM] [Log] Fall_EnterState
+[11/7/2024 12:16:39 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:39 PM] [Log] Fall_ExitState
+[11/7/2024 12:16:39 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:39 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:39 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:39 PM] [Log] Move_EnterState
+[11/7/2024 12:16:39 PM] [Log] Move_ExitState
+[11/7/2024 12:16:39 PM] [Log] Jump_EnterState
+[11/7/2024 12:16:39 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:40 PM] [Log] Fall_EnterState
+[11/7/2024 12:16:40 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:40 PM] [Log] Fall_ExitState
+[11/7/2024 12:16:40 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:40 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:40 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:40 PM] [Log] Move_EnterState
+[11/7/2024 12:16:40 PM] [Log] Move_ExitState
+[11/7/2024 12:16:40 PM] [Log] Jump_EnterState
+[11/7/2024 12:16:40 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:40 PM] [Log] Fall_EnterState
+[11/7/2024 12:16:40 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:41 PM] [Log] Fall_ExitState
+[11/7/2024 12:16:41 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:41 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:41 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:41 PM] [Log] Move_EnterState
+[11/7/2024 12:16:41 PM] [Log] Move_ExitState
+[11/7/2024 12:16:41 PM] [Log] Jump_EnterState
+[11/7/2024 12:16:41 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:41 PM] [Log] Fall_EnterState
+[11/7/2024 12:16:41 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:42 PM] [Log] Fall_ExitState
+[11/7/2024 12:16:42 PM] [Log] SetAnimatorTrigger: JumpTrigger - 18
+[11/7/2024 12:16:42 PM] [Log] Idle_EnterState
+[11/7/2024 12:16:42 PM] [Log] Idle_ExitState
+[11/7/2024 12:16:42 PM] [Log] Move_EnterState
+[11/7/2024 12:16:42 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:42 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:43 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:43 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:43 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:43 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:44 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:44 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:44 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:44 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:44 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:44 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:44 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:44 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:44 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:44 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:45 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:45 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:45 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:45 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:46 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:46 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:47 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:47 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:48 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:48 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:49 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:49 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:49 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:49 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:50 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:50 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:51 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:51 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:52 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:52 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:53 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:53 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:54 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:54 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:54 PM] [Log] SetActionTrigger: AttackTrigger - 4 - action 1
+[11/7/2024 12:16:54 PM] [Log] SetAnimatorTrigger: AttackTrigger - 4
+[11/7/2024 12:16:55 PM] [Log] Move_ExitState
+[11/7/2024 12:16:55 PM] [Log] Idle_EnterState

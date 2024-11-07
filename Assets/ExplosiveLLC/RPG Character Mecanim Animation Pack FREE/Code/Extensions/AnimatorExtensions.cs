@@ -43,12 +43,78 @@ namespace RPGCharacterAnims.Extensions
         }
 
         /// <summary>
+        /// Sets the animator to trigger an emote.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="emote">The type of emote to set.</param>
+        public static void TriggerEmote(this Animator animator, EmoteType emote)
+        { SetActionTrigger(animator, AnimatorTrigger.ActionTrigger, (int) emote); }
+
+        /// <summary>
         /// Sets the animator side.
         /// </summary>
         /// <param name="animator">The animator to act on.</param>
         /// <param name="side">The type of emote to set.</param>
         public static void SetSide(this Animator animator, Side side)
         { animator.SetInteger(AnimationParameters.Side, (int)side); }
+
+        /// <summary>
+        /// Sets the animator to trigger talking.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="talkType">The enum value to set.</param>
+        public static void TriggerTalking(this Animator animator, TalkType talkType)
+        { animator.SetInteger(AnimationParameters.Talking, (int)talkType); }
+
+        /// <summary>
+        /// Sets the animator to trigger dodging.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="dodgeType">The enum value to set.</param>
+        public static void TriggerDodge(this Animator animator, DodgeType dodgeType)
+        { animator.SetActionTrigger(AnimatorTrigger.DodgeTrigger, (int)dodgeType); }
+
+        /// <summary>
+        /// Sets the animator to trigger climbing.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="climbType">The enum value to set.</param>
+        public static void TriggerClimb(this Animator animator, ClimbType climbType)
+        { animator.SetActionTrigger(AnimatorTrigger.ClimbLadderTrigger, (int)climbType); }
+
+        /// <summary>
+        /// Sets the animator to trigger crawling.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="crawlType">The enum value to set.</param>
+        public static void TriggerCrawl(this Animator animator, CrawlType crawlType)
+        { animator.SetActionTrigger(AnimatorTrigger.CrawlTrigger, (int)crawlType); }
+
+        /// <summary>
+        /// Sets the animator to trigger turning.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="turnType">The enum value to set.</param>
+        public static void TriggerTurn(this Animator animator, TurnType turnType)
+        { animator.SetActionTrigger(AnimatorTrigger.TurnTrigger, (int)turnType); }
 
         /// <summary>
         /// Sets the animator to trigger dive rolling.
@@ -60,6 +126,17 @@ namespace RPGCharacterAnims.Extensions
         /// <param name="rollType">The enum value to set.</param>
         public static void TriggerDiveRoll(this Animator animator, DiveRollType rollType)
         { animator.SetActionTrigger(AnimatorTrigger.DiveRollTrigger, (int)rollType); }
+
+        /// <summary>
+        /// Sets the animator to trigger rolling.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="rollType">The enum value to set.</param>
+        public static void TriggerRoll(this Animator animator, RollType rollType)
+        { animator.SetActionTrigger(AnimatorTrigger.RollTrigger, (int)rollType); }
 
         /// <summary>
         /// Sets the animator to trigger knockback.
@@ -84,6 +161,29 @@ namespace RPGCharacterAnims.Extensions
         { animator.SetActionTrigger(AnimatorTrigger.KnockdownTrigger, (int)knockdownType); }
 
         /// <summary>
+        /// Sets the animator to trigger casting.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="castType">The enum value to set.</param>
+        public static void TriggerCast(this Animator animator, CastType castType)
+        { animator.SetActionTrigger(AnimatorTrigger.CastTrigger, (int)castType); }
+
+        /// <summary>
+        /// Sets the animator to trigger attack casting.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="castType">The enum value to set.</param>
+        public static void TriggerAttackCast(this Animator animator, AttackCastType castType)
+        { animator.SetActionTrigger(AnimatorTrigger.AttackCastTrigger, (int)castType); }
+
+
+        /// <summary>
         /// Sets the animator to trigger getting hit.
         /// </summary>
         /// <remarks>
@@ -106,6 +206,17 @@ namespace RPGCharacterAnims.Extensions
         { animator.SetActionTrigger(AnimatorTrigger.GetHitTrigger, hitType); }
 
         /// <summary>
+        /// Sets the animator to trigger getting hit while blocking.
+        /// </summary>
+        /// <remarks>
+        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
+        /// </remarks>
+        /// <param name="animator">The animator to act on.</param>
+        /// <param name="hitType">The enum value to set.</param>
+        public static void TriggerBlockGettingHit(this Animator animator, BlockedHitType hitType)
+        { animator.SetActionTrigger(AnimatorTrigger.GetHitTrigger, (int)hitType); }
+
+        /// <summary>
         /// Set Animator Trigger using legacy Animation Trigger names.
         /// </summary>
         [Obsolete("This is for backwards compatibility with older trigger names.")]
@@ -123,17 +234,19 @@ namespace RPGCharacterAnims.Extensions
         public static void DebugAnimatorParameters(this Animator animator)
         {
             Debug.Log("ANIMATOR SETTINGS---------------------------");
-			Debug.Log("Moving: " + animator.GetBool(AnimationParameters.Moving));
-			Debug.Log("Aiming: " + animator.GetBool(AnimationParameters.Aiming));
-			Debug.Log($"Weapon: {animator.GetInteger(AnimationParameters.Weapon)}");
-			Debug.Log($"WeaponSwitch: {animator.GetInteger(AnimationParameters.WeaponSwitch)}");
-			Debug.Log($"Side: {animator.GetInteger(AnimationParameters.Side)}");
-			Debug.Log($"LeftWeapon: {animator.GetInteger(AnimationParameters.LeftWeapon)}");
-			Debug.Log($"RightWeapon: {animator.GetInteger(AnimationParameters.RightWeapon)}");
-			Debug.Log("Jumping: " + animator.GetInteger(AnimationParameters.Jumping));
-			Debug.Log("Action: " + animator.GetInteger(AnimationParameters.Action));
-			Debug.Log("Velocity X: " + animator.GetFloat(AnimationParameters.VelocityX));
-			Debug.Log("Velocity Z: " + animator.GetFloat(AnimationParameters.VelocityZ));
+			Debug.Log($"Aiming:{animator.GetBool(AnimationParameters.Aiming)}   Blocking:{animator.GetBool(AnimationParameters.Blocking)}   " +
+				$"Crouch:{animator.GetBool(AnimationParameters.Crouch)}    Injured:{animator.GetBool(AnimationParameters.Injured)}    " +
+				$"Moving:{animator.GetBool(AnimationParameters.Moving)}    Sprint:{animator.GetBool(AnimationParameters.Sprint)}    " +
+				$"Stunned:{animator.GetBool(AnimationParameters.Stunned)}    Swimming:{animator.GetBool(AnimationParameters.Swimming)}    " +
+				$"Action:{animator.GetInteger(AnimationParameters.Action)}    Jumping:{animator.GetInteger(AnimationParameters.Jumping)}    " +
+				$"Side:{animator.GetInteger(AnimationParameters.Side)}");
+			Debug.Log($"LeftWeapon:{animator.GetInteger(AnimationParameters.LeftWeapon)}    RightWeapon:{animator.GetInteger(AnimationParameters.RightWeapon)}    " +
+				$"SheathLocation:{animator.GetInteger(AnimationParameters.SheathLocation)}    Talking:{animator.GetInteger(AnimationParameters.Talking)}    " +
+				$"Weapon:{animator.GetInteger(AnimationParameters.Weapon)}    WeaponSwitch:{animator.GetInteger(AnimationParameters.WeaponSwitch)}    " +
+				$"Idle:{animator.GetFloat(AnimationParameters.Idle)}    AimHorizontal:{animator.GetFloat(AnimationParameters.AimHorizontal)}    " +
+				$"AimVertical:{animator.GetFloat(AnimationParameters.AimVertical)}    AnimationSpeed:{animator.GetFloat(AnimationParameters.AnimationSpeed)}");
+			Debug.Log($"BowPull:{animator.GetFloat(AnimationParameters.BowPull)}    Charge:{animator.GetFloat(AnimationParameters.Charge)}     " +
+				$"Velocity X:{animator.GetFloat(AnimationParameters.VelocityX)}    Velocity Z:{animator.GetFloat(AnimationParameters.VelocityZ)}");
 		}
 
 		/// <summary>
@@ -148,8 +261,8 @@ namespace RPGCharacterAnims.Extensions
 		{
 			{ animator.SetInteger(AnimationParameters.Weapon, ( int )animatorWeapon); }
 			if (weaponSwitch != -2) { animator.SetInteger(AnimationParameters.WeaponSwitch, weaponSwitch); }
-			if (leftWeapon != Weapon.Unarmed) { animator.SetInteger(AnimationParameters.LeftWeapon, ( int )leftWeapon); }
-			if (rightWeapon != Weapon.Unarmed) { animator.SetInteger(AnimationParameters.RightWeapon, ( int )rightWeapon); }
+			if (leftWeapon != Weapon.Relax) { animator.SetInteger(AnimationParameters.LeftWeapon, ( int )leftWeapon); }
+			if (rightWeapon != Weapon.Relax) { animator.SetInteger(AnimationParameters.RightWeapon, ( int )rightWeapon); }
 			if (weaponSide != Side.Unchanged) { animator.SetInteger(AnimationParameters.Side, ( int )weaponSide); }
 		}
 	}

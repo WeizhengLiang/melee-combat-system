@@ -6,7 +6,7 @@ namespace RPGCharacterAnims.Actions
 	public class Attack:BaseActionHandler<AttackContext>
 	{
 		public override bool CanStartAction(RPGCharacterController controller)
-		{ return !active && controller.canAction; }
+		{ return !controller.isRelaxed && !active && !controller.isCasting && controller.canAction; }
 
 		public override bool CanEndAction(RPGCharacterController controller)
 		{ return active; }
@@ -33,6 +33,10 @@ namespace RPGCharacterAnims.Actions
 					attackSide = context.Side;
 					weaponNumber = controller.rightWeapon;
 					break;
+				case Side.Dual:
+					attackSide = context.Side;
+					weaponNumber = controller.rightWeapon;
+					break;
 			}
 
 			if (attackNumber == -1) {
@@ -48,13 +52,22 @@ namespace RPGCharacterAnims.Actions
 
 			duration = AnimationData.AttackDuration(attackSide, weaponNumber, attackNumber);
 
-			if (controller.isMoving) {
+			if (!controller.maintainingGround) {
+				controller.AirAttack();
+				EndAction(controller);
+			}
+			else if (controller.isMoving) {
 				controller.RunningAttack(
 					attackSide,
-					false,
-					false,
+					controller.hasLeftWeapon,
+					controller.hasRightWeapon,
+					controller.hasDualWeapons,
 					controller.hasTwoHandedWeapon
 				);
+				EndAction(controller);
+			}
+			else if (context.type == "Kick") {
+				controller.AttackKick(attackNumber);
 				EndAction(controller);
 			}
 			else if (context.type == "Attack") {
@@ -67,10 +80,18 @@ namespace RPGCharacterAnims.Actions
 				);
 				EndAction(controller);
 			}
+			else if (context.type == "Special") {
+				controller.isSpecial = true;
+				controller.StartSpecial(attackNumber);
+			}
 		}
 
 		protected override void _EndAction(RPGCharacterController controller)
 		{
+			if (controller.isSpecial) {
+				controller.isSpecial = false;
+				controller.EndSpecial();
+			}
 		}
 	}
 }

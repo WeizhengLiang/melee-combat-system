@@ -10,7 +10,7 @@ namespace RPGCharacterAnims.Actions
         { this.navigation = navigation; }
 
         public override bool CanStartAction(RPGCharacterController controller)
-        { return navigation != null; }
+        { return navigation != null && controller.canMove; }
 
         public override bool CanEndAction(RPGCharacterController controller)
         { return navigation != null && navigation.isNavigating; }

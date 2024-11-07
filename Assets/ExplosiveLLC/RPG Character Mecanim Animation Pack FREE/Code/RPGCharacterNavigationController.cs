@@ -54,9 +54,31 @@ namespace RPGCharacterAnims
 				// Set the Animation Controller if the character is moving.
 				if (navMeshAgent.velocity.sqrMagnitude > 0) {
 					animator.SetBool(AnimationParameters.Moving, true);
-
-					// Default run speed is 7 for navigation, so we divide by that.
 					animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed);
+
+					// If sprinting, multiply by the sprint speed.
+					if (rpgCharacterController.isSprinting) {
+						animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed
+						* rpgCharacterMovementController.sprintSpeed);
+
+						navMeshAgent.speed = rpgCharacterMovementController.sprintSpeed * 7;
+					}
+
+					// If crawling, multiply by the crawl speed.
+					else if (rpgCharacterController.isCrawling) {
+						animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed
+						* rpgCharacterMovementController.crawlSpeed);
+
+						navMeshAgent.speed = rpgCharacterMovementController.crawlSpeed * 7;
+					}
+
+					// If crouching, multiply by the crouch speed.
+					else if (rpgCharacterController.isCrouching) {
+						animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed
+						* rpgCharacterMovementController.crouchSpeed);
+
+						navMeshAgent.speed = rpgCharacterMovementController.crouchSpeed * 7;
+					}
 				}
 				// Stop animation.
 				else { StopAnimation(); }
@@ -104,12 +126,13 @@ namespace RPGCharacterAnims
 		/// <param name="destination">Point in world space to navigate to.</param>
 		public void MeshNavToPoint(Vector3 destination)
         {
-            if (!CanMoveTo(destination)) return;
+			if (!CanMoveTo(destination)) return;
 			if (debugNavigation) { Debug.Log("MeshNavToPoint: " + destination); }
 
 			navMeshAgent.enabled = true;
-			isNavigating = true;
 			navMeshAgent.SetDestination(destination);
+
+			if (navMeshAgent.speed > 0.1f) { isNavigating = true; }
 			if (rpgCharacterMovementController != null) { rpgCharacterMovementController.enabled = false; }
 		}
 
@@ -118,6 +141,7 @@ namespace RPGCharacterAnims
         /// </summary>
         public void StopNavigating()
         {
+			if (debugNavigation) { Debug.Log("StopNavigating"); }
 			isNavigating = false;
 			navMeshAgent.enabled = false;
 			if (rpgCharacterMovementController != null) { rpgCharacterMovementController.enabled = true; }

@@ -12,21 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd351293187d4226b2fb8c1ffd1bcdc, type: 3}
   m_Name: MeleeCombatSystemConfig_1
   m_EditorClassIdentifier: 
-  weaponDataList:
-  - weaponType: 0
-    prefab: {fileID: 6806757697949842298, guid: 41efd71772c154b18a64d6095931bc79, type: 3}
-    attackPoints: {fileID: 370225896913207586, guid: 41efd71772c154b18a64d6095931bc79, type: 3}
-    attackRadius: 1.5
-    damageMultiplier: 0
-    attackSpeedMultiplier: 0
-    staminaCost: 0
-  - weaponType: 1
-    prefab: {fileID: 8220178317465926844, guid: 1cc258fa90d0f4580a82e55d6af74418, type: 3}
-    attackPoints: {fileID: 7818981756840865863, guid: 1cc258fa90d0f4580a82e55d6af74418, type: 3}
-    attackRadius: 3
-    damageMultiplier: 0
-    attackSpeedMultiplier: 0
-    staminaCost: 0
   baseAttackDamage: 11
   baseAttackSpeed: 1
   criticalHitChance: 0.1

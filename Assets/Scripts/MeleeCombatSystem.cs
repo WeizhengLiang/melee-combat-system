@@ -12,7 +12,6 @@ public class MeleeCombatSystem : MonoBehaviour
     private RPGCharacterWeaponController weaponController;
     private AttackHandler attackHandler;
     private WeaponManager weaponManager;
-    private CharacterInstance characterInstance;
 
     private bool isInImpactPhase = false;
 
@@ -25,7 +24,6 @@ public class MeleeCombatSystem : MonoBehaviour
         weaponController = GetComponent<RPGCharacterWeaponController>();
         weaponManager = GetComponent<WeaponManager>();
         attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
-        characterInstance = GetComponent<CharacterInstance>();
 
         if (attackHandler == null)
         {
@@ -57,6 +55,16 @@ public class MeleeCombatSystem : MonoBehaviour
             attackHandler.ResetInterruptFlag();
             characterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, attackSide, attackNumber));
         }
+    }
+
+    public void PerformBlock()
+    {
+        characterController.StartAction("Block");
+    }
+    
+    public void PerformDodge()
+    {
+        characterController.StartAction("Dodge");
     }
 
     private void StartImpactPhase()

@@ -8,8 +8,16 @@ namespace RPGCharacterAnims.Lookups
 	/// ARMED.
 	/// </summary>
 	public enum AnimatorWeapon
-	{
+    {
+        RELAX = -1,
         UNARMED = 0,
         TWOHANDSWORD = 1,
+        TWOHANDSPEAR = 2,
+        TWOHANDAXE = 3,
+        TWOHANDBOW = 4,
+        TWOHANDCROSSBOW = 5,
+        STAFF = 6,
+        ARMED = 7,
+        RIFLE = 18,
     }
 }

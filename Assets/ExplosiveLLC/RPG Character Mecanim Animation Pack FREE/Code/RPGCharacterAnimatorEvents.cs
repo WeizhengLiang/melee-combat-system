@@ -1,4 +1,3 @@
-using System;
 using RPGCharacterAnims.Lookups;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,13 +18,14 @@ namespace RPGCharacterAnims
         public UnityEvent OnFootL = new UnityEvent();
         public UnityEvent OnLand = new UnityEvent();
         public UnityEvent OnWeaponSwitch = new UnityEvent();
-
-        public AnimatorMoveEvent OnMove = new AnimatorMoveEvent();
-
+        
+        // attack phase event
         public UnityEvent OnAttackAnticipationStart = new UnityEvent();
         public UnityEvent OnAttackImpactStart = new UnityEvent();
         public UnityEvent OnAttackRecoveryStart = new UnityEvent();
         public UnityEvent OnAttackEnd = new UnityEvent();
+
+        public AnimatorMoveEvent OnMove = new AnimatorMoveEvent();
 
 		// Components.
 		private RPGCharacterController rpgCharacterController;
@@ -36,14 +36,14 @@ namespace RPGCharacterAnims
 			rpgCharacterController = GetComponentInParent<RPGCharacterController>();
             animator = GetComponent<Animator>();
         }
-
+        
         private void Start()
         {
 	        AttackHandler attackHandler = rpgCharacterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
 	        OnAttackAnticipationStart.AddListener(attackHandler.OnAttackAnticipationStart);
-            OnAttackImpactStart.AddListener(attackHandler.OnAttackImpactStart);
-            OnAttackRecoveryStart.AddListener(attackHandler.OnAttackRecoveryStart);
-            OnAttackEnd.AddListener(attackHandler.OnAttackEnd);
+	        OnAttackImpactStart.AddListener(attackHandler.OnAttackImpactStart);
+	        OnAttackRecoveryStart.AddListener(attackHandler.OnAttackRecoveryStart);
+	        OnAttackEnd.AddListener(attackHandler.OnAttackEnd);
         }
 
         public void Hit() => OnHit.Invoke();
@@ -53,14 +53,14 @@ namespace RPGCharacterAnims
         public void Land() => OnLand.Invoke();
 
         public void WeaponSwitch() => OnWeaponSwitch.Invoke();
-
+        
         public void AttackAnticipationStart() => OnAttackAnticipationStart.Invoke();
         public void AttackImpactStart() => OnAttackImpactStart.Invoke();
         public void AttackRecoveryStart() => OnAttackRecoveryStart.Invoke();
         public void AttackEnd() => OnAttackEnd.Invoke();
 
-        // Used for animations that contain root motion to drive the characters
-		// position and rotation using the Motion node of the animation file.
+        // Used for animations that contain root motion to drive the character�s
+		// position and rotation using the �Motion� node of the animation file.
 		void OnAnimatorMove()
 		{
 			if (!animator) { return; }

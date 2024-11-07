@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 13681452}
   - component: {fileID: 1885862585}
   - component: {fileID: 5321184792874943586}
-  - component: {fileID: 7517427521858630766}
   - component: {fileID: 3668655356348723783}
   - component: {fileID: 6459111868685106628}
   m_Layer: 0
@@ -91,9 +90,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
-  animationSpeed: 1
+  mainCamera: {fileID: 0}
   ikHands: {fileID: 0}
+  ladder: {fileID: 0}
+  cliff: {fileID: 0}
   target: {fileID: 0}
+  animationSpeed: 1
+  headLook: 0
+  idleAlert: 1
+  isNearCliff: 0
+  isNearLadder: 0
+  isSitting: 0
+  isSpecial: 0
+  isTalking: 0
   rightWeapon: 0
   leftWeapon: 0
 --- !u!114 &114472432562717340
@@ -115,6 +124,14 @@ MonoBehaviour:
   walkAccel: 15
   runSpeed: 1
   runAccel: 30
+  sprintSpeed: 2
+  sprintAccel: 15
+  crouchSpeed: 0.25
+  crouchAccel: 15
+  crawlSpeed: 0.15
+  crawlAccel: 15
+  injuredSpeed: 0.675
+  injuredAccel: 20
   groundFriction: 120
   rotationSpeed: 100
   canJump: 0
@@ -122,11 +139,16 @@ MonoBehaviour:
   canDoubleJump: 0
   jumpSpeed: 12
   jumpGravity: 24
+  allowDoubleJump: 1
   doubleJumpSpeed: 8
   inAirSpeed: 8
   inAirAccel: 16
   fallGravity: 32
   fallingControl: 0
+  swimSpeed: 4
+  swimAccel: 4
+  strokeSpeed: 6
+  waterFriction: 5
   debugMessages: 1
 --- !u!114 &114739187124406758
 MonoBehaviour:
@@ -140,11 +162,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5958cd024b2eaad48be530c6c18db3df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  singleAnimSwitch: 1
+  singleAnimSwitchDual: 1
   debugWalkthrough: 1
+  debugIncomingWeaponContext: 1
   debugSwitchWeaponContext: 1
   debugDoWeaponSwitch: 1
   debugWeaponVisibility: 1
   debugSetAnimator: 1
+  twoHandAxe: {fileID: 0}
+  twoHandSword: {fileID: 0}
+  twoHandSpear: {fileID: 0}
+  twoHandBow: {fileID: 0}
+  twoHandCrossbow: {fileID: 0}
+  staff: {fileID: 0}
+  swordL: {fileID: 0}
+  swordR: {fileID: 0}
+  maceL: {fileID: 0}
+  maceR: {fileID: 0}
+  daggerL: {fileID: 0}
+  daggerR: {fileID: 0}
+  itemL: {fileID: 0}
+  itemR: {fileID: 0}
+  shield: {fileID: 0}
+  pistolL: {fileID: 0}
+  pistolR: {fileID: 0}
+  rifle: {fileID: 0}
+  spear: {fileID: 0}
 --- !u!54 &5400000
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -220,24 +264,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b02b01da8792e143b1a29f8aa2b8168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7517427521858630766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8abad51ba0028479bb89a9ea8fb39b0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: 0}
-  debugNavigation: 1
-  isNavigating: 0
-  moveSpeed: 1
-  rotationSpeed: 1
-  maxNavPathLength: 40
 --- !u!195 &3668655356348723783
 NavMeshAgent:
   m_ObjectHideFlags: 0

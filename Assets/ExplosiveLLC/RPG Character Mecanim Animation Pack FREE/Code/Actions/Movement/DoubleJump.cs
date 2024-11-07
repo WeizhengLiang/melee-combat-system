@@ -9,7 +9,7 @@ namespace RPGCharacterAnims.Actions
         }
 
         public override bool CanStartAction(RPGCharacterController controller)
-        { return controller.isFalling && movement.canDoubleJump; }
+        { return controller.isFalling && movement.canDoubleJump && !controller.isBlocking && movement.allowDoubleJump; }
 
         protected override void _StartAction(RPGCharacterController controller, EmptyContext context)
         { movement.currentState = CharacterState.DoubleJump; }
