@@ -19,32 +19,29 @@ public class DamageHandler : MonoBehaviour, IDamageable
         attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
     }
 
-    public void ReceiveHit(Vector3 attackerPosition, float damage, float attackerToughness)
+    public void ReceiveHit(Vector3 hitPosition, AttackLevel attackerLevel)
     {
-        Debug.Log($"ReceiveHit called, damage: {damage}, attackerToughness: {attackerToughness}, CurrentAttackPhase: {attackHandler.CurrentAttackPhase}");
-        
-        bool wasInterrupted = attackHandler.CurrentAttackPhase != AttackHandler.AttackPhase.None && 
-                              attackHandler.TryInterruptAttack(attackerToughness);
-        
-        Debug.Log($"Was attack interrupted: {wasInterrupted}");
-
-        if (wasInterrupted || attackHandler.CurrentAttackPhase == AttackHandler.AttackPhase.None)
+        if (attackHandler == null)
         {
-            characterController.GetHit(Random.Range(1, 3));
-            ApplyDamage(damage);
-            Debug.Log($"Full damage applied: {damage}");
+            Debug.LogError("AttackHandler is null in DamageHandler");
+            return;
         }
-        else
-        {
-            ApplyDamage(damage * 0.5f);
-            Debug.Log($"Reduced damage applied: {damage * 0.5f}");
-        }
-    }
 
-    private void ApplyDamage(float damage)
-    {
-        // 这里应用实际的伤害逻辑，例如减少生命值
-        // characterInstance.Health -= damage;
-        Debug.Log($"Received {damage} damage");
+        if (attackHandler.CurrentAttackPhase == AttackHandler.AttackPhase.None || 
+            attackHandler.IsAttackInterrupted)
+        {
+            // 根据攻击等级选择击退类型
+            KnockbackType knockbackType = attackerLevel switch
+            {
+                AttackLevel.Light => KnockbackType.Knockback1,
+                AttackLevel.Medium => KnockbackType.Knockback1,
+                AttackLevel.Heavy => KnockbackType.Knockback2,
+                AttackLevel.Special => KnockbackType.Knockback2,
+                _ => KnockbackType.Knockback1
+            };
+
+            // 使用原有的 Knockback 系统
+            characterController.Knockback(knockbackType);
+        }
     }
 }

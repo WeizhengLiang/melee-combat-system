@@ -46,6 +46,8 @@ public class CharacterSetupWindow : EditorWindow
     private const string PlayerTemplatePath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Prefabs/CharacterTemplate/RPG-Character_Template.prefab";
     private const string NPCTemplatePath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Prefabs/CharacterTemplate/RPG-Character-NPC_Template.prefab";
 
+    private CombatAnimationConfig combatAnimationConfig;
+
     [MenuItem("Tools/Character Setup")]
     public static void ShowWindow()
     {
@@ -141,14 +143,14 @@ public class CharacterSetupWindow : EditorWindow
             EditorGUILayout.EndVertical();
 
             // 隐藏数值设计
-            // GUILayout.Space(10);
-            // GUILayout.Label("Melee Combat System Settings", EditorStyles.boldLabel);
-            // EditorGUILayout.BeginVertical(GUI.skin.box);
-            // if (useMeleeCombatSystem)
-            // {
-            //     DrawMeleeCombatSystemSettings();
-            // }
-            // EditorGUILayout.EndVertical();
+            GUILayout.Space(10);
+            GUILayout.Label("Melee Combat System Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            if (useMeleeCombatSystem)
+            {
+                DrawMeleeCombatSystemSettings();
+            }
+            EditorGUILayout.EndVertical();
 
             if (selectedCharacterType == CharacterType.BuildNPC && useRPGCharacterWeaponController)
             {
@@ -281,6 +283,22 @@ public class CharacterSetupWindow : EditorWindow
             }
 
             availableWeaponsSO.Add(weaponDataSO);
+        }
+    }
+
+    private void DrawMeleeCombatSystemSettings()
+    {
+        EditorGUILayout.LabelField("Combat Animation Config", EditorStyles.boldLabel);
+        combatAnimationConfig = (CombatAnimationConfig)EditorGUILayout.ObjectField(
+            "Animation Config", combatAnimationConfig, typeof(CombatAnimationConfig), false);
+            
+        if (GUILayout.Button("Create New Combat Animation Config"))
+        {
+            var config = ScriptableObject.CreateInstance<CombatAnimationConfig>();
+            string path = "Assets/Resources/AnimationCfgs/DefaultCombatAnimConfig.asset";
+            AssetDatabase.CreateAsset(config, path);
+            AssetDatabase.SaveAssets();
+            combatAnimationConfig = config;
         }
     }
 
@@ -548,6 +566,23 @@ public class CharacterSetupWindow : EditorWindow
         //         meleeCombatSystem.combatConfig = combatConfig;
         //     }
         // }
+
+        if (useMeleeCombatSystem)
+        {
+            if (combatAnimationConfig == null)
+            {
+                EditorUtility.DisplayDialog("Setup Error", 
+                    "Combat Animation Config is required for Melee Combat System.", "OK");
+                return;
+            }
+            
+            MeleeCombatSystem meleeCombatSystem = finalCharacter.GetComponent<MeleeCombatSystem>();
+            if (meleeCombatSystem != null)
+            {
+                meleeCombatSystem.animationConfig = combatAnimationConfig;
+                AnimationData.Initialize(combatAnimationConfig);
+            }
+        }
 
         if (useRPGCharacterWeaponController)
         {

@@ -12,9 +12,10 @@ public class MeleeCombatSystem : MonoBehaviour
     private RPGCharacterWeaponController weaponController;
     private AttackHandler attackHandler;
     private WeaponManager weaponManager;
+    public CombatAnimationConfig animationConfig;
+
 
     private bool isInImpactPhase = false;
-
     private int currentAttackId = 0;
     private Dictionary<int, HashSet<IDamageable>> hitTargets = new Dictionary<int, HashSet<IDamageable>>();
 
@@ -31,13 +32,18 @@ public class MeleeCombatSystem : MonoBehaviour
             return;
         }
 
-        // 订阅 AttackHandler 的事件
+        if (animationConfig != null)
+        {
+            AnimationData.Initialize(animationConfig);
+        }
+        else
+        {
+            Debug.LogError("Combat Animation Config is not assigned in MeleeCombatSystem");
+        }
+
         attackHandler.OnImpactPhaseStart += StartImpactPhase;
         attackHandler.OnImpactPhaseEnd += EndImpactPhase;
         attackHandler.OnAttackActionEnd += EndAttack;
-
-        // 订阅武器变化事件（假设 RPGCharacterController 有这样的事件）
-        // characterController.OnWeaponChanged += OnWeaponChanged;
     }
 
     private void Update()
@@ -48,12 +54,16 @@ public class MeleeCombatSystem : MonoBehaviour
         }
     }
 
-    public void PerformAttack(int attackNumber, Side attackSide)
+    public void PerformAttack(int attackNumber, AttackLevel level)
     {
         if (characterController.CanStartAction(HandlerTypes.Attack))
         {
-            attackHandler.ResetInterruptFlag();
-            characterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, attackSide, attackNumber));
+            var weaponController = GetComponent<RPGCharacterWeaponController>();
+            Side currentSide = weaponController != null ? weaponManager.GetCurrentWeaponSide() : Side.None;
+
+            characterController.StartAction(HandlerTypes.Attack, 
+                new AttackContext(HandlerTypes.Attack, currentSide, attackNumber, level));
+            attackHandler.StartAttack(level);
         }
     }
 
@@ -96,19 +106,16 @@ public class MeleeCombatSystem : MonoBehaviour
         List<Transform> attackPoints = weaponManager.GetAttackPoints(currentWeapon);
         float attackRadius = weaponManager.GetAttackRadius(currentWeapon);
 
-        Debug.Log($"Current weapon: {currentWeapon}, Attack points: {attackPoints.Count}, Attack radius: {attackRadius}");
         foreach (var attackPoint in attackPoints)
         {
-            Debug.Log($"Attack point: {attackPoint.name}, Attack point position: {attackPoint.position}, Attack radius: {attackRadius}");
             Collider[] hitColliders = Physics.OverlapSphere(attackPoint.position, attackRadius);
             foreach (var hitCollider in hitColliders)
             {
-                Debug.Log($"Detected collider: {hitCollider.name}");
                 IDamageable damageable = hitCollider.GetComponent<IDamageable>();
                 if (damageable != null && hitCollider.gameObject != gameObject && !hitTargets[currentAttackId].Contains(damageable))
                 {
                     hitTargets[currentAttackId].Add(damageable);
-                    ProcessHit(damageable, attackPoint.position, characterController.rightWeapon);
+                    ProcessHit(damageable, attackPoint.position, currentWeapon);
                 }
             }
         }
@@ -116,10 +123,25 @@ public class MeleeCombatSystem : MonoBehaviour
 
     private void ProcessHit(IDamageable target, Vector3 hitPosition, Weapon weapon)
     {
-        Debug.Log($"ProcessHit called for {target}, weapon: {weapon}");
+        MeleeCombatSystem targetSystem = (target as MonoBehaviour)?.GetComponent<MeleeCombatSystem>();
+        
+        if (targetSystem != null && targetSystem.isInImpactPhase)
+        {
+            // 检查攻击等级和时间
+            if (attackHandler.CurrentAttackLevel < targetSystem.attackHandler.CurrentAttackLevel ||
+                (attackHandler.CurrentAttackLevel == targetSystem.attackHandler.CurrentAttackLevel &&
+                 attackHandler.AttackStartTime > targetSystem.attackHandler.AttackStartTime))
+            {
+                // 我方攻击被打断
+                attackHandler.TryInterruptAttack(targetSystem.attackHandler.CurrentAttackLevel);
+                return;
+            }
+            
+            // 尝试打断对方攻击
+            targetSystem.attackHandler.TryInterruptAttack(attackHandler.CurrentAttackLevel);
+        }
 
         bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
-
         if (isTargetDefending)
         {
             if (Random.value < combatConfig.blockChance)
@@ -129,54 +151,35 @@ public class MeleeCombatSystem : MonoBehaviour
             }
         }
 
-        // float damage = CalculateDamage(weapon);
-        float damage = 0;
-        target.ReceiveHit(hitPosition, damage, combatConfig.toughness);
+        // ApplyKnockback(target as MonoBehaviour);
+        (target as DamageHandler)?.ReceiveHit(hitPosition, attackHandler.CurrentAttackLevel);
     }
 
-    // private float CalculateDamage(Weapon weapon)
-    // {
-    //     MeleeCombatSystemConfig.WeaponData weaponData = combatConfig.GetWeaponData(weapon);
-    //     float baseDamage = combatConfig.baseAttackDamage * weaponData.damageMultiplier;
-    //
-    //     if (Random.value < combatConfig.criticalHitChance)
-    //     {
-    //         baseDamage *= combatConfig.criticalHitMultiplier;
-    //         Debug.Log("Critical hit!");
-    //     }
-    //
-    //     return baseDamage;
-    // }
-
-    private void OnWeaponChanged(Weapon newWeapon)
+    private void ApplyKnockback(MonoBehaviour target)
     {
-        // 根据新武器更新 MeleeCombatSystem 的状态
-        // 例如，更新攻击点、攻击半径等
-        UpdateWeaponProperties(newWeapon);
-    }
+        if (target?.GetComponent<Rigidbody>() is Rigidbody rb)
+        {
+            var knockbackType = attackHandler.CurrentAttackLevel switch
+            {
+                AttackLevel.Light => KnockbackType.Knockback1,
+                AttackLevel.Heavy => KnockbackType.Knockback2,
+                _ => KnockbackType.Knockback1
+            };
 
-    private void UpdateWeaponProperties(Weapon weapon)
-    {
-        // 更新与武器相关的属性
-        // 例如：
-        // attackRadius = weaponManager.GetAttackRadius(weapon);
-        // attackPoints = weaponManager.GetAttackPoints(weapon);
+            Vector3 direction = AnimationData.HitDirection(knockbackType);
+            // float force = combatConfig.GetKnockbackForce(attackHandler.CurrentAttackLevel);
+            // rb.AddForce(direction * force, ForceMode.Impulse);
+        }
     }
 
     private void OnDestroy()
     {
-        // 取消订阅事件
         if (attackHandler != null)
         {
             attackHandler.OnImpactPhaseStart -= StartImpactPhase;
             attackHandler.OnImpactPhaseEnd -= EndImpactPhase;
             attackHandler.OnAttackActionEnd -= EndAttack;
         }
-
-        // 取消订阅武器变化事件
-        // if (characterController != null)
-        // {
-        //     characterController.OnWeaponChanged -= OnWeaponChanged;
-        // }
+        hitTargets.Clear();
     }
 }

@@ -166,4 +166,27 @@ public class WeaponManager : MonoBehaviour
         characterController.rightWeapon = Weapon.Unarmed;
         characterController.leftWeapon = Weapon.Unarmed;
     }
+    
+    public Side GetCurrentWeaponSide()
+    {
+        // 双手武器情况
+        if (characterController.rightWeapon.Is2HandedWeapon())
+        {
+            return Side.None;
+        }
+        
+        // 双持武器情况
+        if (characterController.rightWeapon != Weapon.Unarmed && 
+            characterController.leftWeapon != Weapon.Unarmed)
+        {
+            return Side.Dual;
+        }
+        
+        // 单手武器和空手情况，系统随机或交替使用左右手
+        if (Time.frameCount % 2 == 0)
+        {
+            return Side.Right;
+        }
+        return Side.Left;
+    }
 }

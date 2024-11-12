@@ -264,5 +264,30 @@ namespace RPGCharacterAnims
 
 		public static Vector3 HitDirection(KnockdownType hitType)
 		{ return Vector3.back; }
+
+		private static CombatAnimationConfig combatConfig;
+
+		public static void Initialize(CombatAnimationConfig config)
+		{
+			combatConfig = config;
+		}
+
+		public static AttackAnimationData GetAttackData(AttackAnimationType type)
+		{
+			return combatConfig?.GetAnimationData(type);
+		}
+
+		// 保留原有的方法，但添加新的重载
+		public static float AttackDuration(AttackAnimationType type)
+		{
+			var data = GetAttackData(type);
+			return data?.duration ?? 1f;
+		}
+
+		public static int GetLegacyAnimationNumber(AttackAnimationType type)
+		{
+			var data = GetAttackData(type);
+			return data?.legacyAnimationNumber ?? 1;
+		}
 	}
 }

@@ -22,6 +22,15 @@ public class AttackHandler : Attack
     public Side CurrentAttackSide => currentAttackSide;
     private int currentAttackNumber;
     private bool isAttackInterrupted = false;
+    public bool IsAttackInterrupted => isAttackInterrupted;
+
+    private AttackLevel currentAttackLevel;
+    public AttackLevel CurrentAttackLevel => currentAttackLevel;
+    private float attackStartTime;
+    public float AttackStartTime => attackStartTime;
+
+    private KnockbackType currentKnockbackType;
+    public KnockbackType CurrentKnockbackType => currentKnockbackType;
 
     [Header("Debug")]
     public bool debugMode = true;
@@ -35,6 +44,19 @@ public class AttackHandler : Attack
     public override bool CanStartAction(RPGCharacterController controller)
     {
         return base.CanStartAction(controller) && (currentPhase == AttackPhase.None || currentPhase == AttackPhase.Recovery);
+    }
+
+    protected override void _StartAction(RPGCharacterController controller, AttackContext context)
+    {
+        var attackType = (AttackAnimationType)(context.number - 1);
+        var animData = AnimationData.GetAttackData(attackType);
+        if (animData != null)
+        {
+            currentAttackNumber = animData.legacyAnimationNumber;
+            currentAttackLevel = animData.attackLevel;
+            currentKnockbackType = animData.knockbackType;
+        }
+        base._StartAction(controller, context);
     }
 
     // 这些方法将由动画事件调用
@@ -65,8 +87,9 @@ public class AttackHandler : Attack
 
     public void OnAttackEnd()
     {
-       if (debugMode) Debug.Log($"AttackHandler: Entering Attack end, currentgameobject: {characterController.gameObject.name}");
+        if (debugMode) Debug.Log($"AttackHandler: Entering Attack end, currentgameobject: {characterController.gameObject.name}");
         ResetAttackPhase();
+        ResetInterruptFlag();
         OnAttackActionEnd?.Invoke();
     }
 
@@ -87,19 +110,23 @@ public class AttackHandler : Attack
         isAttackInterrupted = false;
     }
 
-    public bool TryInterruptAttack(float attackerToughness)
+    public bool TryInterruptAttack(AttackLevel attackerLevel)
     {
         switch (currentPhase)
         {
             case AttackPhase.Anticipation:
-                // Anticipation 阶段总是可以被打断
-                if (debugMode) Debug.Log($"TryInterruptAttack: Anticipation, currentgameobject: {characterController.gameObject.name}");
-                ResetAttackPhase();
-                isAttackInterrupted = true;
-                return true;
+                // Anticipation 阶段，根据攻击等级判断
+                if (attackerLevel >= currentAttackLevel)
+                {
+                    if (debugMode) Debug.Log($"TryInterruptAttack: Anticipation, currentgameobject: {characterController.gameObject.name}");
+                    ResetAttackPhase();
+                    isAttackInterrupted = true;
+                    return true;
+                }
+                return false;
             case AttackPhase.Impact:
-                // Impact 阶段根据韧性决定是否可以被打断
-                if (attackerToughness > combatSystemConfig.toughness)
+                // Impact 阶段，只有更高等级攻击可以打断
+                if (attackerLevel > currentAttackLevel)
                 {
                     if (debugMode) Debug.Log($"TryInterruptAttack: Impact, currentgameobject: {characterController.gameObject.name}");
                     ResetAttackPhase();
@@ -116,5 +143,11 @@ public class AttackHandler : Attack
             default:
                 return false;
         }
+    }
+
+    public void StartAttack(AttackLevel level)
+    {
+        currentAttackLevel = level;
+        attackStartTime = Time.time;
     }
 }

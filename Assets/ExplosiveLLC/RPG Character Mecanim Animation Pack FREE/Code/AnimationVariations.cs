@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RPGCharacterAnims.Lookups;
 
 namespace RPGCharacterAnims
@@ -122,5 +123,22 @@ namespace RPGCharacterAnims
 
         public static readonly DualAttack[] DualAttacks =
         { DualAttack.Attack1, DualAttack.Attack2, DualAttack.Attack3 };
+
+        // new add
+        public static readonly Dictionary<AttackLevel, AttackAnimationType[]> TwoHandSwordAttacksByLevel = new()
+        {
+            { AttackLevel.Light, new[] { 
+                AttackAnimationType.TwoHandSword_Light1, 
+                AttackAnimationType.TwoHandSword_Light2
+            }},
+            { AttackLevel.Medium, new[] { 
+                AttackAnimationType.TwoHandSword_Medium1, 
+                AttackAnimationType.TwoHandSword_Medium2
+            }},
+            { AttackLevel.Heavy, new[] { 
+                AttackAnimationType.TwoHandSword_Heavy1
+            }}
+        };
+
     }
 }
