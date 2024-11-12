@@ -39,11 +39,11 @@ namespace RPGCharacterAnims
         
         private void Start()
         {
-	        AttackHandler attackHandler = rpgCharacterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
-	        OnAttackAnticipationStart.AddListener(attackHandler.OnAttackAnticipationStart);
-	        OnAttackImpactStart.AddListener(attackHandler.OnAttackImpactStart);
-	        OnAttackRecoveryStart.AddListener(attackHandler.OnAttackRecoveryStart);
-	        OnAttackEnd.AddListener(attackHandler.OnAttackEnd);
+	        MCS_Attack mcsAttack = rpgCharacterController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
+	        OnAttackAnticipationStart.AddListener(mcsAttack.OnAttackAnticipationStart);
+	        OnAttackImpactStart.AddListener(mcsAttack.OnAttackImpactStart);
+	        OnAttackRecoveryStart.AddListener(mcsAttack.OnAttackRecoveryStart);
+	        OnAttackEnd.AddListener(mcsAttack.OnAttackEnd);
         }
 
         public void Hit() => OnHit.Invoke();

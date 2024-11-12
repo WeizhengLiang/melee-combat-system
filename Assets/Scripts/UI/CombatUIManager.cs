@@ -53,7 +53,7 @@ public class CombatUIManager : MonoBehaviour
 
     private void UpdatePlayerUI()
     {
-        var attackHandler = playerController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+        var attackHandler = playerController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
         if (attackHandler == null) return;
 
         playerAttackPhase.text = $"Attack Phase: {attackHandler.CurrentAttackPhase}";
@@ -74,7 +74,7 @@ public class CombatUIManager : MonoBehaviour
 
     private void UpdateNPCUI()
     {
-        var attackHandler = npcController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+        var attackHandler = npcController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
         if (attackHandler == null) return;
 
         npcAttackPhase.text = $"Attack Phase: {attackHandler.CurrentAttackPhase}";

@@ -9,7 +9,7 @@ public class DamageHandler : MonoBehaviour, IDamageable
 {
     private RPGCharacterController characterController;
     private RPGCharacterMovementController movementController;
-    private AttackHandler attackHandler;
+    private MCS_Attack mcsAttack;
 
     private void Awake()
     {
@@ -19,16 +19,16 @@ public class DamageHandler : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+        mcsAttack = characterController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
     }
 
     public void ReceiveHit(Vector3 hitPosition, AttackLevel attackerLevel)
     {
-        if (attackHandler == null) return;
+        if (mcsAttack == null) return;
 
         // 只在非攻击状态或攻击被打断时处理击退
-        if (attackHandler.CurrentAttackPhase == AttackHandler.AttackPhase.None || 
-            attackHandler.IsAttackInterrupted)
+        if (mcsAttack.CurrentAttackPhase == MCS_Attack.AttackPhase.None || 
+            mcsAttack.IsAttackInterrupted)
         {
             ProcessHitReaction(hitPosition, attackerLevel);
         }

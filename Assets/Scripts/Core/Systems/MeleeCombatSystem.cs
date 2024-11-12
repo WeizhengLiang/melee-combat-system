@@ -10,7 +10,7 @@ public class MeleeCombatSystem : MonoBehaviour
     public MeleeCombatSystemConfig combatConfig;
     private RPGCharacterController characterController;
     private RPGCharacterWeaponController weaponController;
-    private AttackHandler attackHandler;
+    private MCS_Attack mcsAttack;
     private WeaponManager weaponManager;
     public CombatAnimationConfig animationConfig;
 
@@ -24,9 +24,9 @@ public class MeleeCombatSystem : MonoBehaviour
         characterController = GetComponent<RPGCharacterController>();
         weaponController = GetComponent<RPGCharacterWeaponController>();
         weaponManager = GetComponent<WeaponManager>();
-        attackHandler = characterController.GetHandler(HandlerTypes.Attack) as AttackHandler;
+        mcsAttack = characterController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
 
-        if (attackHandler == null)
+        if (mcsAttack == null)
         {
             Debug.LogError("AttackHandler not found in RPGCharacterController");
             return;
@@ -41,16 +41,16 @@ public class MeleeCombatSystem : MonoBehaviour
             Debug.LogError("Combat Animation Config is not assigned in MeleeCombatSystem");
         }
 
-        attackHandler.OnImpactPhaseStart += StartImpactPhase;
-        attackHandler.OnImpactPhaseEnd += EndImpactPhase;
-        attackHandler.OnAttackActionEnd += EndAttack;
+        mcsAttack.OnImpactPhaseStart += StartImpactPhase;
+        mcsAttack.OnImpactPhaseEnd += EndImpactPhase;
+        mcsAttack.OnAttackActionEnd += EndMcsAttack;
     }
 
     private void Update()
     {
         if (isInImpactPhase)
         {
-            DetectHit(attackHandler.CurrentAttackSide);
+            DetectHit(mcsAttack.CurrentAttackSide);
         }
     }
 
@@ -63,7 +63,7 @@ public class MeleeCombatSystem : MonoBehaviour
 
             characterController.StartAction(HandlerTypes.Attack, 
                 new AttackContext(HandlerTypes.Attack, currentSide, attackNumber, level));
-            attackHandler.StartAttack(level);
+            mcsAttack.StartAttack(level);
         }
     }
 
@@ -88,7 +88,7 @@ public class MeleeCombatSystem : MonoBehaviour
         isInImpactPhase = false;
     }
 
-    private void EndAttack()
+    private void EndMcsAttack()
     {
         Debug.Log($"EndAttack called, currentAttackId: {currentAttackId}, hitTargets count: {hitTargets.Count}");
         hitTargets.Remove(currentAttackId);
@@ -128,17 +128,17 @@ public class MeleeCombatSystem : MonoBehaviour
         if (targetSystem != null && targetSystem.isInImpactPhase)
         {
             // 检查攻击等级和时间
-            if (attackHandler.CurrentAttackLevel < targetSystem.attackHandler.CurrentAttackLevel ||
-                (attackHandler.CurrentAttackLevel == targetSystem.attackHandler.CurrentAttackLevel &&
-                 attackHandler.AttackStartTime > targetSystem.attackHandler.AttackStartTime))
+            if (mcsAttack.CurrentAttackLevel < targetSystem.mcsAttack.CurrentAttackLevel ||
+                (mcsAttack.CurrentAttackLevel == targetSystem.mcsAttack.CurrentAttackLevel &&
+                 mcsAttack.AttackStartTime > targetSystem.mcsAttack.AttackStartTime))
             {
                 // 我方攻击被打断
-                attackHandler.TryInterruptAttack(targetSystem.attackHandler.CurrentAttackLevel);
+                mcsAttack.TryInterruptAttack(targetSystem.mcsAttack.CurrentAttackLevel);
                 return;
             }
             
             // 尝试打断对方攻击
-            targetSystem.attackHandler.TryInterruptAttack(attackHandler.CurrentAttackLevel);
+            targetSystem.mcsAttack.TryInterruptAttack(mcsAttack.CurrentAttackLevel);
         }
 
         bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
@@ -152,14 +152,14 @@ public class MeleeCombatSystem : MonoBehaviour
         }
 
         // ApplyKnockback(target as MonoBehaviour);
-        (target as DamageHandler)?.ReceiveHit(hitPosition, attackHandler.CurrentAttackLevel);
+        (target as DamageHandler)?.ReceiveHit(hitPosition, mcsAttack.CurrentAttackLevel);
     }
 
     private void ApplyKnockback(MonoBehaviour target)
     {
         if (target?.GetComponent<Rigidbody>() is Rigidbody rb)
         {
-            var knockbackType = attackHandler.CurrentAttackLevel switch
+            var knockbackType = mcsAttack.CurrentAttackLevel switch
             {
                 AttackLevel.Light => KnockbackType.Knockback1,
                 AttackLevel.Heavy => KnockbackType.Knockback2,
@@ -174,11 +174,11 @@ public class MeleeCombatSystem : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (attackHandler != null)
+        if (mcsAttack != null)
         {
-            attackHandler.OnImpactPhaseStart -= StartImpactPhase;
-            attackHandler.OnImpactPhaseEnd -= EndImpactPhase;
-            attackHandler.OnAttackActionEnd -= EndAttack;
+            mcsAttack.OnImpactPhaseStart -= StartImpactPhase;
+            mcsAttack.OnImpactPhaseEnd -= EndImpactPhase;
+            mcsAttack.OnAttackActionEnd -= EndMcsAttack;
         }
         hitTargets.Clear();
     }

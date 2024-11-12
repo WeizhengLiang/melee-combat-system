@@ -5,17 +5,32 @@ using RPGCharacterAnims.Actions;
 using RPGCharacterAnims.Lookups;
 using UnityEngine;
 
-public class AttackHandler : Attack
+/// <summary>
+/// Handles the character's attack states, phase transitions, and interruption logic.
+/// Inherits from base Attack class to implement specific attack behaviors and state management.
+/// </summary>
+public class MCS_Attack : Attack
 {
+    /// <summary>
+    /// Defines the phases of an attack action:
+    /// None: Not in attack state
+    /// Anticipation: Preparation phase, can be interrupted by equal or higher level attacks
+    /// Impact: Strike phase, can only be interrupted by higher level attacks
+    /// Recovery: End phase, can be interrupted by any attack
+    /// </summary>
     public enum AttackPhase { None, Anticipation, Impact, Recovery }
 
     private RPGCharacterController characterController;
     private MeleeCombatSystemConfig combatSystemConfig;
 
-    public event Action OnImpactPhaseStart;
-    public event Action OnImpactPhaseEnd;
-    public event Action OnAttackActionEnd;
+    /// <summary>
+    /// Events for notifying other systems about attack state changes
+    /// </summary>
+    public event Action OnImpactPhaseStart;  // Triggered when entering impact phase
+    public event Action OnImpactPhaseEnd;    // Triggered when exiting impact phase
+    public event Action OnAttackActionEnd;   // Triggered when attack action completes
 
+    // Attack state properties
     private AttackPhase currentPhase = AttackPhase.None;
     public AttackPhase CurrentAttackPhase => currentPhase;
     private Side currentAttackSide;
@@ -24,9 +39,12 @@ public class AttackHandler : Attack
     private bool isAttackInterrupted = false;
     public bool IsAttackInterrupted => isAttackInterrupted;
 
+    /// <summary>
+    /// Attack level properties: Used for determining attack priority and interruption logic
+    /// </summary>
     private AttackLevel currentAttackLevel;
     public AttackLevel CurrentAttackLevel => currentAttackLevel;
-    private float attackStartTime;
+    private float attackStartTime;           // Records attack start time for handling same-level attack priority
     public float AttackStartTime => attackStartTime;
 
     private KnockbackType currentKnockbackType;
@@ -35,17 +53,30 @@ public class AttackHandler : Attack
     [Header("Debug")]
     public bool debugMode = true;
 
-    public AttackHandler(RPGCharacterController controller, MeleeCombatSystemConfig combatConfig)
+    /// <summary>
+    /// Constructor: Initializes the attack handler with required dependencies
+    /// </summary>
+    /// <param name="controller">Reference to the character controller</param>
+    /// <param name="combatConfig">Combat system configuration</param>
+    public MCS_Attack(RPGCharacterController controller, MeleeCombatSystemConfig combatConfig)
     {
         characterController = controller;
         combatSystemConfig = combatConfig;
     }
 
+    /// <summary>
+    /// Checks if a new attack action can be started
+    /// Conditions: Base class allows attack AND (No current attack OR In recovery phase)
+    /// </summary>
     public override bool CanStartAction(RPGCharacterController controller)
     {
         return base.CanStartAction(controller) && (currentPhase == AttackPhase.None || currentPhase == AttackPhase.Recovery);
     }
 
+    /// <summary>
+    /// Internal implementation of attack action start
+    /// Sets up animation data and related properties
+    /// </summary>
     protected override void _StartAction(RPGCharacterController controller, AttackContext context)
     {
         var attackType = (AttackAnimationType)(context.number - 1);
@@ -59,13 +90,22 @@ public class AttackHandler : Attack
         base._StartAction(controller, context);
     }
 
-    // 这些方法将由动画事件调用
+    // The following methods are called by animation events to manage attack phases
+
+    /// <summary>
+    /// Called when entering anticipation phase
+    /// This phase can be interrupted by equal or higher level attacks
+    /// </summary>
     public void OnAttackAnticipationStart()
     {
         currentPhase = AttackPhase.Anticipation;
         if (debugMode) Debug.Log($"AttackHandler: Entering Anticipation phase, currentgameobject: {characterController.gameObject.name}");
     }
 
+    /// <summary>
+    /// Called when entering impact phase
+    /// Skips if attack was interrupted
+    /// </summary>
     public void OnAttackImpactStart()
     {
         if (isAttackInterrupted)
@@ -78,6 +118,10 @@ public class AttackHandler : Attack
         OnImpactPhaseStart?.Invoke();
     }
 
+    /// <summary>
+    /// Called when entering recovery phase
+    /// This phase can be interrupted by any attack
+    /// </summary>
     public void OnAttackRecoveryStart()
     {
         currentPhase = AttackPhase.Recovery;
@@ -109,13 +153,17 @@ public class AttackHandler : Attack
     {
         isAttackInterrupted = false;
     }
-
+    /// <summary>
+    /// Attempts to interrupt the current attack based on phase and attacker level
+    /// </summary>
+    /// <param name="attackerLevel">The level of the incoming attack</param>
+    /// <returns>True if attack was successfully interrupted</returns>
     public bool TryInterruptAttack(AttackLevel attackerLevel)
     {
         switch (currentPhase)
         {
             case AttackPhase.Anticipation:
-                // Anticipation 阶段，根据攻击等级判断
+                // In anticipation phase, can be interrupted by equal or higher level attacks
                 if (attackerLevel >= currentAttackLevel)
                 {
                     if (debugMode) Debug.Log($"TryInterruptAttack: Anticipation, currentgameobject: {characterController.gameObject.name}");
@@ -125,7 +173,7 @@ public class AttackHandler : Attack
                 }
                 return false;
             case AttackPhase.Impact:
-                // Impact 阶段，只有更高等级攻击可以打断
+                // In impact phase, can only be interrupted by higher level attacks
                 if (attackerLevel > currentAttackLevel)
                 {
                     if (debugMode) Debug.Log($"TryInterruptAttack: Impact, currentgameobject: {characterController.gameObject.name}");
@@ -135,7 +183,7 @@ public class AttackHandler : Attack
                 }
                 return false;
             case AttackPhase.Recovery:
-                // Recovery 阶段可以被打断
+                // Recovery phase can be interrupted by any attack
                 if (debugMode) Debug.Log($"TryInterruptAttack: Recovery, currentgameobject: {characterController.gameObject.name}");
                 ResetAttackPhase();
                 isAttackInterrupted = true;
