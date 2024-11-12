@@ -71,17 +71,17 @@ namespace RPGCharacterAnims
             var animatorEvents = animator.gameObject.GetComponent<RPGCharacterAnimatorEvents>();
             animatorEvents.OnWeaponSwitch.AddListener(WeaponSwitch);
 
-            // Hide all weapons when the swim action begins.
-            var swimHandler = rpgCharacterController.GetHandler(HandlerTypes.Swim);
-            swimHandler.AddStartListener(HideAllWeapons);
-
-			// Hide all weapons when the Crawl action begins.
-			var crawlHandler = rpgCharacterController.GetHandler(HandlerTypes.Crawl);
-			crawlHandler.AddStartListener(HideAllWeapons);
-
-			// Hide all weapons when the ClimbLadder action begins.
-			var climbLadderHandler = rpgCharacterController.GetHandler(HandlerTypes.ClimbLadder);
-			climbLadderHandler.AddStartListener(HideAllWeapons);
+   //          // Hide all weapons when the swim action begins.
+   //          var swimHandler = rpgCharacterController.GetHandler(HandlerTypes.Swim);
+   //          swimHandler.AddStartListener(HideAllWeapons);
+   //
+			// // Hide all weapons when the Crawl action begins.
+			// var crawlHandler = rpgCharacterController.GetHandler(HandlerTypes.Crawl);
+			// crawlHandler.AddStartListener(HideAllWeapons);
+   //
+			// // Hide all weapons when the ClimbLadder action begins.
+			// var climbLadderHandler = rpgCharacterController.GetHandler(HandlerTypes.ClimbLadder);
+			// climbLadderHandler.AddStartListener(HideAllWeapons);
 		}
 
         /// <summary>

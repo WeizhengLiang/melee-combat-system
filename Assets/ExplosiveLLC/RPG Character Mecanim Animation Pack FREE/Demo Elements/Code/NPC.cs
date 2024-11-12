@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 using RPGCharacterAnims.Lookups;
+using Random = UnityEngine.Random;
 
 namespace RPGCharacterAnims
 {
@@ -16,6 +18,22 @@ namespace RPGCharacterAnims
 		{
             rpgCharacterController = GetComponent<RPGCharacterController>();
             rpgNavigationController = GetComponent<RPGCharacterNavigationController>();
+		}
+
+	    void Start()
+		{
+			if (rpgCharacterController.target == null)
+			{
+				var superCharacter = FindObjectOfType<SuperCharacterController>();
+				if (superCharacter != null)
+				{
+					rpgCharacterController.target = superCharacter.transform;
+				}
+				else
+				{
+					rpgCharacterController.target = transform;
+				}
+			}
 		}
 
 		private void Update()

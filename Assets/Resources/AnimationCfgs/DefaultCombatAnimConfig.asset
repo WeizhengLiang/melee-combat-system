@@ -17,24 +17,24 @@ MonoBehaviour:
     attackLevel: 0
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 1
+    legacyAnimationNumber: 5
   - animationType: 1
     attackLevel: 0
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 2
+    legacyAnimationNumber: 7
   - animationType: 2
     attackLevel: 1
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 3
+    legacyAnimationNumber: 1
   - animationType: 3
     attackLevel: 1
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 4
+    legacyAnimationNumber: 2
   - animationType: 4
     attackLevel: 2
     knockbackType: 2
     duration: 1
-    legacyAnimationNumber: 5
+    legacyAnimationNumber: 8
