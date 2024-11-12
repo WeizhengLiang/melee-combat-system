@@ -887,6 +887,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100004, guid: c4d040df785664db69f1087e2aa47d10, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1414319394}
+    - targetCorrespondingSourceObject: {fileID: 100004, guid: c4d040df785664db69f1087e2aa47d10, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1414319405}
+    - targetCorrespondingSourceObject: {fileID: 100004, guid: c4d040df785664db69f1087e2aa47d10, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1414319406}
   m_SourcePrefab: {fileID: 100100000, guid: c4d040df785664db69f1087e2aa47d10, type: 3}
 --- !u!1 &517420276
 GameObject:
@@ -2927,6 +2933,86 @@ MonoBehaviour:
   isTalking: 0
   rightWeapon: 0
   leftWeapon: 0
+--- !u!114 &1414319405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414319393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22f8445ce871a9b46b22d4812ecda9b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockbackMultiplier: 1
+  movementAnimationMultiplier: 1
+  currentVelocity: {x: 0, y: 0, z: 0}
+  walkSpeed: 0.5
+  walkAccel: 15
+  runSpeed: 1
+  runAccel: 30
+  sprintSpeed: 2
+  sprintAccel: 15
+  crouchSpeed: 0.25
+  crouchAccel: 15
+  crawlSpeed: 0.15
+  crawlAccel: 15
+  injuredSpeed: 0.675
+  injuredAccel: 20
+  groundFriction: 120
+  rotationSpeed: 100
+  canJump: 0
+  holdingJump: 0
+  canDoubleJump: 0
+  jumpSpeed: 12
+  jumpGravity: 24
+  allowDoubleJump: 1
+  doubleJumpSpeed: 8
+  inAirSpeed: 8
+  inAirAccel: 16
+  fallGravity: 32
+  fallingControl: 0
+  swimSpeed: 4
+  swimAccel: 4
+  strokeSpeed: 6
+  waterFriction: 5
+  debugMessages: 0
+--- !u!114 &1414319406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414319393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 294f215f6a448ab4d8564c41fa2e0502, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugMove: {x: 0, y: 0, z: 0}
+  triggerInteraction: 0
+  fixedTimeStep: 0
+  fixedUpdatesPerSecond: 0
+  clampToMovingGround: 1
+  debugSpheres: 1
+  debugGrounding: 1
+  debugPushbackMesssages: 1
+  spheres:
+  - offset: 0.5
+    isFeet: 1
+    isHead: 0
+  - offset: 1
+    isFeet: 0
+    isHead: 0
+  - offset: 1.5
+    isFeet: 0
+    isHead: 1
+  Walkable:
+    serializedVersion: 2
+    m_Bits: 512
+  ownCollider: {fileID: 0}
+  radius: 0.5
 --- !u!1 &1429688497
 GameObject:
   m_ObjectHideFlags: 0
