@@ -58,10 +58,9 @@ public class MCS_Attack : Attack
     /// </summary>
     /// <param name="controller">Reference to the character controller</param>
     /// <param name="combatConfig">Combat system configuration</param>
-    public MCS_Attack(RPGCharacterController controller, MeleeCombatSystemConfig combatConfig)
+    public MCS_Attack(RPGCharacterController controller)
     {
         characterController = controller;
-        combatSystemConfig = combatConfig;
     }
 
     /// <summary>

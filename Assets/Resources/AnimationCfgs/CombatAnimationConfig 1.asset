@@ -10,31 +10,56 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b196b3a6fcd442959115564b1a1888e, type: 3}
-  m_Name: DefaultCombatAnimConfig
+  m_Name: CombatAnimationConfig 1
   m_EditorClassIdentifier: 
   attackAnimations:
   - animationType: 0
     attackLevel: 0
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 5
+    legacyAnimationNumber: 1
   - animationType: 1
     attackLevel: 0
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 7
+    legacyAnimationNumber: 2
   - animationType: 2
     attackLevel: 1
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 1
+    legacyAnimationNumber: 3
   - animationType: 3
     attackLevel: 1
     knockbackType: 1
     duration: 1
-    legacyAnimationNumber: 2
+    legacyAnimationNumber: 4
   - animationType: 4
     attackLevel: 2
     knockbackType: 2
     duration: 1
+    legacyAnimationNumber: 5
+  - animationType: 5
+    attackLevel: 0
+    knockbackType: 1
+    duration: 1
+    legacyAnimationNumber: 6
+  - animationType: 6
+    attackLevel: 0
+    knockbackType: 1
+    duration: 1
+    legacyAnimationNumber: 7
+  - animationType: 7
+    attackLevel: 1
+    knockbackType: 1
+    duration: 1
     legacyAnimationNumber: 8
+  - animationType: 8
+    attackLevel: 1
+    knockbackType: 1
+    duration: 1
+    legacyAnimationNumber: 9
+  - animationType: 9
+    attackLevel: 2
+    knockbackType: 2
+    duration: 1
+    legacyAnimationNumber: 10

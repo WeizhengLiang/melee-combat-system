@@ -1,6 +1,7 @@
 using RPGCharacterAnims.Extensions;
 using RPGCharacterAnims.Lookups;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace RPGCharacterAnims
 {
@@ -289,5 +290,22 @@ namespace RPGCharacterAnims
 			var data = GetAttackData(type);
 			return data?.legacyAnimationNumber ?? 1;
 		}
+
+		private static readonly Dictionary<AttackAnimationType, int> LegacyAnimationNumbers = new()
+		{
+			// 双手剑攻击动画编号
+			{ AttackAnimationType.TwoHandSword_Light1, 101 },
+			{ AttackAnimationType.TwoHandSword_Light2, 102 },
+			{ AttackAnimationType.TwoHandSword_Medium1, 103 },
+			{ AttackAnimationType.TwoHandSword_Medium2, 104 },
+			{ AttackAnimationType.TwoHandSword_Heavy1, 105 },
+			
+			// 空手攻击动画编号
+			{ AttackAnimationType.Unarmed_Light1, 201 },
+			{ AttackAnimationType.Unarmed_Light2, 202 },
+			{ AttackAnimationType.Unarmed_Medium1, 203 },
+			{ AttackAnimationType.Unarmed_Medium2, 204 },
+			{ AttackAnimationType.Unarmed_Heavy1, 205 }
+		};
 	}
 }

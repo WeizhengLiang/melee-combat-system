@@ -115,23 +115,49 @@ public class MeleeCombatInput : MonoBehaviour
 
     private AttackAnimationType GetAttackTypeFromCombo(int combo, AttackLevel level)
     {
-        return level switch
+        // 获取当前武器类型
+        Weapon currentWeapon = characterController.rightWeapon;
+        
+        if (currentWeapon == Weapon.TwoHandSword)
         {
-            AttackLevel.Light => combo switch
+            return level switch
             {
-                0 => AttackAnimationType.TwoHandSword_Light1,
-                1 => AttackAnimationType.TwoHandSword_Light2,
+                AttackLevel.Light => combo switch
+                {
+                    0 => AttackAnimationType.TwoHandSword_Light1,
+                    1 => AttackAnimationType.TwoHandSword_Light2,
+                    _ => AttackAnimationType.TwoHandSword_Light1
+                },
+                AttackLevel.Medium => combo switch
+                {
+                    0 => AttackAnimationType.TwoHandSword_Medium1,
+                    1 => AttackAnimationType.TwoHandSword_Medium2,
+                    _ => AttackAnimationType.TwoHandSword_Medium1
+                },
+                AttackLevel.Heavy => AttackAnimationType.TwoHandSword_Heavy1,
                 _ => AttackAnimationType.TwoHandSword_Light1
-            },
-            AttackLevel.Medium => combo switch
+            };
+        }
+        else // 空手攻击
+        {
+            return level switch
             {
-                0 => AttackAnimationType.TwoHandSword_Medium1,
-                1 => AttackAnimationType.TwoHandSword_Medium2,
-                _ => AttackAnimationType.TwoHandSword_Medium1
-            },
-            AttackLevel.Heavy => AttackAnimationType.TwoHandSword_Heavy1,
-            _ => AttackAnimationType.TwoHandSword_Light1
-        };
+                AttackLevel.Light => combo switch
+                {
+                    0 => AttackAnimationType.Unarmed_Light1,
+                    1 => AttackAnimationType.Unarmed_Light2,
+                    _ => AttackAnimationType.Unarmed_Light1
+                },
+                AttackLevel.Medium => combo switch
+                {
+                    0 => AttackAnimationType.Unarmed_Medium1,
+                    1 => AttackAnimationType.Unarmed_Medium2,
+                    _ => AttackAnimationType.Unarmed_Medium1
+                },
+                AttackLevel.Heavy => AttackAnimationType.Unarmed_Heavy1,
+                _ => AttackAnimationType.Unarmed_Light1
+            };
+        }
     }
 
     private AttackLevel GetAttackLevelFromCombo(int combo)

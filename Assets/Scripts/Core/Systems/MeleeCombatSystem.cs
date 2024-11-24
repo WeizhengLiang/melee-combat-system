@@ -7,7 +7,7 @@ using System.Linq;
 
 public class MeleeCombatSystem : MonoBehaviour
 {
-    public MeleeCombatSystemConfig combatConfig;
+    // public MeleeCombatSystemConfig combatConfig;
     private RPGCharacterController characterController;
     private RPGCharacterWeaponController weaponController;
     private MCS_Attack mcsAttack;
@@ -144,11 +144,11 @@ public class MeleeCombatSystem : MonoBehaviour
         bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
         if (isTargetDefending)
         {
-            if (Random.value < combatConfig.blockChance)
-            {
+            // if (Random.value < combatConfig.blockChance)
+            // {
                 Debug.Log("Hit blocked!");
                 return;
-            }
+            // }
         }
 
         // ApplyKnockback(target as MonoBehaviour);

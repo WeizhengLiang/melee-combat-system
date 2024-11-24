@@ -418,7 +418,7 @@ namespace RPGCharacterAnims
 
             SetHandler(HandlerTypes.Aim, new SimpleActionHandler(() => { }, StopAim));
             // SetHandler(HandlerTypes.Attack, new Attack());
-            SetHandler(HandlerTypes.Attack, new MCS_Attack(this, GetComponent<MeleeCombatSystem>().combatConfig));
+            SetHandler(HandlerTypes.Attack, new MCS_Attack(this));
             SetHandler(HandlerTypes.Block, new SimpleActionHandler(StartBlock, EndBlock));
             SetHandler(HandlerTypes.Cast, new Cast());
             SetHandler(HandlerTypes.AttackCast, new AttackCast());

@@ -8,6 +8,7 @@ using RPGCharacterAnims.Lookups;
 public class CombatAnimationConfigEditor : Editor
 {
     private bool showTwoHandSwordAttacks = true;
+    private bool showUnarmedAttacks = true;
 
     public override void OnInspectorGUI()
     {
@@ -20,12 +21,25 @@ public class CombatAnimationConfigEditor : Editor
         }
 
         EditorGUILayout.Space(10);
+        
+        // 双手剑攻击配置
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
             showTwoHandSwordAttacks = EditorGUILayout.Foldout(showTwoHandSwordAttacks, "Two-Hand Sword Attacks", true);
             if (showTwoHandSwordAttacks)
             {
                 DrawAttackGroup(AttackAnimationType.TwoHandSword_Light1, AttackAnimationType.TwoHandSword_Heavy1);
+            }
+        }
+
+        // 空手攻击配置
+        EditorGUILayout.Space(5);
+        using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+        {
+            showUnarmedAttacks = EditorGUILayout.Foldout(showUnarmedAttacks, "Unarmed Attacks", true);
+            if (showUnarmedAttacks)
+            {
+                DrawAttackGroup(AttackAnimationType.Unarmed_Light1, AttackAnimationType.Unarmed_Heavy1);
             }
         }
 
