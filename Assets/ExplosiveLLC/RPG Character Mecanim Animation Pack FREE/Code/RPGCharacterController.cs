@@ -70,7 +70,6 @@ namespace RPGCharacterAnims
 		/// </summary>
 		public Transform target;
 
-        private PerfectLookAt headLookController;
 
 		#endregion
 
@@ -410,9 +409,6 @@ namespace RPGCharacterAnims
 			mainCamera = Camera.main;
 			if (!mainCamera) { Debug.LogError("ERROR: No Main Camera found."); }
 
-			// Find HeadLookController if applied.
-			headLookController = GetComponent<PerfectLookAt>();
-
 			// Setup IKhands if used.
             ikHands = GetComponentInChildren<IKHands>();
 
@@ -438,9 +434,6 @@ namespace RPGCharacterAnims
             SetHandler(HandlerTypes.Sprint, new SimpleActionHandler(StartSprint, EndSprint));
             SetHandler(HandlerTypes.Strafe, new SimpleActionHandler(StartStrafe, EndStrafe));
             SetHandler(HandlerTypes.Turn, new Turn());
-
-            OnLockActions += LockHeadlook;
-            OnUnlockActions += UnlockHeadlook;
 
             // Unlock actions and movement.
             Unlock(true, true);
@@ -624,23 +617,6 @@ namespace RPGCharacterAnims
         /// <param name="_bowPull">Float between 0-1.</param>
         public void SetBowPull(float _bowPull)
         { this._bowPull = _bowPull; }
-
-        #endregion
-
-        #region Toggles
-
-        /// <summary>
-        /// Toggles headlook on and off.
-        /// </summary>
-        public void ToggleHeadlook()
-        {
-			if (headLookController) {
-				if (!headLook) { headLookController.EnablePerfectLookat(0.1f); }
-				else { headLookController.DisablePerfectLookat(0.1f); }
-				headLook = !headLook;
-				_isHeadlook = headLook;
-			}
-		}
 
         #endregion
 
@@ -1363,29 +1339,7 @@ namespace RPGCharacterAnims
 		private float CurrentAnimationLength(int animationlayer)
 		{ return animator.GetCurrentAnimatorClipInfo(animationlayer).Length; }
 
-        /// <summary>
-        /// Stop character from looking at target.
-        /// </summary>
-        private void LockHeadlook()
-        {
-			if (headLook) {
-				_isHeadlook = false;
-				if (headLookController && headLook) { headLookController.DisablePerfectLookat(0.1f); }
-			}
-		}
-
-        /// <summary>
-        /// Make character look at target.
-        /// </summary>
-        private void UnlockHeadlook()
-        {
-            if (headLook) {
-				_isHeadlook = true;
-				if (headLookController) { headLookController.EnablePerfectLookat(0.1f); }
-			}
-        }
-
-        /// <summary>
+		/// <summary>
         /// Lock character movement and/or action, on a delay for a set time.
         /// </summary>
         /// <param name="lockMovement">If set to <c>true</c> lock movement.</param>

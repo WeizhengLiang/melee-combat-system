@@ -130,10 +130,6 @@ namespace RPGCharacterAnims
 				inputSwitchRight = rpgInputs.RPGCharacter.WeaponRight.WasPressedThisFrame();
 				inputSwitchUp = rpgInputs.RPGCharacter.WeaponUp.WasPressedThisFrame();
 
-                // Headlook toggle.
-                if (rpgInputs.RPGCharacter.ToggleHeadLook.IsPressed())
-				{ rpgCharacterController.ToggleHeadlook(); }
-
 				// Injury toggle.
 				if (rpgInputs.RPGCharacter.ToggleInjury.IsPressed()) {
                     if (rpgCharacterController.CanStartAction("Injure"))

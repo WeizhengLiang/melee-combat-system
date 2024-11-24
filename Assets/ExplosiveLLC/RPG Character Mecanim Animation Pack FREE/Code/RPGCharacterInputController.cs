@@ -119,8 +119,6 @@ namespace RPGCharacterAnims
 						{ rpgCharacterController.TryEndAction(HandlerTypes.Injure); }
 			        }
 		        }
-		        // Headlook toggle.
-		        if (Input.GetKeyDown(KeyCode.L)) { rpgCharacterController.ToggleHeadlook(); }
 
 		        // Slow time toggle.
 		        if (rpgCharacterController.HandlerExists(HandlerTypes.SlowTime)) {
