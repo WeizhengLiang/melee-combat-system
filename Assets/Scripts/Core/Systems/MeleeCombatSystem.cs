@@ -4,6 +4,7 @@ using RPGCharacterAnims.Lookups;
 using RPGCharacterAnims.Actions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class MeleeCombatSystem : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class MeleeCombatSystem : MonoBehaviour
     private Dictionary<int, HashSet<IDamageable>> hitTargets = new Dictionary<int, HashSet<IDamageable>>();
     private bool isBlocking = false;
     public bool IsBlocking => isBlocking;
+
+    private bool isDodging = false;
 
     private void Start()
     {
@@ -88,7 +91,17 @@ public class MeleeCombatSystem : MonoBehaviour
 
     public void PerformDodge()
     {
-        characterController.StartAction("Dodge");
+        if (!characterController.CanStartAction(HandlerTypes.Dodge) || isDodging) return;
+
+        isDodging = true;
+        characterController.Dodge(DodgeType.Backward);
+        StartCoroutine(EndDodgeCoroutine());
+    }
+
+    private IEnumerator EndDodgeCoroutine()
+    {
+        yield return new WaitForSeconds(0.55f);
+        isDodging = false;
     }
 
     private void StartImpactPhase()
@@ -141,6 +154,9 @@ public class MeleeCombatSystem : MonoBehaviour
         
         if (targetSystem != null)
         {
+            // 如果目标正在闪避，攻击无效
+            if (targetSystem.isDodging) return;
+
             // 如果目标正在格挡
             if (targetSystem.IsBlocking)
             {

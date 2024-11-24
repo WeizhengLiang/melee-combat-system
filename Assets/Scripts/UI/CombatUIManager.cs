@@ -111,6 +111,13 @@ public class CombatUIManager : MonoBehaviour
                     meleeSystem.PerformBlock();
                 }
                 break;
+            case 3: // Dodge
+                var meleeSys = npcController.GetComponent<MeleeCombatSystem>();
+                if (meleeSys != null)
+                {
+                    meleeSys.PerformDodge();
+                }
+                break;
         }
     }
 
