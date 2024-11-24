@@ -105,7 +105,11 @@ public class CombatUIManager : MonoBehaviour
                 StartCoroutine(PerformNPCAttackCombo());
                 break;
             case 2: // Block
-                npcController.StartAction(HandlerTypes.Block);
+                var meleeSystem = npcController.GetComponent<MeleeCombatSystem>();
+                if (meleeSystem != null)
+                {
+                    meleeSystem.PerformBlock();
+                }
                 break;
         }
     }
@@ -135,10 +139,31 @@ public class CombatUIManager : MonoBehaviour
             yield return new WaitForSeconds(1f); // 等待武器切换完成
         }
 
+        int comboCount = 0;
         while (npcActionDropdown.value == 1)
         {
-            npcController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, Side.Right));
-            yield return new WaitForSeconds(1f); // 等待攻击动画完成
+            var attackType = GetAttackTypeFromCombo(comboCount);
+            var attackData = AnimationData.GetAttackData(attackType);
+            
+            if (attackData != null)
+            {
+                npcController.StartAction(HandlerTypes.Attack, 
+                    new AttackContext(HandlerTypes.Attack, Side.Right, attackData.legacyAnimationNumber, attackData.attackLevel));
+            }
+            
+            comboCount = (comboCount + 1) % 3;
+            yield return new WaitForSeconds(1f);
         }
+    }
+
+    private AttackAnimationType GetAttackTypeFromCombo(int combo)
+    {
+        return combo switch
+        {
+            0 => AttackAnimationType.TwoHandSword_Light1,
+            1 => AttackAnimationType.TwoHandSword_Medium1,
+            2 => AttackAnimationType.TwoHandSword_Heavy1,
+            _ => AttackAnimationType.TwoHandSword_Light1
+        };
     }
 }

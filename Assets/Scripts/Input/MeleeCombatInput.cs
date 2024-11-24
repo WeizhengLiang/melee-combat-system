@@ -59,6 +59,10 @@ public class MeleeCombatInput : MonoBehaviour
         {   
             meleeCombatSystem.PerformBlock();
         }
+        else if (Input.GetKeyUp(KeyCode.K))
+        {
+            meleeCombatSystem.EndBlock();
+        }
         
         if (Input.GetKeyDown(KeyCode.H)) 
         {   

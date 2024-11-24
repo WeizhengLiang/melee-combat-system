@@ -18,6 +18,8 @@ public class MeleeCombatSystem : MonoBehaviour
     private bool isInImpactPhase = false;
     private int currentAttackId = 0;
     private Dictionary<int, HashSet<IDamageable>> hitTargets = new Dictionary<int, HashSet<IDamageable>>();
+    private bool isBlocking = false;
+    public bool IsBlocking => isBlocking;
 
     private void Start()
     {
@@ -69,9 +71,21 @@ public class MeleeCombatSystem : MonoBehaviour
 
     public void PerformBlock()
     {
-        characterController.StartAction("Block");
+        if (!characterController.CanStartAction(HandlerTypes.Block)) return;
+        
+        isBlocking = true;
+        characterController.StartAction(HandlerTypes.Block);
     }
-    
+
+    public void EndBlock()
+    {
+        if (isBlocking)
+        {
+            isBlocking = false;
+            characterController.EndAction(HandlerTypes.Block);
+        }
+    }
+
     public void PerformDodge()
     {
         characterController.StartAction("Dodge");
@@ -125,20 +139,31 @@ public class MeleeCombatSystem : MonoBehaviour
     {
         MeleeCombatSystem targetSystem = (target as MonoBehaviour)?.GetComponent<MeleeCombatSystem>();
         
-        if (targetSystem != null && targetSystem.isInImpactPhase)
+        if (targetSystem != null)
         {
-            // 检查攻击等级和时间
-            if (mcsAttack.CurrentAttackLevel < targetSystem.mcsAttack.CurrentAttackLevel ||
-                (mcsAttack.CurrentAttackLevel == targetSystem.mcsAttack.CurrentAttackLevel &&
-                 mcsAttack.AttackStartTime > targetSystem.mcsAttack.AttackStartTime))
+            // 如果目标正在格挡
+            if (targetSystem.IsBlocking)
             {
-                // 我方攻击被打断
-                mcsAttack.TryInterruptAttack(targetSystem.mcsAttack.CurrentAttackLevel);
+                // 攻击被格挡，打断攻击
+                mcsAttack.TryInterruptAttack(AttackLevel.Heavy);
                 return;
             }
-            
-            // 尝试打断对方攻击
-            targetSystem.mcsAttack.TryInterruptAttack(mcsAttack.CurrentAttackLevel);
+
+            if (targetSystem.isInImpactPhase)
+            {
+                // 检查攻击等级和时间
+                if (mcsAttack.CurrentAttackLevel < targetSystem.mcsAttack.CurrentAttackLevel ||
+                    (mcsAttack.CurrentAttackLevel == targetSystem.mcsAttack.CurrentAttackLevel &&
+                     mcsAttack.AttackStartTime > targetSystem.mcsAttack.AttackStartTime))
+                {
+                    // 我方攻击被打断
+                    mcsAttack.TryInterruptAttack(targetSystem.mcsAttack.CurrentAttackLevel);
+                    return;
+                }
+                
+                // 尝试打断对方攻击
+                targetSystem.mcsAttack.TryInterruptAttack(mcsAttack.CurrentAttackLevel);
+            }
         }
 
         bool isTargetDefending = (target as MonoBehaviour)?.GetComponent<DefenseHandler>()?.IsDefending ?? false;
