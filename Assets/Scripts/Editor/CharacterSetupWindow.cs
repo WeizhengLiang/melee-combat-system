@@ -5,6 +5,9 @@ using System.Linq;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
 
+/// <summary>
+/// Editor window for setting up character prefabs with components and configurations
+/// </summary>
 public class CharacterSetupWindow : EditorWindow
 {
     private enum CharacterType
@@ -57,6 +60,9 @@ public class CharacterSetupWindow : EditorWindow
     private Vector2 scrollPosition;
     private GameObject templateCharacterInstance;
 
+    /// <summary>
+    /// Draws the editor window GUI
+    /// </summary>
     private void OnGUI()
     {
         GUILayout.Label("Character Setup", EditorStyles.boldLabel);
@@ -188,12 +194,15 @@ public class CharacterSetupWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Draws a toggle for a component and handles its state
+    /// </summary>
     private void DrawComponentToggle<T>(string label, ref bool useComponent) where T : Component
     {
         bool hasComponent = templateCharacterInstance.GetComponent<T>() != null;
         EditorGUI.BeginChangeCheck();
         useComponent = EditorGUILayout.Toggle(label, useComponent);
-        if (EditorGUI.EndChangeCheck())
+        if (EditorGUI.EndChangeCheck() && templateCharacterInstance != null)
         {
             if (useComponent && !hasComponent)
             {
@@ -302,109 +311,6 @@ public class CharacterSetupWindow : EditorWindow
         }
     }
 
-    
-// 隐藏数值设计
-    // private void DrawMeleeCombatSystemSettings()
-    // {
-    //     MeleeCombatSystem meleeCombatSystem = templateCharacterInstance.GetComponent<MeleeCombatSystem>();
-    //     if (meleeCombatSystem != null)
-    //     {
-    //         EditorGUILayout.LabelField("Melee Combat System Config", EditorStyles.boldLabel);
-
-    //         // 获取所有的 Combat Config
-    //         string[] guids = AssetDatabase.FindAssets("t:MeleeCombatSystemConfig", new[] { CharacterCombatCfgsPath });
-    //         List<string> configNames = new List<string> { "Please select character combat config" };
-    //         List<MeleeCombatSystemConfig> configs = new List<MeleeCombatSystemConfig>();
-
-    //         foreach (string guid in guids)
-    //         {
-    //             string path = AssetDatabase.GUIDToAssetPath(guid);
-    //             MeleeCombatSystemConfig config = AssetDatabase.LoadAssetAtPath<MeleeCombatSystemConfig>(path);
-    //             configs.Add(config);
-    //             configNames.Add(config.name);
-    //         }
-
-    //         int selectedIndex = combatConfig != null ? configs.IndexOf(combatConfig) + 1 : 0;
-    //         int newSelectedIndex = EditorGUILayout.Popup("Combat Config", selectedIndex, configNames.ToArray());
-
-    //         if (newSelectedIndex != selectedIndex)
-    //         {
-    //             if (newSelectedIndex == 0)
-    //             {
-    //                 combatConfig = null;
-    //             }
-    //             else
-    //             {
-    //                 combatConfig = configs[newSelectedIndex - 1];
-    //             }
-    //             GUI.changed = true;
-    //         }
-
-    //         if (!isCombatConfigEditing)
-    //         {
-    //             if (GUILayout.Button("Create New Config"))
-    //             {
-    //                 string path = EditorUtility.SaveFilePanelInProject("Save Combat Config", "MeleeCombatSystemConfig", "asset", "Please enter a file name to save the config to", CharacterCombatCfgsPath);
-    //                 if (!string.IsNullOrEmpty(path))
-    //                 {
-    //                     combatConfig = CreateInstance<MeleeCombatSystemConfig>();
-    //                     AssetDatabase.CreateAsset(combatConfig, path);
-    //                     AssetDatabase.SaveAssets();
-    //                     GUI.changed = true;
-    //                 }
-    //             }
-    //         }
-
-    //         EditorGUI.BeginDisabledGroup(true);
-    //         EditorGUILayout.ObjectField("Combat Config", combatConfig, typeof(MeleeCombatSystemConfig), false);
-    //         EditorGUI.EndDisabledGroup();
-
-    //         if (!isCombatConfigEditing && selectedIndex != 0)
-    //         {
-    //             if (GUILayout.Button("Edit Config"))
-    //             {
-    //                 isCombatConfigEditing = true;
-    //             }
-    //         }
-
-    //         if (isCombatConfigEditing)
-    //         {
-    //             if (GUILayout.Button("Save Config"))
-    //             {
-    //                 EditorUtility.SetDirty(combatConfig);
-    //                 AssetDatabase.SaveAssets();
-    //                 isCombatConfigEditing = false;
-    //                 GUI.changed = true;
-    //             }
-                
-    //             EditorGUI.BeginDisabledGroup(false);
-    //             combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
-    //             combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
-    //             combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
-    //             combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
-    //             combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
-    //             combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
-    //             combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
-    //             EditorGUI.EndDisabledGroup();
-    //         }
-    //         else
-    //         {
-    //             if (selectedIndex != 0)
-    //             {
-    //                 EditorGUI.BeginDisabledGroup(true);
-    //                 combatConfig.baseAttackDamage = EditorGUILayout.FloatField("Base Attack Damage", combatConfig.baseAttackDamage);
-    //                 combatConfig.baseAttackSpeed = EditorGUILayout.FloatField("Base Attack Speed", combatConfig.baseAttackSpeed);
-    //                 combatConfig.criticalHitChance = EditorGUILayout.FloatField("Critical Hit Chance", combatConfig.criticalHitChance);
-    //                 combatConfig.criticalHitMultiplier = EditorGUILayout.FloatField("Critical Hit Multiplier", combatConfig.criticalHitMultiplier);
-    //                 combatConfig.blockChance = EditorGUILayout.FloatField("Block Chance", combatConfig.blockChance);
-    //                 combatConfig.blockDamageReduction = EditorGUILayout.FloatField("Block Damage Reduction", combatConfig.blockDamageReduction);
-    //                 combatConfig.toughness = EditorGUILayout.FloatField("Toughness", combatConfig.toughness);
-    //                 EditorGUI.EndDisabledGroup();
-    //             }
-                
-    //         }
-    //     }
-    // }
 
     private void DrawRPGCharacterWeaponControllerSettings()
     {
@@ -438,11 +344,7 @@ public class CharacterSetupWindow : EditorWindow
 
         if (selectedSetupMode == SetupMode.Default)
         {
-            // 隐藏数值设计
-            // if (combatConfig == null)
-            // {
-            //     warningMessage += "- Combat Config\n";
-            // }
+
             if (availableWeaponsSO.Count == 0)
             {
                 warningMessage += "- Weapons\n";
@@ -475,13 +377,7 @@ public class CharacterSetupWindow : EditorWindow
             {
                 warningMessage += "- RPG Character Weapon Controller\n";
             }
-            
-            // component information missing
-            // 隐藏数值设计
-            // if (combatConfig == null)
-            // {
-            //     warningMessage += "- Combat Config\n";
-            // }
+
             if (availableWeaponsSO.Count == 0)
             {
                 warningMessage += "- Weapons\n";
@@ -517,11 +413,7 @@ public class CharacterSetupWindow : EditorWindow
                         Transform bone = Utility.FindDeepChild(finalCharacter.transform, attackPoint.boneName);
                         if (bone != null)
                         {
-                            // create attackpoint instances
-                            // GameObject attackPointObj = new GameObject(attackPoint.name);
-                            // attackPointObj.transform.SetParent(bone);
-                            // attackPointObj.transform.localPosition = attackPoint.localPosition;
-                            // attackPointObj.tag = "AttackPoint";
+  
                             
                             // add unarmed attackpoint data to WeaponManager
                             WeaponManager.WeaponData weaponData = new WeaponManager.WeaponData();
@@ -556,16 +448,6 @@ public class CharacterSetupWindow : EditorWindow
                 }
             }
         }
-
-        // 隐藏数值设计
-        // if (useMeleeCombatSystem)
-        // {
-        //     MeleeCombatSystem meleeCombatSystem = finalCharacter.GetComponent<MeleeCombatSystem>();
-        //     if (meleeCombatSystem != null)
-        //     {
-        //         meleeCombatSystem.combatConfig = combatConfig;
-        //     }
-        // }
 
         if (useMeleeCombatSystem)
         {
@@ -614,6 +496,9 @@ public class CharacterSetupWindow : EditorWindow
         templateCharacterInstance.name = "Preview " + selectedCharacterType.ToString();
     }
 
+    /// <summary>
+    /// Applies or removes a component based on the toggle state
+    /// </summary>
     private void ApplyComponentIfNeeded<T>(GameObject target, bool shouldApply) where T : Component
     {
         if (shouldApply)
@@ -633,15 +518,16 @@ public class CharacterSetupWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Clears all setup and resets to default state
+    /// </summary>
     private void ClearAllSetup()
     {
         if (EditorUtility.DisplayDialog("Clear All Setup", "Are you sure you want to clear all setup and start fresh?", "Yes", "No"))
         {
             selectedCharacterType = CharacterType.BuildPlayer;
             selectedSetupMode = SetupMode.Default;
-            // combatConfig = null; 隐藏数值设计
             weaponControllerSettings = null;
-            //isCombatConfigEditing = false; 隐藏数值设计
             availableWeaponsSO.Clear();
 
             useDamageHandler = true;
@@ -691,6 +577,9 @@ public class CharacterSetupWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Destroys the preview instance if it exists
+    /// </summary>
     private void DestroyPreviewInstance()
     {
         if (templateCharacterInstance != null)
@@ -700,6 +589,9 @@ public class CharacterSetupWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Copies components from source to target GameObject
+    /// </summary>
     public static void CopyComponentsToTarget(GameObject source, GameObject target, bool copyTransform = false)
     {
         Component[] sourceComponents = source.GetComponents<Component>();

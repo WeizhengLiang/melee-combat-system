@@ -3,17 +3,26 @@ using UnityEditor;
 using System.IO;
 using System;
 
+/// <summary>
+/// Automatically logs play mode messages to a file for debugging and analysis
+/// </summary>
 [InitializeOnLoad]
 public class PlayModeLogger
 {
     private static string logFilePath = "Assets/PlayModeLog.txt";
     private static StringWriter logWriter;
 
+    /// <summary>
+    /// Initializes the logger and subscribes to play mode state changes
+    /// </summary>
     static PlayModeLogger()
     {
         EditorApplication.playModeStateChanged += LogPlayModeState;
     }
 
+    /// <summary>
+    /// Handles play mode state changes and manages logging accordingly
+    /// </summary>
     private static void LogPlayModeState(PlayModeStateChange state)
     {
         if (state == PlayModeStateChange.EnteredPlayMode)
@@ -26,6 +35,9 @@ public class PlayModeLogger
         }
     }
 
+    /// <summary>
+    /// Starts the logging process when entering play mode
+    /// </summary>
     private static void StartLogging()
     {
         logWriter = new StringWriter();
@@ -33,6 +45,9 @@ public class PlayModeLogger
         Debug.Log("Play Mode started. Logging begins.");
     }
 
+    /// <summary>
+    /// Stops the logging process and saves the log file when exiting play mode
+    /// </summary>
     private static void StopLogging()
     {
         Application.logMessageReceived -= LogCallback;
@@ -42,6 +57,9 @@ public class PlayModeLogger
         Debug.Log("Play Mode ended. Log saved to " + logFilePath);
     }
 
+    /// <summary>
+    /// Callback for handling log messages and writing them to the log file
+    /// </summary>
     private static void LogCallback(string condition, string stackTrace, LogType type)
     {
         logWriter.WriteLine($"[{DateTime.Now}] [{type}] {condition}");
@@ -51,6 +69,9 @@ public class PlayModeLogger
         }
     }
 
+    /// <summary>
+    /// Saves the accumulated log messages to a file
+    /// </summary>
     private static void SaveLogToFile()
     {
         File.WriteAllText(logFilePath, logWriter.ToString());

@@ -3,6 +3,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Editor window for selecting and managing weapons for character setup
+/// </summary>
 public class WeaponSelectionWindow : EditorWindow
 {
     private List<WeaponDataSO> allWeapons = new List<WeaponDataSO>();
@@ -14,6 +17,9 @@ public class WeaponSelectionWindow : EditorWindow
     private Vector2 selectedWeaponsScrollPosition;
     private CharacterSetupWindow parentWindow;
 
+    /// <summary>
+    /// Shows the weapon selection window with a reference to the parent window
+    /// </summary>
     public static void ShowWindow(CharacterSetupWindow parent)
     {
         WeaponSelectionWindow window = GetWindow<WeaponSelectionWindow>("Weapon Selection");
@@ -21,6 +27,9 @@ public class WeaponSelectionWindow : EditorWindow
         window.LoadWeapons();
     }
 
+    /// <summary>
+    /// Loads all weapon configurations from the specified path
+    /// </summary>
     private void LoadWeapons()
     {
         allWeapons.Clear();
@@ -34,6 +43,9 @@ public class WeaponSelectionWindow : EditorWindow
         filteredWeapons = new List<WeaponDataSO>(allWeapons);
     }
 
+    /// <summary>
+    /// Draws the editor window GUI
+    /// </summary>
     private void OnGUI()
     {
         GUILayout.BeginHorizontal();
@@ -101,6 +113,9 @@ public class WeaponSelectionWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Filters weapons based on the search string
+    /// </summary>
     private void FilterWeapons()
     {
         if (string.IsNullOrEmpty(searchString))
@@ -114,18 +129,27 @@ public class WeaponSelectionWindow : EditorWindow
         Repaint();
     }
 
+    /// <summary>
+    /// Clears the search and shows all weapons
+    /// </summary>
     private void ClearSearch()
     {
         searchString = "";
         FilterWeapons();
     }
 
+    /// <summary>
+    /// Clears all selected weapons
+    /// </summary>
     private void ClearAllSelectedWeapons()
     {
         selectedWeapons.Clear();
         Repaint();
     }
 
+    /// <summary>
+    /// Confirms the weapon selection and updates the parent window
+    /// </summary>
     private void ConfirmSelection()
     {
         parentWindow.AddSelectedWeapons(selectedWeapons);

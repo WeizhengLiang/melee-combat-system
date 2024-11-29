@@ -4,6 +4,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// Editor window for managing character models and generating their configurations
+/// </summary>
 public class CharacterModelManager : EditorWindow
 {
     private const string ModelsFolderPath = "Assets/ExplosiveLLC/RPG Character Mecanim Animation Pack FREE/Models/Characters";
@@ -37,9 +40,7 @@ public class CharacterModelManager : EditorWindow
         }
 
         DisplayAttackPointsTable();
-
         GUILayout.Space(10);
-
         DisplayConfigGenerationSection();
 
         if (GUILayout.Button("Generate Unarmed Config"))
@@ -48,6 +49,9 @@ public class CharacterModelManager : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Imports a new model file and creates a copy in the project's model folder
+    /// </summary>
     private void ImportNewModel()
     {
         string modelPath = EditorUtility.OpenFilePanel("Select Character Model", "", "fbx");
@@ -74,6 +78,9 @@ public class CharacterModelManager : EditorWindow
         Debug.Log($"Model imported: {destPath}");
     }
 
+    /// <summary>
+    /// Displays a table showing all attack points in the selected prefab
+    /// </summary>
     private void DisplayAttackPointsTable()
     {
         if (importedPrefab == null) return;
@@ -104,6 +111,9 @@ public class CharacterModelManager : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
+    /// <summary>
+    /// Displays the section for generating attack point configurations
+    /// </summary>
     private void DisplayConfigGenerationSection()
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -115,7 +125,6 @@ public class CharacterModelManager : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         
-        // 左侧：预制体列表
         EditorGUILayout.BeginVertical(GUILayout.Width(position.width / 2));
         string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { PrefabsFolderPath });
         foreach (string guid in prefabGuids)
@@ -144,7 +153,6 @@ public class CharacterModelManager : EditorWindow
         }
         EditorGUILayout.EndVertical();
 
-        // 右侧：配置预览
         EditorGUILayout.BeginVertical(GUILayout.Width(position.width / 2));
         previewScrollPosition = EditorGUILayout.BeginScrollView(previewScrollPosition);
         
@@ -184,6 +192,9 @@ public class CharacterModelManager : EditorWindow
         EditorGUILayout.EndVertical();
     }
 
+    /// <summary>
+    /// Displays the preview of an attack point configuration
+    /// </summary>
     private void DisplayConfigPreview(UnarmedAttackPointsConfig config)
     {
         EditorGUI.indentLevel++;
@@ -198,6 +209,9 @@ public class CharacterModelManager : EditorWindow
         EditorGUI.indentLevel--;
     }
 
+    /// <summary>
+    /// Creates a new unarmed attack point configuration for a prefab
+    /// </summary>
     private UnarmedAttackPointsConfig CreateUnarmedConfigForPrefab(GameObject prefab)
     {
         UnarmedAttackPointsConfig config = ScriptableObject.CreateInstance<UnarmedAttackPointsConfig>();
@@ -208,12 +222,11 @@ public class CharacterModelManager : EditorWindow
         {
             if (child.CompareTag("AttackPoint"))
             {
-                config.attackPoints.Add(new UnarmedAttackPointsConfig.UnarmedAttackPoint
+                config.attackPoints.Add(new UnarmedAttackPointsConfig.AttackPointConfig()
                 {
                     name = child.name,
                     boneName = child.parent.name,
                     localPosition = child.localPosition,
-                    parent = child.parent
                 });
             }
         }
@@ -221,6 +234,9 @@ public class CharacterModelManager : EditorWindow
         return config;
     }
 
+    /// <summary>
+    /// Generates and saves unarmed attack point configurations for selected prefabs
+    /// </summary>
     private void GenerateUnarmedConfig()
     {
         foreach (var kvp in prefabToggles.Where(kvp => kvp.Value))
@@ -241,6 +257,9 @@ public class CharacterModelManager : EditorWindow
         AssetDatabase.Refresh();
     }
 
+    /// <summary>
+    /// Gets a unique name for a new configuration file
+    /// </summary>
     private string GetUniqueConfigName(string defaultName)
     {
         string configName = defaultName;
@@ -248,8 +267,7 @@ public class CharacterModelManager : EditorWindow
         string fullPath = EditorUtility.SaveFilePanel("Save Unarmed Config", ConfigsFolderPath, configName, "asset");
         if (string.IsNullOrEmpty(fullPath))
         {
-            EditorUtility.DisplayDialog("Path Empty", "Path is empty, please select a path", "OK");
-            return null; // User cancelled the operation
+            return null;
         }
 
         configName = Path.GetFileNameWithoutExtension(fullPath);
@@ -261,13 +279,16 @@ public class CharacterModelManager : EditorWindow
                 "A config with this name already exists. Do you want to overwrite it?", 
                 "Yes", "No"))
             {
-                return GetUniqueConfigName(configName); // Recursively call the method to get a new name
+                return GetUniqueConfigName(configName);
             }
         }
 
         return configName;
     }
 
+    /// <summary>
+    /// Gets the full bone hierarchy path for a transform
+    /// </summary>
     private string GetBonePath(Transform bone)
     {
         string path = bone.name;

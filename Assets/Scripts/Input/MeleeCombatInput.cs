@@ -3,8 +3,14 @@ using RPGCharacterAnims;
 using RPGCharacterAnims.Actions;
 using RPGCharacterAnims.Lookups;
 
+/// <summary>
+/// Handles melee combat input and manages combat state including combos
+/// </summary>
 public class MeleeCombatInput : MonoBehaviour
 {
+    /// <summary>
+    /// Delegate and event for weapon toggle actions
+    /// </summary>
     public delegate void WeaponToggleEventHandler();
     public static event WeaponToggleEventHandler OnWeaponToggle;
 
@@ -13,22 +19,28 @@ public class MeleeCombatInput : MonoBehaviour
     private RPGCharacterController characterController;
     private float lastAttackTime;
     private int comboCount;
-    private float comboTimeout;  // 动态计算的连击超时时间
+    private float comboTimeout;  // Dynamic combo timeout duration
     private AttackLevel currentAttackLevel = AttackLevel.Light;
     private Side currentAttackSide = Side.Right;
 
+    /// <summary>
+    /// Initializes components and combat settings
+    /// </summary>
     private void Start()
     {
         meleeCombatSystem = GetComponent<MeleeCombatSystem>();
         weaponManager = GetComponent<WeaponManager>();
         characterController = GetComponent<RPGCharacterController>();
         
-        // 初始化连击超时时间为最长的攻击动画时长的1.5倍
+        // Initialize combo timeout as 1.5x the longest attack animation duration
         comboTimeout = GetMaxAttackDuration() * 1.5f;
         lastAttackTime = -comboTimeout;
         comboCount = 0;
     }
 
+    /// <summary>
+    /// Gets the duration of the longest attack animation
+    /// </summary>
     private float GetMaxAttackDuration()
     {
         float maxDuration = 0f;
@@ -48,6 +60,9 @@ public class MeleeCombatInput : MonoBehaviour
         CustomMeleeCombatInputs();
     }
 
+    /// <summary>
+    /// Processes combat-related inputs including attacks, blocks, and dodges
+    /// </summary>
     private void CustomMeleeCombatInputs()
     {
         if (Input.GetKeyDown(KeyCode.J)) 
@@ -74,35 +89,40 @@ public class MeleeCombatInput : MonoBehaviour
             OnWeaponToggle?.Invoke();
         }
 
-        // 重置连击计数
+        // Reset combo if timeout exceeded
         if (Time.time - lastAttackTime > comboTimeout)
         {
             ResetCombo();
         }
     }
 
+    /// <summary>
+    /// Handles attack input and combo system
+    /// </summary>
     private void HandleAttackInput()
     {
-        // 首先检查是否可以开始新的攻击动作
         if (!characterController.CanStartAction(HandlerTypes.Attack))
         {
             return;
         }
 
-        UpdateComboState();
         var attackData = GetAttackDataFromCombo();
         if (attackData != null)
         {
             meleeCombatSystem.PerformAttack(attackData.legacyAnimationNumber, attackData.attackLevel);
         }
+        UpdateComboState();
     }
 
+    /// <summary>
+    /// Updates the combo state and timing
+    /// </summary>
     private void UpdateComboState()
     {
         if (Time.time - lastAttackTime <= comboTimeout)
         {
             comboCount = (comboCount + 1) % GetMaxComboCount();
-            lastAttackTime = Time.time;  // 更新最后攻击时间
+            lastAttackTime = Time.time;
         }
         else
         {
@@ -110,6 +130,9 @@ public class MeleeCombatInput : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets attack data based on current combo state
+    /// </summary>
     private AttackAnimationData GetAttackDataFromCombo()
     {
         currentAttackLevel = GetAttackLevelFromCombo(comboCount);
@@ -117,9 +140,11 @@ public class MeleeCombatInput : MonoBehaviour
         return AnimationData.GetAttackData(attackType);
     }
 
+    /// <summary>
+    /// Determines attack type based on combo count and current weapon
+    /// </summary>
     private AttackAnimationType GetAttackTypeFromCombo(int combo, AttackLevel level)
     {
-        // 获取当前武器类型
         Weapon currentWeapon = characterController.rightWeapon;
         
         if (currentWeapon == Weapon.TwoHandSword)
@@ -142,7 +167,7 @@ public class MeleeCombatInput : MonoBehaviour
                 _ => AttackAnimationType.TwoHandSword_Light1
             };
         }
-        else // 空手攻击
+        else // Unarmed attacks
         {
             return level switch
             {
@@ -164,22 +189,31 @@ public class MeleeCombatInput : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Determines attack level based on combo count
+    /// </summary>
     private AttackLevel GetAttackLevelFromCombo(int combo)
     {
         return combo switch
         {
-            0 => AttackLevel.Light,    // 第一击为轻攻击
-            1 => AttackLevel.Medium,   // 第二击为中攻击
-            2 => AttackLevel.Heavy,    // 第三击为重攻击
-            _ => AttackLevel.Light     // 默认为轻攻击
+            0 => AttackLevel.Light,    // First hit: Light attack
+            1 => AttackLevel.Medium,   // Second hit: Medium attack
+            2 => AttackLevel.Heavy,    // Third hit: Heavy attack
+            _ => AttackLevel.Light     // Default: Light attack
         };
     }
 
+    /// <summary>
+    /// Gets the maximum number of hits in a combo
+    /// </summary>
     private int GetMaxComboCount()
     {
-        return 3; // 固定为3连击
+        return 3; // Fixed 3-hit combo system
     }
 
+    /// <summary>
+    /// Resets the combo counter and updates last attack time
+    /// </summary>
     private void ResetCombo()
     {
         comboCount = 0;

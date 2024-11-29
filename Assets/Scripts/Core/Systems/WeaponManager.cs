@@ -3,61 +3,98 @@ using System.Collections.Generic;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Extensions;
 using RPGCharacterAnims.Lookups;
-using UnityEngine.Serialization;
 
+/// <summary>
+/// Manages weapon systems including:
+/// - Weapon data and configurations
+/// - Weapon attachment points
+/// - Attack points for hit detection
+/// - Weapon equipping and unequipping
+/// </summary>
 public class WeaponManager : MonoBehaviour
 {
+    #region Data Structures
     [System.Serializable]
     public class WeaponData
     {
+        [Header("Weapon Configuration")]
         public string name;
         public Weapon weaponType;
         public GameObject weaponInstance;
+        
+        [Header("Attack Configuration")]
         public List<Transform> attackPoints;
         public Transform attachPoint;
         public float attackRadius = 0.5f;
     }
+    #endregion
 
-    public List<WeaponData> availableWeapons = new List<WeaponData>();
-    private Dictionary<Weapon, WeaponData> weaponDataDict = new Dictionary<Weapon, WeaponData>();
-    public Dictionary<Weapon, WeaponData> WeaponDataDict => weaponDataDict;
+    #region Fields
+    [Header("Weapon Setup")]
+    [Tooltip("List of available weapons and their configurations")]
+    public List<WeaponData> availableWeapons = new();
 
-    private RPGCharacterController characterController;
-
+    [Header("Unarmed Configuration")]
+    [Tooltip("Configuration for unarmed combat attack points")]
     public UnarmedAttackPointsConfig unarmedConfig;
 
+    private Dictionary<Weapon, WeaponData> weaponDataDict = new();
+    private RPGCharacterController characterController;
+
+    // Public read-only access to weapon data
+    public Dictionary<Weapon, WeaponData> WeaponDataDict => weaponDataDict;
+    #endregion
+
+    #region Initialization
     private void Awake()
     {
-        characterController = GetComponent<RPGCharacterController>();
+        InitializeComponents();
         InitializeWeaponData();
+    }
+
+    private void InitializeComponents()
+    {
+        characterController = GetComponent<RPGCharacterController>();
+        if (characterController == null)
+        {
+            Debug.LogError("[WeaponManager] RPGCharacterController not found");
+            enabled = false;
+        }
     }
 
     private void InitializeWeaponData()
     {
         SetupWeaponsAttackPoints();
     }
+    #endregion
 
+    #region Weapon Setup
     private void SetupWeaponsAttackPoints()
     {
         foreach (var weaponData in availableWeapons)
         {
-            if (!weaponDataDict.ContainsKey(weaponData.weaponType))
+            if (weaponDataDict.ContainsKey(weaponData.weaponType))
             {
-                weaponData.attackPoints = new List<Transform>();
-                if (weaponData.weaponType == Weapon.Unarmed)
-                {
-                    SetupUnarmedAttackPoints(weaponData);
-                }
-                else
-                {
-                    SetupWeaponAttackPoints(weaponData);
-                }
-                weaponDataDict[weaponData.weaponType] = weaponData;
+                Debug.LogWarning($"[WeaponManager] Duplicate weapon type found: {weaponData.weaponType}. Ignoring duplicate.");
+                continue;
             }
-            else
-            {
-                Debug.LogWarning($"Duplicate weapon type found: {weaponData.weaponType}. Ignoring duplicate.");
-            }
+
+            InitializeWeaponAttackPoints(weaponData);
+            weaponDataDict[weaponData.weaponType] = weaponData;
+        }
+    }
+
+    private void InitializeWeaponAttackPoints(WeaponData weaponData)
+    {
+        weaponData.attackPoints = new List<Transform>();
+        
+        if (weaponData.weaponType == Weapon.Unarmed)
+        {
+            SetupUnarmedAttackPoints(weaponData);
+        }
+        else
+        {
+            SetupWeaponAttackPoints(weaponData);
         }
     }
 
@@ -68,7 +105,8 @@ public class WeaponManager : MonoBehaviour
             if (child.CompareTag("AttackPoint"))
             {
                 weaponData.attackPoints.Add(child);
-            }else if (child.CompareTag("AttachPoint"))
+            }
+            else if (child.CompareTag("AttachPoint"))
             {
                 weaponData.attachPoint = child;
             }
@@ -79,114 +117,134 @@ public class WeaponManager : MonoBehaviour
     {
         if (unarmedConfig == null)
         {
-            Debug.LogWarning("Character's unarmedConfig is missing, Setup unarmed AttackPoints failed");
+            Debug.LogWarning("[WeaponManager] UnarmedConfig is missing, unarmed attack points setup failed");
             return;
         }
 
-        foreach (var attackPointConfig in unarmedConfig.attackPoints)
+        foreach (var pointConfig in unarmedConfig.attackPoints)
         {
-            Transform bone = Utility.FindDeepChild(transform, attackPointConfig.boneName);
-            if (bone != null)
-            {
-                Transform existingAttackPoint = bone.Find(attackPointConfig.name);
-                if (existingAttackPoint == null)
-                {
-                    GameObject attackPointObj = new GameObject(attackPointConfig.name);
-                    attackPointObj.transform.SetParent(bone);
-                    attackPointObj.transform.localPosition = attackPointConfig.localPosition;
-                    attackPointObj.tag = "AttackPoint";
-                    existingAttackPoint = attackPointObj.transform;
-                }
-                weaponData.attackPoints.Add(existingAttackPoint);
-            }
-            else
-            {
-                Debug.LogWarning($"Bone {attackPointConfig.boneName} not found for unarmed attack point {attackPointConfig.name}");
-            }
+            CreateUnarmedAttackPoint(weaponData, pointConfig);
         }
     }
 
+    private void CreateUnarmedAttackPoint(WeaponData weaponData, UnarmedAttackPointsConfig.AttackPointConfig pointConfig)
+    {
+        Transform bone = Utility.FindDeepChild(transform, pointConfig.boneName);
+        if (bone == null)
+        {
+            Debug.LogWarning($"[WeaponManager] Bone {pointConfig.boneName} not found for unarmed attack point {pointConfig.name}");
+            return;
+        }
+
+        Transform attackPoint = GetOrCreateAttackPoint(bone, pointConfig);
+        weaponData.attackPoints.Add(attackPoint);
+    }
+
+    private Transform GetOrCreateAttackPoint(Transform bone, UnarmedAttackPointsConfig.AttackPointConfig config)
+    {
+        Transform existingPoint = bone.Find(config.name);
+        if (existingPoint != null) return existingPoint;
+
+        GameObject attackPointObj = new GameObject(config.name);
+        attackPointObj.transform.SetParent(bone);
+        attackPointObj.transform.localPosition = config.localPosition;
+        attackPointObj.tag = "AttackPoint";
+        
+        return attackPointObj.transform;
+    }
+    #endregion
+
+    #region Weapon Access
+    /// <summary>
+    /// Retrieves weapon prefab for the specified weapon type
+    /// </summary>
     public GameObject GetWeaponPrefab(Weapon weaponType)
     {
         if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
         {
             return weaponData.weaponInstance;
         }
-        Debug.LogWarning($"Weapon prefab for {weaponType} not found.");
+        Debug.LogWarning($"[WeaponManager] Weapon prefab for {weaponType} not found");
         return null;
     }
 
+    /// <summary>
+    /// Gets attack points for the specified weapon type
+    /// </summary>
     public List<Transform> GetAttackPoints(Weapon weaponType)
     {
         if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
         {
             return weaponData.attackPoints;
         }
-        Debug.LogWarning($"Attack points for {weaponType} not found.");
+        Debug.LogWarning($"[WeaponManager] Attack points for {weaponType} not found");
         return new List<Transform>();
     }
 
+    /// <summary>
+    /// Gets attack radius for the specified weapon type
+    /// </summary>
     public float GetAttackRadius(Weapon weaponType)
     {
         if (weaponDataDict.TryGetValue(weaponType, out WeaponData weaponData))
         {
             return weaponData.attackRadius;
         }
-        Debug.LogWarning($"Attack radius for {weaponType} not found. Using default value.");
+        Debug.LogWarning($"[WeaponManager] Attack radius for {weaponType} not found. Using default value");
         return 0.5f;
     }
+    #endregion
 
+    #region Weapon State Management
+    /// <summary>
+    /// Checks if the specified weapon type is available
+    /// </summary>
     public bool IsWeaponAvailable(Weapon weaponType)
     {
         return weaponDataDict.ContainsKey(weaponType);
     }
 
+    /// <summary>
+    /// Equips the specified weapon type if available
+    /// </summary>
     public void EquipWeapon(Weapon weaponType)
     {
-        if (IsWeaponAvailable(weaponType))
+        if (!IsWeaponAvailable(weaponType))
         {
-            characterController.rightWeapon = weaponType;
-            if (weaponType.Is2HandedWeapon())
-            {
-                characterController.leftWeapon = weaponType;
-            }
-            else
-            {
-                characterController.leftWeapon = Weapon.Unarmed;
-            }
+            Debug.LogWarning($"[WeaponManager] Attempted to equip unavailable weapon: {weaponType}");
+            return;
         }
-        else
-        {
-            Debug.LogWarning($"Attempted to equip unavailable weapon: {weaponType}");
-        }
+
+        characterController.rightWeapon = weaponType;
+        characterController.leftWeapon = weaponType.Is2HandedWeapon() ? weaponType : Weapon.Unarmed;
     }
 
+    /// <summary>
+    /// Unequips current weapons
+    /// </summary>
     public void UnequipWeapon()
     {
         characterController.rightWeapon = Weapon.Unarmed;
         characterController.leftWeapon = Weapon.Unarmed;
     }
-    
+
+    /// <summary>
+    /// Determines the current weapon side based on equipped weapons
+    /// </summary>
     public Side GetCurrentWeaponSide()
     {
-        // 双手武器情况
         if (characterController.rightWeapon.Is2HandedWeapon())
         {
             return Side.None;
         }
         
-        // 双持武器情况
         if (characterController.rightWeapon != Weapon.Unarmed && 
             characterController.leftWeapon != Weapon.Unarmed)
         {
             return Side.Dual;
         }
         
-        // 单手武器和空手情况，系统随机或交替使用左右手
-        if (Time.frameCount % 2 == 0)
-        {
-            return Side.Right;
-        }
-        return Side.Left;
+        return Time.frameCount % 2 == 0 ? Side.Right : Side.Left;
     }
+    #endregion
 }

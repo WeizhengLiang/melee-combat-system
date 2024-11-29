@@ -4,9 +4,13 @@ using System.Collections.Generic;
 using RPGCharacterAnims;
 using RPGCharacterAnims.Lookups;
 
+/// <summary>
+/// Custom editor for configuring combat animations and their properties
+/// </summary>
 [CustomEditor(typeof(CombatAnimationConfig))]
 public class CombatAnimationConfigEditor : Editor
 {
+    // Foldout states for attack categories
     private bool showTwoHandSwordAttacks = true;
     private bool showUnarmedAttacks = true;
 
@@ -22,7 +26,7 @@ public class CombatAnimationConfigEditor : Editor
 
         EditorGUILayout.Space(10);
         
-        // 双手剑攻击配置
+        // Two-Hand Sword attack configurations
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
             showTwoHandSwordAttacks = EditorGUILayout.Foldout(showTwoHandSwordAttacks, "Two-Hand Sword Attacks", true);
@@ -32,7 +36,7 @@ public class CombatAnimationConfigEditor : Editor
             }
         }
 
-        // 空手攻击配置
+        // Unarmed attack configurations
         EditorGUILayout.Space(5);
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
@@ -46,6 +50,9 @@ public class CombatAnimationConfigEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    /// <summary>
+    /// Draws the attack configuration group for a specific range of attack types
+    /// </summary>
     private void DrawAttackGroup(AttackAnimationType start, AttackAnimationType end)
     {
         var attackAnimations = serializedObject.FindProperty("attackAnimations");
@@ -69,6 +76,9 @@ public class CombatAnimationConfigEditor : Editor
         }
     }
 
+    /// <summary>
+    /// Initializes the default attack configurations for all attack types
+    /// </summary>
     private void InitializeDefaultAttacks(CombatAnimationConfig config)
     {
         if (config.attackAnimations == null)
@@ -76,7 +86,6 @@ public class CombatAnimationConfigEditor : Editor
         
         config.attackAnimations.Clear();
         
-        // 只添加双手剑的基础攻击动画配置
         foreach (AttackAnimationType type in System.Enum.GetValues(typeof(AttackAnimationType)))
         {
             float duration = AnimationData.AttackDuration(type);
@@ -95,6 +104,9 @@ public class CombatAnimationConfigEditor : Editor
         EditorUtility.SetDirty(config);
     }
 
+    /// <summary>
+    /// Determines the default attack level based on the attack type name
+    /// </summary>
     private AttackLevel GetDefaultAttackLevel(AttackAnimationType type)
     {
         if (type.ToString().Contains("Light")) return AttackLevel.Light;
@@ -103,6 +115,9 @@ public class CombatAnimationConfigEditor : Editor
         return AttackLevel.Light;
     }
 
+    /// <summary>
+    /// Determines the default knockback type based on the attack type
+    /// </summary>
     private KnockbackType GetDefaultKnockbackType(AttackAnimationType type)
     {
         if (type.ToString().Contains("Heavy") || type.ToString().Contains("Special"))
@@ -110,9 +125,11 @@ public class CombatAnimationConfigEditor : Editor
         return KnockbackType.Knockback1;
     }
 
+    /// <summary>
+    /// Gets the default legacy animation number for the attack type
+    /// </summary>
     private int GetDefaultLegacyNumber(AttackAnimationType type)
     {
-        // 这里需要根据实际的动画编号来设置
         return (int)type + 1;
     }
 }

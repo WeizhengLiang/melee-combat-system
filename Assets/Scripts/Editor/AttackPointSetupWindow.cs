@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 using UnityEditor.Experimental.SceneManagement;
 
+/// <summary>
+/// Editor window for setting up attack points on character prefabs
+/// </summary>
 public class AttackPointSetupWindow : EditorWindow
 {
     private GameObject selectedPrefab;
@@ -41,31 +44,6 @@ public class AttackPointSetupWindow : EditorWindow
             var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
             bool isPrefabOpen = prefabStage != null && prefabStage.assetPath == AssetDatabase.GetAssetPath(selectedPrefab);
 
-            // EditorGUI.BeginDisabledGroup(!isPrefabOpen);
-            // if (GUILayout.Button("Remove"))
-            // {
-            //     if (isPrefabOpen)
-            //     {
-            //         DestroyImmediate(attackPoints[i].gameObject, true);
-            //         attackPoints.RemoveAt(i);
-            //         i--;
-            //         
-            //         // 标记预制体场景为 dirty
-            //         EditorSceneManager.MarkSceneDirty(PrefabStageUtility.GetCurrentPrefabStage().scene);
-            //         
-            //         // 强制保存更改
-            //         SaveChange();
-            //         
-            //         // 强制刷新 CharacterModelManager
-            //         // CharacterModelManager.RefreshAllConfigs();
-            //     }
-            //     else
-            //     {
-            //         Debug.LogWarning("please open prefab to edit");
-            //     }
-            // }
-            // EditorGUI.EndDisabledGroup();
-
             EditorGUILayout.EndHorizontal();
         }
 
@@ -84,13 +62,11 @@ public class AttackPointSetupWindow : EditorWindow
                 AddAttackPoint();
             }
         }
-
-        // if (GUILayout.Button("Save Changes"))
-        // {
-        //     SaveChange();
-        // }
     }
 
+    /// <summary>
+    /// Refreshes the list of attack points from the selected prefab
+    /// </summary>
     private void RefreshAttackPoints()
     {
         attackPoints.Clear();
@@ -104,19 +80,22 @@ public class AttackPointSetupWindow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// Adds a new attack point to the selected object in the prefab
+    /// </summary>
     private void AddAttackPoint()
     {
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         if (prefabStage == null)
         {
-            Debug.LogWarning("please open prefab stage");
+            Debug.LogWarning("Please open prefab stage first");
             return;
         }
 
         GameObject selectedObject = Selection.activeGameObject;
         if (selectedObject == null || !prefabStage.IsPartOfPrefabContents(selectedObject))
         {
-            Debug.LogWarning("please select a prefab instance");
+            Debug.LogWarning("Please select a valid object in the prefab");
             return;
         }
 
@@ -127,90 +106,71 @@ public class AttackPointSetupWindow : EditorWindow
         attackPoints.Add(newPoint.transform);
         Selection.activeGameObject = newPoint;
 
-        // 手动将场景标记为dirty
         EditorSceneManager.MarkSceneDirty(prefabStage.scene);
-
-        // 刷新AttackPoints列表
         RefreshAttackPoints();
-
-        // 强制重绘窗口
         Repaint();
     }
 
+    /// <summary>
+    /// Saves changes made to the prefab
+    /// </summary>
     public void SaveChange()
     {
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
-        if (prefabStage != null)
+        if (prefabStage != null && prefabStage.scene.isDirty)
         {
-            // 在预制体编辑模式下
-            if (prefabStage.scene.isDirty)
-            {
-                // 保存预制体
-                PrefabUtility.SaveAsPrefabAsset(prefabStage.prefabContentsRoot, prefabStage.assetPath);
-                
-                // 刷新资源数据库
-                AssetDatabase.Refresh();
-            }
+            PrefabUtility.SaveAsPrefabAsset(prefabStage.prefabContentsRoot, prefabStage.assetPath);
+            AssetDatabase.Refresh();
         }
 
-        Debug.Log("更改已成功保存。");
-        
-        // 刷新 AttackPoints 列表
+        Debug.Log("Changes saved successfully.");
         RefreshAttackPoints();
-        
-        // 强制重绘窗口
         Repaint();
     }
     
+    /// <summary>
+    /// Opens the selected prefab in the prefab editor
+    /// </summary>
     private static void OpenPrefab(GameObject prefab)
     {
-        GameObject selectedObject = prefab;
-    
-        if (selectedObject != null)
+        if (prefab == null)
         {
-            // 获取预制体资源路径
-            string prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(selectedObject);
+            Debug.LogWarning("Please select a game object");
+            return;
+        }
 
-            if(IsPreviewSceneOpened(prefabPath))
+        string prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefab);
+
+        if (IsPreviewSceneOpened(prefabPath))
+        {
+            Debug.LogWarning("Prefab is already open in prefab stage");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(prefabPath))
+        {
+            GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefabAsset != null)
             {
-                Debug.LogWarning("prefab is opened in prefab stage");
-                return;
-            }
-        
-            if (!string.IsNullOrEmpty(prefabPath))
-            {
-                // 加载预制体资源
-                GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            
-                if (prefabAsset != null)
-                {
-                    // 打开预制体编辑器
-                    AssetDatabase.OpenAsset(prefabAsset);
-                }
-                else
-                {
-                    Debug.LogError("cant open prefab");
-                }
+                AssetDatabase.OpenAsset(prefabAsset);
             }
             else
             {
-                Debug.LogWarning("not prefab instance");
+                Debug.LogError("Cannot open prefab");
             }
         }
         else
         {
-            Debug.LogWarning("please select a game object");
+            Debug.LogWarning("Not a prefab instance");
         }
     }
 
+    /// <summary>
+    /// Checks if the prefab is already opened in the prefab stage
+    /// </summary>
     private static bool IsPreviewSceneOpened(string prefabPath)
     {
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
-        if (prefabStage != null)
-        {
-            return prefabStage.assetPath == prefabPath;
-        }
-        return false;
+        return prefabStage != null && prefabStage.assetPath == prefabPath;
     }
-
 }

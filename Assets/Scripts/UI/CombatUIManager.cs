@@ -7,6 +7,9 @@ using RPGCharacterAnims;
 using RPGCharacterAnims.Actions;
 using RPGCharacterAnims.Lookups;
 
+/// <summary>
+/// Manages the combat UI elements for both player and NPC characters
+/// </summary>
 public class CombatUIManager : MonoBehaviour
 {
     [Header("Player UI")]
@@ -28,12 +31,18 @@ public class CombatUIManager : MonoBehaviour
     public Animator playerAnimator;
     public Animator npcAnimator;
 
+    /// <summary>
+    /// Initializes the UI and starts the update coroutine
+    /// </summary>
     private void Start()
     {
         SetupNPCDropdown();
         StartCoroutine(UpdateUI());
     }
 
+    /// <summary>
+    /// Sets up the NPC action dropdown menu
+    /// </summary>
     private void SetupNPCDropdown()
     {
         npcActionDropdown.ClearOptions();
@@ -41,6 +50,9 @@ public class CombatUIManager : MonoBehaviour
         npcActionDropdown.onValueChanged.AddListener(OnNPCActionChanged);
     }
 
+    /// <summary>
+    /// Continuously updates the UI elements
+    /// </summary>
     private IEnumerator UpdateUI()
     {
         while (true)
@@ -51,14 +63,17 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the player's UI elements with current combat information
+    /// </summary>
     private void UpdatePlayerUI()
     {
-        var attackHandler = playerController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
+        var attackHandler = playerController.GetHandler(HandlerTypes.Attack) as AttackHandler;
         if (attackHandler == null) return;
 
         playerAttackPhase.text = $"Attack Phase: {attackHandler.CurrentAttackPhase}";
         
-        // 安全地获取动画名称
+        // Safely get animation name
         var animInfo = playerAnimator.GetCurrentAnimatorClipInfo(0);
         if (animInfo != null && animInfo.Length > 0)
         {
@@ -72,14 +87,17 @@ public class CombatUIManager : MonoBehaviour
         playerAttackLevel.text = $"Attack Level: {attackHandler.CurrentAttackLevel}";
     }
 
+    /// <summary>
+    /// Updates the NPC's UI elements with current combat information
+    /// </summary>
     private void UpdateNPCUI()
     {
-        var attackHandler = npcController.GetHandler(HandlerTypes.Attack) as MCS_Attack;
+        var attackHandler = npcController.GetHandler(HandlerTypes.Attack) as AttackHandler;
         if (attackHandler == null) return;
 
         npcAttackPhase.text = $"Attack Phase: {attackHandler.CurrentAttackPhase}";
         
-        // 安全地获取动画名称
+        // Safely get animation name
         var animInfo = npcAnimator.GetCurrentAnimatorClipInfo(0);
         if (animInfo != null && animInfo.Length > 0)
         {
@@ -93,6 +111,9 @@ public class CombatUIManager : MonoBehaviour
         npcAttackLevel.text = $"Attack Level: {attackHandler.CurrentAttackLevel}";
     }
 
+    /// <summary>
+    /// Handles NPC action selection from the dropdown menu
+    /// </summary>
     private void OnNPCActionChanged(int index)
     {
         switch (index)
@@ -121,6 +142,9 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Performs a sequence of attacks for the NPC
+    /// </summary>
     private IEnumerator PerformNPCAttackCombo()
     {
         if (npcController.rightWeapon != Weapon.TwoHandSword)
@@ -143,7 +167,7 @@ public class CombatUIManager : MonoBehaviour
             context.rightWeapon = newWeapon;
 
             npcController.StartAction(HandlerTypes.SwitchWeapon, context);
-            yield return new WaitForSeconds(1f); // 等待武器切换完成
+            yield return new WaitForSeconds(1f); // Wait for weapon switch
         }
 
         int comboCount = 0;
@@ -163,6 +187,9 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Determines attack type based on combo count
+    /// </summary>
     private AttackAnimationType GetAttackTypeFromCombo(int combo)
     {
         return combo switch

@@ -9,7 +9,7 @@ using UnityEngine;
 /// Handles the character's attack states, phase transitions, and interruption logic.
 /// Inherits from base Attack class to implement specific attack behaviors and state management.
 /// </summary>
-public class MCS_Attack : Attack
+public class AttackHandler : Attack
 {
     /// <summary>
     /// Defines the phases of an attack action:
@@ -58,7 +58,7 @@ public class MCS_Attack : Attack
     /// </summary>
     /// <param name="controller">Reference to the character controller</param>
     /// <param name="combatConfig">Combat system configuration</param>
-    public MCS_Attack(RPGCharacterController controller)
+    public AttackHandler(RPGCharacterController controller)
     {
         characterController = controller;
     }
