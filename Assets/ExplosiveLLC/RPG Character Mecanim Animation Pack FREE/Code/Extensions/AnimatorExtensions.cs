@@ -43,34 +43,12 @@ namespace RPGCharacterAnims.Extensions
         }
 
         /// <summary>
-        /// Sets the animator to trigger an emote.
-        /// </summary>
-        /// <remarks>
-        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
-        /// </remarks>
-        /// <param name="animator">The animator to act on.</param>
-        /// <param name="emote">The type of emote to set.</param>
-        public static void TriggerEmote(this Animator animator, EmoteType emote)
-        { SetActionTrigger(animator, AnimatorTrigger.ActionTrigger, (int) emote); }
-
-        /// <summary>
         /// Sets the animator side.
         /// </summary>
         /// <param name="animator">The animator to act on.</param>
         /// <param name="side">The type of emote to set.</param>
         public static void SetSide(this Animator animator, Side side)
         { animator.SetInteger(AnimationParameters.Side, (int)side); }
-
-        /// <summary>
-        /// Sets the animator to trigger talking.
-        /// </summary>
-        /// <remarks>
-        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
-        /// </remarks>
-        /// <param name="animator">The animator to act on.</param>
-        /// <param name="talkType">The enum value to set.</param>
-        public static void TriggerTalking(this Animator animator, TalkType talkType)
-        { animator.SetInteger(AnimationParameters.Talking, (int)talkType); }
 
         /// <summary>
         /// Sets the animator to trigger dodging.
@@ -82,29 +60,7 @@ namespace RPGCharacterAnims.Extensions
         /// <param name="dodgeType">The enum value to set.</param>
         public static void TriggerDodge(this Animator animator, DodgeType dodgeType)
         { animator.SetActionTrigger(AnimatorTrigger.DodgeTrigger, (int)dodgeType); }
-
-        /// <summary>
-        /// Sets the animator to trigger climbing.
-        /// </summary>
-        /// <remarks>
-        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
-        /// </remarks>
-        /// <param name="animator">The animator to act on.</param>
-        /// <param name="climbType">The enum value to set.</param>
-        public static void TriggerClimb(this Animator animator, ClimbType climbType)
-        { animator.SetActionTrigger(AnimatorTrigger.ClimbLadderTrigger, (int)climbType); }
-
-        /// <summary>
-        /// Sets the animator to trigger crawling.
-        /// </summary>
-        /// <remarks>
-        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
-        /// </remarks>
-        /// <param name="animator">The animator to act on.</param>
-        /// <param name="crawlType">The enum value to set.</param>
-        public static void TriggerCrawl(this Animator animator, CrawlType crawlType)
-        { animator.SetActionTrigger(AnimatorTrigger.CrawlTrigger, (int)crawlType); }
-
+        
         /// <summary>
         /// Sets the animator to trigger turning.
         /// </summary>
@@ -159,28 +115,6 @@ namespace RPGCharacterAnims.Extensions
         /// <param name="knockdownType">The enum value to set.</param>
         public static void TriggerKnockdown(this Animator animator, KnockdownType knockdownType)
         { animator.SetActionTrigger(AnimatorTrigger.KnockdownTrigger, (int)knockdownType); }
-
-        /// <summary>
-        /// Sets the animator to trigger casting.
-        /// </summary>
-        /// <remarks>
-        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
-        /// </remarks>
-        /// <param name="animator">The animator to act on.</param>
-        /// <param name="castType">The enum value to set.</param>
-        public static void TriggerCast(this Animator animator, CastType castType)
-        { animator.SetActionTrigger(AnimatorTrigger.CastTrigger, (int)castType); }
-
-        /// <summary>
-        /// Sets the animator to trigger attack casting.
-        /// </summary>
-        /// <remarks>
-        /// This builds upon the existing SetAnimationTrigger helper and allows you to provide contextual action information.
-        /// </remarks>
-        /// <param name="animator">The animator to act on.</param>
-        /// <param name="castType">The enum value to set.</param>
-        public static void TriggerAttackCast(this Animator animator, AttackCastType castType)
-        { animator.SetActionTrigger(AnimatorTrigger.AttackCastTrigger, (int)castType); }
 
 
         /// <summary>

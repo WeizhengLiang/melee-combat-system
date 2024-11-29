@@ -62,16 +62,14 @@ namespace RPGCharacterAnims
 			Jumping();
 			Damage();
             SwitchWeapons();
-            Strafing();
             Facing();
 
-			if (!rpgCharacterController.HandlerExists("Relax")) { return; }
+            if (!rpgCharacterController.HandlerExists("Relax")) { return; }
 			if (rpgCharacterController.IsActive("Relax")) { return; }
 
 			// Actions that can't be performed in Relax state.
 			Blocking();
-            Aiming();
-            Rolling();
+			Rolling();
             Attacking();
         }
 
@@ -111,27 +109,6 @@ namespace RPGCharacterAnims
 		        inputRoll = Input.GetButtonDown("L3");
 		        inputShield = Input.GetButtonDown("Shield");
 		        inputRelax = Input.GetButtonDown("Relax");
-
-		        // Injury toggle.
-		        if (rpgCharacterController.HandlerExists(HandlerTypes.Injure)) {
-			        if (Input.GetKeyDown(KeyCode.I)) {
-				        if (!rpgCharacterController.TryStartAction(HandlerTypes.Injure))
-						{ rpgCharacterController.TryEndAction(HandlerTypes.Injure); }
-			        }
-		        }
-
-		        // Slow time toggle.
-		        if (rpgCharacterController.HandlerExists(HandlerTypes.SlowTime)) {
-			        if (Input.GetKeyDown(KeyCode.T)) {
-				        if (!rpgCharacterController.TryStartAction(HandlerTypes.SlowTime, 0.125f))
-						{ rpgCharacterController.TryEndAction(HandlerTypes.SlowTime); }
-			        }
-			        // Pause toggle.
-			        if (Input.GetKeyDown(KeyCode.P)) {
-				        if (!rpgCharacterController.TryStartAction(HandlerTypes.SlowTime, 0f))
-						{ rpgCharacterController.TryEndAction(HandlerTypes.SlowTime); }
-			        }
-		        }
 	        }
 			catch (Exception) {
 				Debug.LogError("Inputs not found! If you are using the InputSystem you need to extract the 'InputSystem - Requires InputSystem Package.unitypackage'.");
@@ -193,56 +170,9 @@ namespace RPGCharacterAnims
 
 			rpgCharacterController.StartAction(HandlerTypes.DiveRoll, 1);
         }
-
-        private void Aiming()
-        {
-            if (rpgCharacterController.hasAimedWeapon) {
-				if (rpgCharacterController.HandlerExists(HandlerTypes.Aim)) {
-					if (HasAimInput()) { rpgCharacterController.TryStartAction(HandlerTypes.Aim); }
-					else { rpgCharacterController.TryEndAction(HandlerTypes.Aim); }
-				}
-                if (rpgCharacterController.rightWeapon == Weapon.TwoHandBow) {
-
-                    // If using the bow, we want to pull back slowly on the bow string while the
-                    // Left Mouse button is down, and shoot when it is released.
-                    if (Input.GetMouseButton(0)) {  bowPull += 0.05f; }
-					else if (Input.GetMouseButtonUp(0)) {
-						if (rpgCharacterController.HandlerExists(HandlerTypes.Shoot))
-						{ rpgCharacterController.TryStartAction(HandlerTypes.Shoot); }
-                    }
-					else { bowPull = 0f; }
-                    bowPull = Mathf.Clamp(bowPull, 0f, 1f);
-                }
-				else {
-					// If using a gun or a crossbow, we want to fire when the left mouse button is pressed.
-					if (rpgCharacterController.HandlerExists(HandlerTypes.Shoot)) {
-						if (Input.GetMouseButtonDown(0)) { rpgCharacterController.TryStartAction(HandlerTypes.Shoot); }
-					}
-                }
-				// Reload.
-				if (rpgCharacterController.HandlerExists(HandlerTypes.Reload)) {
-					if (Input.GetMouseButtonDown(2)) { rpgCharacterController.TryStartAction(HandlerTypes.Reload); }
-				}
-				// Finally, set aim location and bow pull.
-				if (rpgCharacterController.target != null) {
-					rpgCharacterController.SetAimInput(rpgCharacterController.target.position);
-					rpgCharacterController.SetBowPull(bowPull);
-				}
-            }
-			else { Strafing(); }
-        }
-
-        private void Strafing()
-        {
-			// Check to make sure Strafe Action exists.
-			if (!rpgCharacterController.HandlerExists(HandlerTypes.Strafe) || !rpgCharacterController.canStrafe) { return; }
-
-			if (inputAimBlock < -0.1f || inputAiming) { rpgCharacterController.TryStartAction(HandlerTypes.Strafe); }
-			else { rpgCharacterController.TryEndAction(HandlerTypes.Strafe); }
-        }
-
-        private void Facing()
-        {
+		
+		private void Facing()
+		{
 			// Check to make sure Face Action exists.
 			if (!rpgCharacterController.HandlerExists(HandlerTypes.Face)) { return; }
 			if (!rpgCharacterController.canFace) { return; }
@@ -265,19 +195,12 @@ namespace RPGCharacterAnims
 				rpgCharacterController.TryStartAction(HandlerTypes.Face);
 			}
 			else { rpgCharacterController.TryEndAction(HandlerTypes.Face); }
-        }
+		}
 
-        private void Attacking()
+		private void Attacking()
         {
-			// Check to make sure Attack and Cast Actions exist.
-			if (!rpgCharacterController.HandlerExists(HandlerTypes.Attack)
-				&& rpgCharacterController.HandlerExists(HandlerTypes.AttackCast)) { return; }
-
-			// If already casting, stop casting.
-            if ((inputCastL || inputCastR) && rpgCharacterController.IsActive(HandlerTypes.AttackCast)) {
-				rpgCharacterController.EndAction(HandlerTypes.AttackCast);
-				return;
-			}
+			// Check to make sure Attack Actions exist.
+			if (!rpgCharacterController.HandlerExists(HandlerTypes.Attack)) { return; }
 
 			// Check to make character can Attack.
 			if (!rpgCharacterController.CanStartAction(HandlerTypes.Attack)) { return; }
@@ -286,10 +209,6 @@ namespace RPGCharacterAnims
 			{ rpgCharacterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, Side.Left)); }
 			else if (inputAttackR)
 			{ rpgCharacterController.StartAction(HandlerTypes.Attack, new AttackContext(HandlerTypes.Attack, Side.Right)); }
-			else if (inputCastL)
-			{ rpgCharacterController.StartAction(HandlerTypes.AttackCast, new AttackCastContext(AnimationVariations.AttackCast.TakeRandom(), Side.Left)); }
-			else if (inputCastR)
-			{ rpgCharacterController.StartAction(HandlerTypes.AttackCast, new AttackCastContext(AnimationVariations.AttackCast.TakeRandom(), Side.Right)); }
         }
 
         private void Damage()
@@ -320,12 +239,6 @@ namespace RPGCharacterAnims
 
 			// Bail out if we can't switch weapons.
 			if (!rpgCharacterController.CanStartAction(HandlerTypes.SwitchWeapon)) { return; }
-
-			// Switch to Relaxed.
-			if (inputRelax) {
-				rpgCharacterController.StartAction(HandlerTypes.Relax);
-				return;
-			}
 
 			var doSwitch = false;
 			var context = new SwitchWeaponContext();

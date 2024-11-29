@@ -214,7 +214,6 @@ namespace RPGCharacterAnims
             rpgCharacterController = GetComponent<RPGCharacterController>();
             rpgCharacterController.SetHandler(HandlerTypes.AcquiringGround, new SimpleActionHandler(() => { }, () => { }));
             rpgCharacterController.SetHandler(HandlerTypes.MaintainingGround, new SimpleActionHandler(() => { }, () => { }));
-            rpgCharacterController.SetHandler(HandlerTypes.ClimbLadder, new ClimbLadder(this));
             rpgCharacterController.SetHandler(HandlerTypes.DiveRoll, new DiveRoll(this));
             rpgCharacterController.SetHandler(HandlerTypes.DoubleJump, new DoubleJump(this));
             rpgCharacterController.SetHandler(HandlerTypes.Fall, new Fall(this));
@@ -225,8 +224,6 @@ namespace RPGCharacterAnims
             rpgCharacterController.SetHandler(HandlerTypes.Knockdown, new Knockdown(this));
             rpgCharacterController.SetHandler(HandlerTypes.Move, new Move(this));
 			rpgCharacterController.SetHandler(HandlerTypes.Roll, new Roll(this));
-			rpgCharacterController.SetHandler(HandlerTypes.Swim, new Swim(this));
-			rpgCharacterController.SetHandler(HandlerTypes.Crawl, new Crawl(this));
 		}
 
         private void Start()
@@ -305,12 +302,9 @@ namespace RPGCharacterAnims
                     animator.SetBool(AnimationParameters.Moving, false);
                 }
             }
-			// Aiming.
-			if (rpgCharacterController.isAiming || rpgCharacterController.isStrafing)
-			{ RotateTowardsTarget(rpgCharacterController.aimInput); }
 
 			// Facing.
-			else if (rpgCharacterController.isFacing) { RotateTowardsDirection(rpgCharacterController.faceInput); }
+			if (rpgCharacterController.isFacing) { RotateTowardsDirection(rpgCharacterController.faceInput); }
 			else if (rpgCharacterController.canMove) { RotateTowardsMovementDir(); }
 
             if (currentState == null && rpgCharacterController.CanStartAction(HandlerTypes.Idle))
@@ -369,24 +363,8 @@ namespace RPGCharacterAnims
                 var moveSpeed = runSpeed;
                 var moveAccel = runAccel;
 
-				if (rpgCharacterController.isInjured) {
-                    moveSpeed = injuredSpeed;
-                    moveAccel = injuredAccel;
-                }
-				else if (rpgCharacterController.isStrafing) {
-                    moveSpeed = walkSpeed;
-                    moveAccel = walkAccel;
-                }
-				else if (rpgCharacterController.isSprinting) {
-                    moveSpeed = sprintSpeed;
-                    moveAccel = sprintAccel;
-                }
-				else if (rpgCharacterController.isCrouching) {
-					moveSpeed = crouchSpeed;
-					moveAccel = crouchAccel;
-				}
 
-				currentVelocity = Vector3.MoveTowards(currentVelocity,
+                currentVelocity = Vector3.MoveTowards(currentVelocity,
 					rpgCharacterController.cameraRelativeInput * moveSpeed,
 					moveAccel * superCharacterController.deltaTime);
 			}
@@ -526,7 +504,6 @@ namespace RPGCharacterAnims
 			if (debugMessages) { Debug.Log("Crawl_ExitState"); }
 			rpgCharacterController.OnUnlockMovement += InstantSwitchOnceAfterMoveUnlock;
 			rpgCharacterController.Lock(true, true, true, 0f, 1f);
-			rpgCharacterController.EndCrawl();
 		}
 
 		private void Swim_EnterState()
@@ -534,8 +511,6 @@ namespace RPGCharacterAnims
 			if (debugMessages) { Debug.Log("Swim_EnterState"); }
 			superCharacterController.DisableClamping();
 			superCharacterController.DisableSlopeLimit();
-			rpgCharacterController.EndAction(HandlerTypes.Strafe);
-			rpgCharacterController.EndAction(HandlerTypes.Aim);
 			rpgCharacterController.Lock(false, true, false, 0f, 0f);
 			animator.SetAnimatorTrigger(AnimatorTrigger.SwimTrigger);
 			animator.SetBool(AnimationParameters.Swimming, true);
@@ -617,61 +592,6 @@ namespace RPGCharacterAnims
 
 			transform.position = newSpot;
             transform.rotation = Quaternion.Euler(transform.rotation.x, ladder.transform.rotation.eulerAngles.y, transform.rotation.z);
-        }
-
-        private void ClimbLadder_SuperUpdate()
-        {
-            var moveInput = rpgCharacterController.moveInput;
-
-            // If no input, don't do anything.
-            if (moveInput == Vector3.zero) { return; }
-
-            // If we can't move (i.e. because we're animating) ignore input.
-            if (!rpgCharacterController.canMove) { return; }
-
-			// Climb Up.
-			if (moveInput.y > 0f) {
-                var ladder = rpgCharacterController.ladder;
-
-				// Just above the height of the SuperCharacterController isFeet Sphere offset + height of character in animation (0.4871393)
-				var ladderTopThreshold = 1.25f;
-				var ladderTop = new Vector3(transform.position.x, ladder.bounds.max.y - ladderTopThreshold, transform.position.z);
-
-                // Climb Off Top or Climb Up.
-                if (superCharacterController.PointBelowHead(ladderTop)) {
-                    rpgCharacterController.ClimbLadder(ClimbType.DismountTop);
-                    rpgCharacterController.OnUnlockMovement += IdleOnceAfterMoveUnlock;
-                }
-				else { rpgCharacterController.ClimbLadder(ClimbType.ClimbUp); }
-            }
-			// Climb Down.
-			else if (moveInput.y < 0f) {
-                var ladder = rpgCharacterController.ladder;
-
-				// Just above the height of the SuperCharacterController isFeet Sphere offset + height of character in animation (0.4871393)
-				var ladderBottomThreshold = 1.1f;
-				var ladderBottom = new Vector3(transform.position.x, ladder.bounds.min.y + ladderBottomThreshold, transform.position.z);
-				Debug.DrawRay(ladderBottom, Vector3.up, Color.white, 10f);
-
-                // Climb Off Bottom or Climb Down.
-                if (superCharacterController.PointAboveFeet(ladderBottom)) {
-                    rpgCharacterController.ClimbLadder(ClimbType.DismountBottom);
-                    rpgCharacterController.OnUnlockMovement += IdleOnceAfterMoveUnlock;
-                }
-				else { rpgCharacterController.ClimbLadder(ClimbType.ClimbDown); }
-            }
-        }
-
-        private void ClimbLadder_ExitState()
-        {
-			if (debugMessages) { Debug.Log("Ladder_ExitState"); }
-            if (rb != null) { rb.isKinematic = true; }
-
-            UnlockMovement();
-
-            superCharacterController.enabled = true;
-            superCharacterController.EnableClamping();
-            superCharacterController.EnableSlopeLimit();
         }
 
         private void DiveRoll_EnterState()
@@ -778,19 +698,7 @@ namespace RPGCharacterAnims
         private void OnTriggerEnter(Collider collide)
         {
 			Debug.Log($"OnTriggerEnter: {collide}");
-
-			// Entering a water volume.
-			if (collide.gameObject.layer == 4) { rpgCharacterController.StartAction(HandlerTypes.Swim); }
-
-            // Near a ladder.
-            else if (collide.transform.parent != null) {
-                if (collide.transform.parent.name.Contains("Ladder")) {
-                    rpgCharacterController.isNearLadder = true;
-                    rpgCharacterController.ladder = collide;
-                }
-            }
-            // Near a cliff.
-            else if (collide.transform.name.Contains("Cliff")) {
+			if (collide.transform.name.Contains("Cliff")) {
                 rpgCharacterController.isNearCliff = true;
                 rpgCharacterController.cliff = collide;
             }

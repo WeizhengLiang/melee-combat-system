@@ -65,9 +65,6 @@ namespace RPGCharacterAnims
 		{
 			if (!animator) { return; }
 
-			// Not used when using Navmesh Navigation.
-			if (rpgCharacterController.isNavigating) { return; }
-
 			OnMove.Invoke(animator.deltaPosition, animator.rootRotation);
 		}
     }

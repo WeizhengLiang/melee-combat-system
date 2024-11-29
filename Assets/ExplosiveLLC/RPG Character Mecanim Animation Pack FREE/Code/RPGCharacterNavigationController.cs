@@ -30,7 +30,6 @@ namespace RPGCharacterAnims
 
             rpgCharacterController = GetComponent<RPGCharacterController>();
             rpgCharacterMovementController = GetComponent<RPGCharacterMovementController>();
-            rpgCharacterController.SetHandler(HandlerTypes.Navigation, new Actions.Navigation(this));
 		}
 
         void Start()
@@ -55,30 +54,6 @@ namespace RPGCharacterAnims
 				if (navMeshAgent.velocity.sqrMagnitude > 0) {
 					animator.SetBool(AnimationParameters.Moving, true);
 					animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed);
-
-					// If sprinting, multiply by the sprint speed.
-					if (rpgCharacterController.isSprinting) {
-						animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed
-						* rpgCharacterMovementController.sprintSpeed);
-
-						navMeshAgent.speed = rpgCharacterMovementController.sprintSpeed * 7;
-					}
-
-					// If crawling, multiply by the crawl speed.
-					else if (rpgCharacterController.isCrawling) {
-						animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed
-						* rpgCharacterMovementController.crawlSpeed);
-
-						navMeshAgent.speed = rpgCharacterMovementController.crawlSpeed * 7;
-					}
-
-					// If crouching, multiply by the crouch speed.
-					else if (rpgCharacterController.isCrouching) {
-						animator.SetFloat(AnimationParameters.VelocityZ, moveSpeed
-						* rpgCharacterMovementController.crouchSpeed);
-
-						navMeshAgent.speed = rpgCharacterMovementController.crouchSpeed * 7;
-					}
 				}
 				// Stop animation.
 				else { StopAnimation(); }

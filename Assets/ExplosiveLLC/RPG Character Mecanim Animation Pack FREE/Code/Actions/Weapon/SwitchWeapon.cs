@@ -43,8 +43,9 @@ namespace RPGCharacterAnims.Actions
 
     public class SwitchWeapon : BaseActionHandler<SwitchWeaponContext>
     {
-        public override bool CanStartAction(RPGCharacterController controller)
-        { return !IsActive() && !controller.isCasting; }
+	    public override bool CanStartAction(RPGCharacterController controller)
+	    {
+		    return !IsActive();}
 
         public override bool CanEndAction(RPGCharacterController controller)
         { return IsActive(); }
@@ -120,12 +121,6 @@ namespace RPGCharacterAnims.Actions
 				case "hips":
 					controller.animator.SetInteger(AnimationParameters.SheathLocation, 1);
 					break;
-			}
-
-			// If relaxing, just use the Relax action.
-			if (context.type == "relax") {
-				controller.StartAction(HandlerTypes.Relax);
-				return;
 			}
 
 			// Force Unarmed if sheathing weapons.
@@ -204,7 +199,7 @@ namespace RPGCharacterAnims.Actions
 				unsheathRight = changeRight && fromRightWeapon != toRightWeapon && !toRightWeapon.HasNoWeapon();
 
 				// If you're switching from the relaxed state, you can "unsheath" your fists.
-				if ((controller.isRelaxed || controller.hasNoWeapon)
+				if ((controller.hasNoWeapon)
 					&& (toLeftWeapon == Weapon.Unarmed || toRightWeapon == Weapon.Unarmed)) {
 					fromLeftWeapon = Weapon.Relax;
 					fromRightWeapon = Weapon.Relax;
@@ -311,7 +306,6 @@ namespace RPGCharacterAnims.Actions
 
 				// Turn off the isWeaponSwitching flag and sync weapon object visibility.
 				weaponController.SyncWeaponVisibility();
-				controller.EndAction(HandlerTypes.Relax);
 				EndAction(controller);
 			});
 		}

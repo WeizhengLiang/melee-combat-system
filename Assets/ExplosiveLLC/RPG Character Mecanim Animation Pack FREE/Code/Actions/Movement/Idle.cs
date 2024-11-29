@@ -45,7 +45,7 @@ namespace RPGCharacterAnims.Actions
                 yield break;
             }
 
-            if (controller.canMove) { controller.RandomIdle(); }
+            // if (controller.canMove) { controller.RandomIdle(); }
 
             StartRandomIdleCountdown(controller);
         }

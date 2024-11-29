@@ -56,7 +56,6 @@ namespace RPGCharacterAnims
             weaponManager = GetComponent<WeaponManager>();
             rpgCharacterController = GetComponent<RPGCharacterController>();
             rpgCharacterController.SetHandler(HandlerTypes.SwitchWeapon, new SwitchWeapon());
-            rpgCharacterController.SetHandler(HandlerTypes.Relax, new Relax());
 
             // Find the Animator component.
             animator = GetComponentInChildren<Animator>();
@@ -665,7 +664,7 @@ namespace RPGCharacterAnims
             if (timed) { while (!isWeaponSwitching) { yield return null; } }
 
             // Reset to Unarmed if not in Relax.
-            if (resetToUnarmed && !rpgCharacterController.isRelaxed) {
+            if (resetToUnarmed) {
                 animator.SetInteger(AnimationParameters.Weapon, 0);
                 rpgCharacterController.rightWeapon = Weapon.Unarmed;
                 rpgCharacterController.leftWeapon = Weapon.Unarmed;

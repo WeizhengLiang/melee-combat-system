@@ -9,7 +9,6 @@ namespace RPGCharacterAnims.Actions
 
         protected override void _StartAction(RPGCharacterController controller, DodgeType dodgeType)
         {
-            controller.GetAngry();
             controller.Dodge(dodgeType);
         }
     }

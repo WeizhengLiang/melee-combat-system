@@ -164,18 +164,6 @@ namespace RPGCharacterAnims
 					switch (weapon) {
 						case Weapon.TwoHandSword:
 							return ( int )AnimationVariations.TwoHandedSwordAttacks.TakeRandom();
-						case Weapon.TwoHandSpear:
-							return ( int )AnimationVariations.TwoHandedSpearAttacks.TakeRandom();
-						case Weapon.TwoHandAxe:
-							return ( int )AnimationVariations.TwoHandedAxeAttacks.TakeRandom();
-						case Weapon.TwoHandBow:
-							return ( int )AnimationVariations.TwoHandedBowAttacks.TakeRandom();
-						case Weapon.TwoHandCrossbow:
-							return ( int )AnimationVariations.TwoHandedCrossbowAttacks.TakeRandom();
-						case Weapon.TwoHandStaff:
-							return ( int )AnimationVariations.TwoHandedStaffAttacks.TakeRandom();
-						case Weapon.Rifle:
-							return ( int )AnimationVariations.ShootingAttacks.TakeRandom();
 						default:
 							Debug.LogError($"RPG Character: no weapon number {weapon} for Side 0");
 							break;
@@ -186,18 +174,6 @@ namespace RPGCharacterAnims
 					switch (weapon) {
 						case Weapon.Unarmed:
 							return ( int )AnimationVariations.UnarmedLeftAttacks.TakeRandom();
-						case Weapon.Shield:
-							return ( int )AnimationVariations.ShieldAttacks.TakeRandom();
-						case Weapon.LeftSword:
-							return ( int )AnimationVariations.LeftSwordAttacks.TakeRandom();
-						case Weapon.LeftMace:
-							return ( int )AnimationVariations.LeftMaceAttacks.TakeRandom();
-						case Weapon.LeftDagger:
-							return ( int )AnimationVariations.LeftDaggerAttacks.TakeRandom();
-						case Weapon.LeftItem:
-							return ( int )AnimationVariations.LeftItemAttacks.TakeRandom();
-						case Weapon.LeftPistol:
-							return ( int )AnimationVariations.LeftPistolAttacks.TakeRandom();
 						default:
 							Debug.LogError($"RPG Character: no weapon number {weapon} for Side 1 (Left)");
 							break;
@@ -207,32 +183,15 @@ namespace RPGCharacterAnims
 					switch (weapon) {
 						case Weapon.Unarmed:
 							return ( int )AnimationVariations.UnarmedRightAttacks.TakeRandom();
-						case Weapon.RightSword:
-							return ( int )AnimationVariations.RightSwordAttacks.TakeRandom();
-						case Weapon.RightMace:
-							return ( int )AnimationVariations.RightMaceAttacks.TakeRandom();
-						case Weapon.RightDagger:
-							return ( int )AnimationVariations.RightDaggerAttacks.TakeRandom();
-						case Weapon.RightItem:
-							return ( int )AnimationVariations.RightItemAttacks.TakeRandom();
-						case Weapon.RightPistol:
-							return ( int )AnimationVariations.RightPistolAttacks.TakeRandom();
-						case Weapon.RightSpear:
-							return ( int )AnimationVariations.RightSpearAttacks.TakeRandom();
 						default:
 							Debug.LogError($"RPG Character: no weapon number {weapon} for Side 2 (Right)");
 							break;
 					}
 					break;
-				case Side.Dual:
-					return ( int )AnimationVariations.DualAttacks.TakeRandom();
 			}
 
 			return 1;
 		}
-
-		public static EmoteType RandomBow()
-		{ return AnimationVariations.Bow.TakeRandom(); }
 
 		public static Vector3 HitDirection(HitType hitType)
 		{

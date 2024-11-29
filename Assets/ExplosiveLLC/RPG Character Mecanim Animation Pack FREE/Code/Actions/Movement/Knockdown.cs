@@ -10,7 +10,7 @@ namespace RPGCharacterAnims.Actions
         }
 
         public override bool CanStartAction(RPGCharacterController controller)
-        { return !controller.isRelaxed && controller.canAction; }
+        { return controller.canAction; }
 
         protected override void _StartAction(RPGCharacterController controller, HitContext context)
         {
@@ -28,7 +28,6 @@ namespace RPGCharacterAnims.Actions
                 if (context.relative) { direction = controller.transform.rotation * direction; }
             }
 
-            controller.GetAngry();
             controller.Knockdown((KnockdownType)hitNumber);
             movement.KnockbackForce(direction, force, variableForce);
             movement.currentState = CharacterState.Knockdown;

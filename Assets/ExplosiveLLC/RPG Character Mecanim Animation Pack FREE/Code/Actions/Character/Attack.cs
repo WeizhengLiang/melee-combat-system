@@ -6,7 +6,7 @@ namespace RPGCharacterAnims.Actions
 	public class Attack:BaseActionHandler<AttackContext>
 	{
 		public override bool CanStartAction(RPGCharacterController controller)
-		{ return !controller.isRelaxed && !active && !controller.isCasting && controller.canAction; }
+		{ return !active && controller.canAction; }
 
 		public override bool CanEndAction(RPGCharacterController controller)
 		{ return active; }

@@ -99,13 +99,13 @@ namespace RPGCharacterAnims
 		/// <summary>
 		/// Returns whether the character can take actions.
 		/// </summary>
-		public bool canAction => _canAction && !isDead && !isSpecial && !isNavigating && !isCrawling;
+		public bool canAction => _canAction && !isDead && !isSpecial;
 		private bool _canAction;
 
         /// <summary>
         /// Returns whether the character can face.
         /// </summary>
-        public bool canFace => _canFace && !isDead && !isSwimming && !isCrawling;
+        public bool canFace => _canFace && !isDead;
         private bool _canFace = true;
 
         /// <summary>
@@ -115,21 +115,10 @@ namespace RPGCharacterAnims
         private bool _canMove;
 
         /// <summary>
-        /// Returns whether the character can strafe.
-        /// </summary>
-        public bool canStrafe => _canStrafe && !isDead && !isSwimming && !isCrawling;
-        private bool _canStrafe = true;
-
-        /// <summary>
         /// Returns whether the AcquiringGround action is active, signifying that the character is
         /// landing on the ground. AcquiringGround is added by RPGCharacterMovementController.
         /// </summary>
 		public bool acquiringGround => TryGetHandlerActive(HandlerTypes.AcquiringGround);
-
-        /// <summary>
-		/// Returns whether the Aim action is active.
-		/// </summary>
-		public bool isAiming => TryGetHandlerActive(HandlerTypes.Aim);
 
         /// <summary>
 		/// Returns whether the Attack action is active.
@@ -141,34 +130,6 @@ namespace RPGCharacterAnims
 		/// Returns whether the Block action is active.
 		/// </summary>
 		public bool isBlocking => TryGetHandlerActive(HandlerTypes.Block);
-
-        /// <summary>
-		/// Returns whether the Cast action is active.
-		/// </summary>
-		public bool isCasting
-		{
-			get
-			{
-				if (TryGetHandlerActive(HandlerTypes.Cast) || TryGetHandlerActive(HandlerTypes.AttackCast)) { return true; }
-				else { return false; }
-			}
-		}
-
-		/// <summary>
-		/// Returns whether the ClimbLadder action is active. ClimbLadder is added by
-		/// RPGCharacterMovementController.
-		/// </summary>
-		public bool isClimbing => TryGetHandlerActive(HandlerTypes.ClimbLadder);
-
-        /// <summary>
-		/// Returns whether the Crouch action is active.
-		/// </summary>
-		public bool isCrouching => TryGetHandlerActive(HandlerTypes.Crouch);
-
-        /// <summary>
-		/// Returns whether the Crouch action is active.
-		/// </summary>
-		public bool isCrawling => TryGetHandlerActive(HandlerTypes.Crawl);
 
         /// <summary>
 		/// Returns whether the Death action is active.
@@ -187,32 +148,16 @@ namespace RPGCharacterAnims
 		public bool isFalling => TryGetHandlerActive(HandlerTypes.Fall);
 
         /// <summary>
-		/// Returns whether the HipShoot action is active.
-		/// </summary>
-		public bool isHipShooting => TryGetHandlerActive(HandlerTypes.HipShoot);
-
-        /// <summary>
 		/// Returns whether the Idle action is active. Idle is added by
 		/// RPGCharacterMovementController.
 		/// </summary>
 		public bool isIdle => TryGetHandlerActive(HandlerTypes.Idle);
 
         /// <summary>
-		/// Returns whether the Injure action is active.
-		/// </summary>
-		public bool isInjured => TryGetHandlerActive(HandlerTypes.Injure);
-
-        /// <summary>
 		/// Returns whether the Move action is active. Idle is added by
 		/// RPGCharacterMovementController.
 		/// </summary>
 		public bool isMoving => TryGetHandlerActive(HandlerTypes.Move);
-
-        /// <summary>
-		/// Returns whether the Navigation action is active. Navigation is added by
-		/// RPGCharacterNavigationController.
-		/// </summary>
-		public bool isNavigating => TryGetHandlerActive(HandlerTypes.Navigation);
 
         /// <summary>
 		/// Returns whether the character is near a cliff. Set by RPGCharacterMovementController.
@@ -224,20 +169,7 @@ namespace RPGCharacterAnims
         /// </summary>
         [HideInInspector] public bool isNearLadder = false;
 
-		/// <summary>
-		/// Returns whether the Relax action is active. Relax is added by RPGCharacterWeapon
-		/// controller. If this action does not exist, returns whether rightWeapon and leftWeapon
-		/// are -1.
-		/// </summary>
-		public bool isRelaxed
-		{
-			get {
-				if (HandlerExists(HandlerTypes.Relax)) { return IsActive(HandlerTypes.Relax); }
-				return rightWeapon == Weapon.Relax && leftWeapon == Weapon.Relax;
-			}
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Returns whether the Roll action is active. Roll is added by
 		/// RPGCharacterMovementController.
 		/// </summary>
@@ -267,22 +199,6 @@ namespace RPGCharacterAnims
         /// action.
         /// </summary>
         [HideInInspector] public bool isSpecial = false;
-
-        /// <summary>
-        /// Returns whether the Sprint action is active.
-        /// </summary>
-		public bool isSprinting => TryGetHandlerActive(HandlerTypes.Sprint);
-
-        /// <summary>
-		/// Returns whether the Strafe action is active.
-		/// </summary>
-		public bool isStrafing => TryGetHandlerActive(HandlerTypes.Strafe);
-
-        /// <summary>
-		/// Returns whether the Swim action is active. Swim is added by
-		/// RPGCharacterMovementController.
-		/// </summary>
-		public bool isSwimming => TryGetHandlerActive(HandlerTypes.Swim);
 
         /// <summary>
 		/// Returns whether the character is talking. This flag is set by the Emote action.
@@ -412,27 +328,13 @@ namespace RPGCharacterAnims
 			// Setup IKhands if used.
             ikHands = GetComponentInChildren<IKHands>();
 
-            SetHandler(HandlerTypes.Aim, new SimpleActionHandler(() => { }, StopAim));
             // SetHandler(HandlerTypes.Attack, new Attack());
             SetHandler(HandlerTypes.Attack, new MCS_Attack(this));
             SetHandler(HandlerTypes.Block, new SimpleActionHandler(StartBlock, EndBlock));
-            SetHandler(HandlerTypes.Cast, new Cast());
-            SetHandler(HandlerTypes.AttackCast, new AttackCast());
-            SetHandler(HandlerTypes.Crouch, new SimpleActionHandler(StartCrouch, EndCrouch));
             SetHandler(HandlerTypes.Death, new SimpleActionHandler(Death, Revive));
             SetHandler(HandlerTypes.Dodge, new Dodge());
-            SetHandler(HandlerTypes.Talk, new Talk());
-            SetHandler(HandlerTypes.Emote, new Emote());
-            SetHandler(HandlerTypes.EmoteCombat, new EmoteCombat());
             SetHandler(HandlerTypes.Face, new SimpleActionHandler(StartFace, EndFace));
-            SetHandler(HandlerTypes.HipShoot, new SimpleActionHandler(() => { }, () => { }));
-            SetHandler(HandlerTypes.Injure, new SimpleActionHandler(StartInjured, EndInjured));
             SetHandler(HandlerTypes.Null, new Null());
-            SetHandler(HandlerTypes.Reload, new Reload());
-            SetHandler(HandlerTypes.Shoot, new Shoot());
-            SetHandler(HandlerTypes.SlowTime, new SlowTime());
-            SetHandler(HandlerTypes.Sprint, new SimpleActionHandler(StartSprint, EndSprint));
-            SetHandler(HandlerTypes.Strafe, new SimpleActionHandler(StartStrafe, EndStrafe));
             SetHandler(HandlerTypes.Turn, new Turn());
 
             // Unlock actions and movement.
@@ -545,9 +447,6 @@ namespace RPGCharacterAnims
         {
             // Update Animator animation speed.
             animator.SetFloat(AnimationParameters.AnimationSpeed, animationSpeed);
-
-			// Aiming.
-            if (isAiming) { Aim(isAiming, aimInput, _bowPull); }
         }
 
         #endregion
@@ -619,89 +518,9 @@ namespace RPGCharacterAnims
         { this._bowPull = _bowPull; }
 
         #endregion
-
-        #region Aiming / Shooting
-
-        /// <summary>
-        /// Triggers the shoot animation. Use the "Shoot" action for a friendly interface.
-        /// </summary>
-        /// <param name="action">Which animation to play: 1- normal shoot, 2- hip shooting with rifle.</param>
-        public void Shoot(int action)
-        {
-			animator.SetActionTrigger(AnimatorTrigger.AttackTrigger, action);
-			if (!isAiming) { Lock(true, true, true, 0, 0.8f); }
-		}
-
-        /// <summary>
-        /// Triggers the reload animation.
-        ///
-        /// Use the "Reload" action for a friendly interface.
-        /// </summary>
-        public void Reload()
-        {
-            animator.SetAnimatorTrigger(AnimatorTrigger.ReloadTrigger);
-			SetIKPause(2f);
-		}
-
-        /// <summary>
-        /// Updates the animator for directional aiming used by 2-Handed Bow and Rifle.
-        ///
-        /// Use the "Aim" action for a friendly interface.
-        /// </summary>
-        /// <param name="aiming">Whether or not aiming is enabled.</param>
-        /// <param name="target">The position in world space of the target.</param>
-        public void Aim(bool aiming, Vector3 target, float bowPull)
-        {
-            animator.SetBool(AnimationParameters.Aiming, aiming);
-            if (!aiming) return;
-
-            var aimTarget = target - transform.position;
-            var horizontalTarget = Vector3.ProjectOnPlane(aimTarget, Vector3.up);
-            var aimRotation = Quaternion.LookRotation(horizontalTarget, Vector3.up);
-
-            var verticalAngle = Vector3.Angle(horizontalTarget, aimTarget);
-            if (aimTarget.y - horizontalTarget.y < 0) { verticalAngle *= -1f; }
-            verticalAngle /= 90f;
-
-            var horizontalAngle = Vector3.Angle(transform.forward, horizontalTarget);
-            var angleDirection = (((aimRotation.eulerAngles.y - transform.rotation.eulerAngles.y) + 360f) % 360f) > 180f ? -1 : 1;
-            horizontalAngle = (horizontalAngle / 180f) * angleDirection;
-
-            animator.SetFloat(AnimationParameters.AimHorizontal, horizontalAngle);
-            animator.SetFloat(AnimationParameters.AimVertical, verticalAngle);
-            animator.SetFloat(AnimationParameters.BowPull, bowPull);
-        }
-
-        /// <summary>
-        /// Resets aiming values.
-        ///
-        /// Use the "Aim" action for a friendly interface.
-        /// </summary>
-        public void StopAim()
-        { Aim(false, Vector3.zero, 0f); }
-
-        #endregion
-
+        
         #region Movement
-
-        /// <summary>
-        /// Sets "Sprinting" in Animator.
-        /// </summary>
-        public void StartSprint()
-        {
-            animator.SetBool(AnimationParameters.Sprint, true);
-            _canStrafe = false;
-        }
-
-        /// <summary>
-        /// Unset "Sprinting" in Animator.
-        /// </summary>
-        public void EndSprint()
-        {
-            animator.SetBool(AnimationParameters.Sprint, false);
-            _canStrafe = true;
-        }
-
+        
         /// <summary>
         /// Turn the character 90/180 degrees.
         ///
@@ -711,10 +530,10 @@ namespace RPGCharacterAnims
         public void Turn(TurnType turnType)
         {
 	        animator.TriggerTurn(turnType);
-			float locktime = 0f;
-			if (turnType == TurnType.Left || turnType == TurnType.Right) { locktime = 0.55f; }
-			else { locktime = 1.45f; }
-            Lock(true, true, true, 0, locktime);
+	        float locktime = 0f;
+	        if (turnType == TurnType.Left || turnType == TurnType.Right) { locktime = 0.55f; }
+	        else { locktime = 1.45f; }
+	        Lock(true, true, true, 0, locktime);
         }
 
         /// <summary>
@@ -787,84 +606,11 @@ namespace RPGCharacterAnims
             Lock(true, true, true, 0, 0.55f);
         }
 
-        /// <summary>
-        /// Triggers ladder climbing animations.
-        ///
-        /// Use the "ClimbLadder" action for a friendly interface.
-        /// </summary>
-        /// <param name="action">1- Climb Up, 2- Climb Down, 3- Dismount Top, 4- Dismount Bottom, 5- Mount Top, 6- Mount Bottom.</param>
-        public void ClimbLadder(ClimbType climbType)
-        {
-            var duration = 0f;
-
-            switch (climbType) {
-                case ClimbType.ClimbUp:
-                case ClimbType.ClimbDown:
-                case ClimbType.MountBottom:
-                    duration = 1.167f;
-                    break;
-                case ClimbType.DismountTop:
-                case ClimbType.MountTop:
-                    duration = 2.667f;
-                    break;
-                case ClimbType.DismountBottom:
-                    duration = 1.0f;
-                    break;
-                default:
-                    return;
-            }
-
-            // Lock actions and set IK off when getting on the ladder.
-            if (climbType == ClimbType.MountTop || climbType == ClimbType.MountBottom) {
-				SetIKOff();
-				Lock(false, true, false, 0f, 0f);
-			}
-
-			// Trigger animation.
-            animator.TriggerClimb(climbType);
-
-			// If we are getting off the ladder, we should unlock actions too.
-			if (climbType == ClimbType.DismountTop || climbType == ClimbType.DismountBottom)
-			{ StartCoroutine(_Lock(true, true, true, 0f, duration)); }
-
-			// Manually start the coroutine to lock movement here so that it doesn't clobber
-			// the one we started above to lock actions.
-			else { StartCoroutine(_Lock(true, false, true, 0f, duration)); }
-        }
-
-		/// <summary>
-		/// Dodge the specified direction.
-		///
-		/// Use the "Crawl" action for a friendly interface.
-		/// </summary>
-		public void Crawl()
-		{
-			EndAction(HandlerTypes.Strafe);
-			EndAction(HandlerTypes.Aim);
-			Lock(false, true, false, 0f, 1f);
-			SetIKOff();
-			animator.TriggerCrawl(CrawlType.Crawl);
-		}
-
-		/// <summary>
-		/// End Crawling.
-		/// </summary>
-		public void EndCrawl()
-		{ animator.TriggerCrawl(CrawlType.StopCrawl); }
-
-		#endregion
+        #endregion
 
 		#region Combat
 
 		/// <summary>
-		/// Ends the relaxed state. This is useful for actions which put the character in combat.
-		/// </summary>
-		public void GetAngry()
-        {
-            if (isRelaxed) { EndAction(HandlerTypes.Relax); }
-        }
-
-        /// <summary>
         /// Trigger an attack animation.
         ///
         /// Use the "Attack" action for a friendly interface.
@@ -880,15 +626,7 @@ namespace RPGCharacterAnims
 			_isAttacking = true;
             Lock(true, true, true, 0, duration);
 
-			// If shooting, use regular or hipshooting attack.
-			if (rightWeapon == Weapon.Rifle) {
-				if (attackSide == Side.None) {
-					if (isHipShooting) { attackNumber = 2; }
-					else { attackNumber = 1; }
-				}
-			}
-
-			// Trigger the animation.
+            // Trigger the animation.
 			var attackTriggerType = attackSide == Side.Dual ? AnimatorTrigger.AttackDualTrigger : AnimatorTrigger.AttackTrigger;
 			animator.SetActionTrigger(attackTriggerType, attackNumber);
 		}
@@ -970,28 +708,6 @@ namespace RPGCharacterAnims
         }
 
         /// <summary>
-        /// Cast a spell.
-        ///
-        /// Use the "Cast" action for a friendly interface.
-        /// </summary>
-        /// <param name="attackSide">0- None, 1- Left, 2- Right, 3- Dual.</param>
-        /// <param name="castType">Type of spell to cast: Cast | AOE | Summon | Buff.</param>
-        public void StartCast(CastType castType, Side attackSide)
-        {
-	        animator.SetSide(attackSide);
-	        animator.TriggerCast(castType);
-	        Lock(true, true, false, 0, 0.8f);
-        }
-
-        public void StartCast(AttackCastType attackCastType, Side attackSide)
-        {
-	        animator.SetSide(attackSide);
-	        animator.TriggerAttackCast(attackCastType);
-			_isAttacking = true;
-	        Lock(true, true, false, 0, 0.8f);
-        }
-
-        /// <summary>
         /// End spellcasting.
         ///
         /// Use the "Cast" action for a friendly interface.
@@ -1070,8 +786,7 @@ namespace RPGCharacterAnims
         /// </summary>
         public void GetHit(int hitNumber)
         {
-			GetAngry();
-            animator.TriggerGettingHit(hitNumber);
+	        animator.TriggerGettingHit(hitNumber);
 			if (isBlocking) {
 				Lock(true, true, false, 0f, 0f);
 				SetIKOff();
@@ -1103,225 +818,12 @@ namespace RPGCharacterAnims
         public void Revive()
         {
             animator.SetAnimatorTrigger(AnimatorTrigger.ReviveTrigger);
-            GetAngry();
             Lock(true, true, true, 0f, 1f);
 			SetIKPause(1f);
         }
 
         #endregion
-
-        #region Emotes
-
-        /// <summary>
-        /// Sit down.
-        ///
-        /// Use the "Emote" action for a friendly interface.
-        /// </summary>
-        public void Sit()
-        {
-	        animator.TriggerEmote(EmoteType.Sit);
-            Lock(true, true, false, 0f, 0f);
-        }
-
-        /// <summary>
-        /// Lay down and sleep.
-        ///
-        /// Use the "Emote" action for a friendly interface.
-        /// </summary>
-        public void Laydown()
-        {
-			animator.TriggerEmote(EmoteType.Laydown);
-			Lock(true, true, false, 0f, 0f);
-		}
-
-        /// <summary>
-        /// Stand when sitting or sleeping.
-        ///
-        /// Use the "Emote" action for a friendly interface.
-        /// </summary>
-        public void Stand()
-        {
-	        var currentActionType = animator.GetInteger(AnimationParameters.Action);
-
-			// Sitting.
-			if (currentActionType == 0)	{
-		        animator.TriggerEmote(EmoteType.StandFromSitting);
-		        Lock(true, true, true, 0f, 1f);
-	        }
-			// Lying Down.
-			else if (currentActionType == 1) {
-		        animator.TriggerEmote(EmoteType.StandFromLaying);
-		        Lock(true, true, true, 0f, 2f);
-	        }
-        }
-
-        /// <summary>
-        /// Pickup an item.
-        ///
-        /// Use the "EmoteCombat" action for a friendly interface.
-        /// </summary>
-        public void Pickup()
-        {
-			if (hasLeftWeapon) { animator.SetInteger("Side", 2); }
-			else { animator.SetInteger("Side", 1); }
-	        animator.TriggerEmote(EmoteType.Pickup);
-            Lock(true, true, true, 0, 1.4f);
-			SetIKPause(1.2f);
-        }
-
-		/// <summary>
-		/// Activate a button or switch.
-		///
-		/// Use the "EmoteCombat" action for a friendly interface.
-		/// </summary>
-		public void Activate()
-		{
-			if (hasLeftWeapon) { animator.SetInteger("Side", 2); }
-			else { animator.SetInteger("Side", 1); }
-			animator.TriggerEmote(EmoteType.Activate);
-			Lock(true, true, true, 0, 1.2f);
-			SetIKPause(rightWeapon == Weapon.TwoHandAxe ? 1.4f : 1f);
-		}
-
-		/// <summary>
-		/// Take a swig.
-		///
-		/// Use the "Emote" action for a friendly interface.
-		/// </summary>
-		public void Drink()
-        {
-	        animator.TriggerEmote(EmoteType.Drink);
-            Lock(true, true, true, 0, 1f);
-        }
-
-		/// <summary>
-		/// Take a bow.
-		///
-		/// Use the "Emote" action for a friendly interface.
-		/// </summary>
-		public void Bow()
-		{
-			var bowType = AnimationData.RandomBow();
-			animator.TriggerEmote(bowType);
-			Lock(true, true, true, 0, 3f);
-		}
-
-		/// <summary>
-		/// Shake head no.
-		///
-		/// Use the "Emote" action for a friendly interface.
-		/// </summary>
-		public void No()
-		{
-			animator.TriggerEmote(EmoteType.No);
-			Lock(true, true, true, 0, 1f);
-		}
-
-		/// <summary>
-		/// Nod head yes.
-		///
-		/// Use the "Emote" action for a friendly interface.
-		/// </summary>
-		public void Yes()
-		{
-			animator.TriggerEmote(EmoteType.Yes);
-			Lock(true, true, true, 0, 1f);
-		}
-
-		/// <summary>
-		/// Do a victorious leap.
-		///
-		/// Use the "EmoteCombat" action for a friendly interface.
-		/// </summary>
-		public void Boost()
-		{
-			SetIKPause(1f);
-			animator.TriggerEmote(EmoteType.Boost);
-			Lock(true, true, true, 0, 1f);
-		}
-
-		/// <summary>
-		/// Switch to the injured state.
-		///
-		/// Use the "Injure" action for a friendly interface.
-		/// </summary>
-		public void StartInjured()
-		{ animator.SetBool(AnimationParameters.Injured, true); }
-
-		/// <summary>
-		/// Recover from the injured state.
-		///
-		/// Use the "Injure" action for a friendly interface.
-		/// </summary>
-		public void EndInjured()
-        { animator.SetBool(AnimationParameters.Injured, false); }
-
-        /// <summary>
-        /// Crouch to move stealthily.
-        ///
-        /// Use the "Crouch" action for a friendly interface.
-        /// </summary>
-        public void StartCrouch()
-        { animator.SetBool(AnimationParameters.Crouch, true); }
-
-        /// <summary>
-        /// Stand from a crouching position
-        ///
-        /// Use the "Crouch" action for a friendly interface.
-        /// </summary>
-        public void EndCrouch()
-        { animator.SetBool(AnimationParameters.Crouch, false); }
-
-        /// <summary>
-        /// Start a conversation.
-        ///
-        /// Use the "Emote" action for a friendly interface.
-        /// </summary>
-        public void StartConversation()
-        {
-			Debug.Log("StartConversation.");
-            StartCoroutine(_PlayConversationClip());
-            Lock(true, true, false, 0f, 0f);
-        }
-
-        /// <summary>
-        /// Stop a conversation.
-        ///
-        /// Use the "Emote" action for a friendly interface.
-        /// </summary>
-        public void EndConversation()
-        {
-	        animator.TriggerTalking(TalkType.None);
-            StopCoroutine(nameof(_PlayConversationClip));
-            Unlock(true, true);
-        }
-
-        /// <summary>
-        /// Plays a random conversation animation.
-        /// </summary>
-        /// <returns>IEnumerator for use with StartCoroutine.</returns>
-        private IEnumerator _PlayConversationClip()
-        {
-            if (!isTalking) { yield break; }
-            var talkingType = AnimationVariations.Conversations.TakeRandom();
-            animator.TriggerTalking(talkingType);
-            yield return new WaitForSeconds(2f);
-            StartCoroutine(_PlayConversationClip());
-        }
-
-        /// <summary>
-        /// Plays random idle animation. Currently only Alert1 animation.
-        /// </summary>
-        public void RandomIdle()
-        {
-	        if (!idleAlert || !isIdle || isRelaxed || isAiming) return;
-	        animator.SetActionTrigger(AnimatorTrigger.IdleTrigger, 1);
-	        Lock(true, true, true, 0, 1.25f);
-	        SetIKPause(2.125f);
-        }
-
-        #endregion
-
+        
         #region Misc
 
         /// <summary>
