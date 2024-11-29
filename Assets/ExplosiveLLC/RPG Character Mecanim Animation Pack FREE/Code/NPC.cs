@@ -11,13 +11,11 @@ namespace RPGCharacterAnims
     {
         [HideInInspector] public NavMeshAgent navMeshAgent;
         private RPGCharacterController rpgCharacterController;
-        private RPGCharacterNavigationController rpgNavigationController;
         private Vector3 targetPosition;
 
 		void Awake()
 		{
             rpgCharacterController = GetComponent<RPGCharacterController>();
-            rpgNavigationController = GetComponent<RPGCharacterNavigationController>();
 		}
 
 	    void Start()

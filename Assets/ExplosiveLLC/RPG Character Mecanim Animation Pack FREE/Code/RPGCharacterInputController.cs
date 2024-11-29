@@ -20,18 +20,13 @@ namespace RPGCharacterAnims
         private bool inputDeath;
         private bool inputAttackL;
         private bool inputAttackR;
-        private bool inputCastL;
-        private bool inputCastR;
         private float inputSwitchUpDown;
         private float inputSwitchLeftRight;
         private float inputAimBlock;
-        private bool inputAiming;
         private bool inputFace;
         private float inputFacingHorizontal;
         private float inputFacingVertical;
         private bool inputRoll;
-        private bool inputShield;
-        private bool inputRelax;
 
         // Variables.
         private Vector3 moveInput;
@@ -95,20 +90,13 @@ namespace RPGCharacterAnims
 		        inputDeath = Input.GetButtonDown("Death");
 		        inputAttackL = Input.GetButtonDown("AttackL");
 		        inputAttackR = Input.GetButtonDown("AttackR");
-		        inputCastL = Input.GetButtonDown("CastL");
-		        inputCastR = Input.GetButtonDown("CastR");
 		        inputSwitchUpDown = Input.GetAxisRaw("SwitchUpDown");
 		        inputSwitchLeftRight = Input.GetAxisRaw("SwitchLeftRight");
-		        inputAimBlock = Input.GetAxisRaw("Aim");
-		        inputAiming = Input.GetButton("Aiming");
 		        inputHorizontal = Input.GetAxisRaw("Horizontal");
 		        inputVertical = Input.GetAxisRaw("Vertical");
 		        inputFace = Input.GetMouseButton(1);
 		        inputFacingHorizontal = Input.GetAxisRaw("FacingHorizontal");
 		        inputFacingVertical = Input.GetAxisRaw("FacingVertical");
-		        inputRoll = Input.GetButtonDown("L3");
-		        inputShield = Input.GetButtonDown("Shield");
-		        inputRelax = Input.GetButtonDown("Relax");
 	        }
 			catch (Exception) {
 				Debug.LogError("Inputs not found! If you are using the InputSystem you need to extract the 'InputSystem - Requires InputSystem Package.unitypackage'.");
@@ -117,8 +105,6 @@ namespace RPGCharacterAnims
 		}
 
 		public bool HasMoveInput() => moveInput.magnitude > 0.1f;
-
-		public bool HasAimInput() => inputAiming || inputAimBlock < -0.1f;
 
 		public bool HasBlockInput() => inputAimBlock > 0.1;
 
@@ -243,17 +229,6 @@ namespace RPGCharacterAnims
 			var doSwitch = false;
 			var context = new SwitchWeaponContext();
 			var weaponNumber = Weapon.Unarmed;
-
-			// Switch to Shield.
-			if (inputShield) {
-				doSwitch = true;
-				context.side = "Left";
-				context.type = "Switch";
-				context.leftWeapon = Weapon.Shield;
-				context.rightWeapon = Weapon.Relax;
-				rpgCharacterController.StartAction(HandlerTypes.SwitchWeapon, context);
-				return;
-			}
 
 			// Cycle through 2Handed weapons if any input happens on the up-down axis.
 			if (Mathf.Abs(inputSwitchUpDown) > 0.1f) {

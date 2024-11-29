@@ -15,18 +15,6 @@ public class WeaponDataSO : ScriptableObject
     [Tooltip("Prefab model for this weapon")]
     public GameObject prefab;
 
-    [Header("Combat Properties")]
-    [Tooltip("Radius of attack detection")]
-    [Range(0.1f, 2.0f)]
-    public float attackRadius = 0.5f;
-
-    [Tooltip("Base damage multiplier for this weapon")]
-    [Range(0.1f, 3.0f)]
-    public float damageMultiplier = 1.0f;
-
-    [Tooltip("Attack speed modifier")]
-    [Range(0.5f, 2.0f)]
-    public float attackSpeedModifier = 1.0f;
     #endregion
 
     #region Validation
