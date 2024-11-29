@@ -329,7 +329,7 @@ namespace RPGCharacterAnims
             ikHands = GetComponentInChildren<IKHands>();
 
             // SetHandler(HandlerTypes.Attack, new Attack());
-            SetHandler(HandlerTypes.Attack, new MCS_Attack(this));
+            SetHandler(HandlerTypes.Attack, new AttackHandler(this));
             SetHandler(HandlerTypes.Block, new SimpleActionHandler(StartBlock, EndBlock));
             SetHandler(HandlerTypes.Death, new SimpleActionHandler(Death, Revive));
             SetHandler(HandlerTypes.Dodge, new Dodge());
